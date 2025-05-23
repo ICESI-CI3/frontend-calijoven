@@ -1,58 +1,54 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { ROUTES } from '@/lib/constants/routes';
+import { AUTH_COOKIE_NAME } from '@/lib/auth/cookieService';
 
 // Rutas públicas a las que se puede acceder sin autenticación
 const publicRoutes = [ROUTES.HOME, ROUTES.LOGIN, ROUTES.REGISTER, ROUTES.UI_COMPONENTS];
+
+// Rutas que deben ignorarse para la verificación de autenticación
+const ignoredRoutes = ['/_next', '/favicon.ico', '/api'];
 
 const isPublicRoute = (path: string) => {
   return publicRoutes.some((route) => path === route || path.startsWith(`${route}/`));
 };
 
-export function middleware(request: NextRequest) {
-  const token = request.cookies.get('auth-storage')?.value;
-  const isAuthPage =
-    request.nextUrl.pathname === ROUTES.LOGIN || request.nextUrl.pathname === ROUTES.REGISTER;
-  const isApiRoute = request.nextUrl.pathname.startsWith('/api');
-  const isPublic = isPublicRoute(request.nextUrl.pathname);
+const isIgnoredRoute = (path: string) => {
+  return ignoredRoutes.some((route) => path.startsWith(route));
+};
 
-  // Allow API routes to be handled by the API
-  if (isApiRoute) {
+export function middleware(request: NextRequest) {
+  const path = request.nextUrl.pathname;
+
+  // Ignorar rutas excluidas (estáticas, API, etc.)
+  if (isIgnoredRoute(path)) {
     return NextResponse.next();
   }
 
-  // Redirect to dashboard if accessing login/register while logged in
+  // Verificar autenticación
+  const token = request.cookies.get(AUTH_COOKIE_NAME)?.value;
+  const isAuthPage = ([ROUTES.LOGIN, ROUTES.REGISTER] as string[]).includes(path);
+
+  // Redirigir a dashboard si está autenticado y visita páginas de login/registro
   if (isAuthPage && token) {
     return NextResponse.redirect(new URL(ROUTES.DASHBOARD, request.url));
   }
 
-  // Permitir acceso a rutas públicas sin redirección
-  if (isPublic) {
+  // Permitir rutas públicas
+  if (isPublicRoute(path)) {
     return NextResponse.next();
   }
 
-  // Redirect to login if accessing protected page while logged out
-  if (!isAuthPage && !token && !request.nextUrl.pathname.startsWith('/_next')) {
+  // Redirigir a login si accede a ruta protegida sin token
+  if (!token) {
     const loginUrl = new URL(ROUTES.LOGIN, request.url);
-    loginUrl.searchParams.set('callbackUrl', request.nextUrl.pathname);
+    loginUrl.searchParams.set('callbackUrl', path);
     return NextResponse.redirect(loginUrl);
   }
-
-  // Aquí se podría implementar verificación de permisos para rutas específicas
-  // basado en los roles del usuario (requeriría decodificar el token)
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public folder
-     */
-    '/((?!_next/static|_next/image|favicon.ico|public).*)',
-  ],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|public).*)'],
 };

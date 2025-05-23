@@ -1,4 +1,4 @@
-import { Role } from './role';
+import { Permission } from '@/lib/constants/permissions';
 
 export type User = {
   id: string;
@@ -6,7 +6,7 @@ export type User = {
   email: string;
   profilePicture: string;
   banned: string;
-  roles: Role;
+  roles: Permission[];
   city: string;
   leadingCommittees: string[];
 };

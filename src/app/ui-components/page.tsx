@@ -8,6 +8,7 @@ import { Modal } from '@/components/Modal';
 import { Select } from '@/components/Select';
 import { Spinner } from '@/components/Spinner';
 import { Textarea } from '@/components/Textarea';
+import RequireAuth from '../(auth)/RequireAuth';
 
 export default function Home() {
   // Estados para los componentes interactivos
@@ -26,6 +27,15 @@ export default function Home() {
 
   return (
     <main className="flex-1 bg-background">
+      <RequireAuth permissions={['MANAGE_PUBLICATION']} requireAll>
+        <div className="container mx-auto px-4 py-8">
+          <h1 className="mb-6 text-4xl font-bold">Bienvenido a la sección de administración</h1>
+          <p className="text-lg text-muted-foreground">
+            Aquí puedes gestionar los componentes de la plataforma.
+          </p>
+        </div>
+      </RequireAuth>
+
       <div className="container mx-auto px-4 py-8">
         <div className="mx-auto max-w-5xl">
           <h1 className="mb-8 text-3xl font-bold">Componentes UI de Cali Joven</h1>
