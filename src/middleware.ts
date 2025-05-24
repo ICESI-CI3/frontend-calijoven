@@ -14,13 +14,16 @@ const isPublicRoute = (path: string) => {
 };
 
 const isIgnoredRoute = (path: string) => {
-  return ignoredRoutes.some((route) => path.startsWith(route));
+  // Ignora rutas especiales y archivos con extensión
+  return (
+    ignoredRoutes.some((route) => path.startsWith(route)) || !!path.match(/\.[^/]+$/) // Si tiene extensión de archivo
+  );
 };
 
 export function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
-  // Ignorar rutas excluidas (estáticas, API, etc.)
+  // Ignorar rutas excluidas (estáticas, API, archivos con extensión, etc.)
   if (isIgnoredRoute(path)) {
     return NextResponse.next();
   }
@@ -50,5 +53,7 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|public).*)'],
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|jpg|jpeg|png|gif|webp|ico|txt|json)).*)',
+  ],
 };

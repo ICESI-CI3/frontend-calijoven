@@ -6,116 +6,116 @@
   :root {
     /* Colores de interfaz base */
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 210 100% 20%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 210 100% 20%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
+    --popover-foreground: 210 100% 20%;
+    --border: 0 0% 80%;
+    --input: 0 0% 80%;
+    --ring: 210 100% 32%;
     --radius: 0.5rem;
 
-    /* Colores principales - Púrpura/Violeta */
-    --primary: 270 70% 50%;
-    --primary-foreground: 210 40% 98%;
-    --primary-50: 270 100% 98%;
-    --primary-100: 270 100% 95%;
-    --primary-200: 270 90% 90%;
-    --primary-300: 270 85% 80%;
-    --primary-400: 270 80% 70%;
-    --primary-500: 270 75% 60%;
-    --primary-600: 270 70% 50%;
-    --primary-700: 270 75% 40%;
-    --primary-800: 270 80% 30%;
-    --primary-900: 270 85% 25%;
-    --primary-950: 270 90% 20%;
+    /* Colores principales - Azul */
+    --primary: 210 100% 20%;
+    --primary-foreground: 0 0% 100%;
+    --primary-50: 210 100% 98%;
+    --primary-100: 210 100% 95%;
+    --primary-200: 210 100% 90%;
+    --primary-300: 210 100% 80%;
+    --primary-400: 210 100% 70%;
+    --primary-500: 210 100% 60%;
+    --primary-600: 210 100% 50%;
+    --primary-700: 210 100% 40%;
+    --primary-800: 210 100% 30%;
+    --primary-900: 210 100% 20%;
+    --primary-950: 210 100% 10%;
 
-    /* Colores secundarios - Magenta/Rosa */
-    --secondary: 320 75% 50%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --secondary-50: 320 100% 98%;
-    --secondary-100: 320 100% 95%;
-    --secondary-200: 320 95% 90%;
-    --secondary-300: 320 90% 80%;
-    --secondary-400: 320 85% 70%;
-    --secondary-500: 320 80% 60%;
-    --secondary-600: 320 75% 50%;
-    --secondary-700: 320 80% 40%;
-    --secondary-800: 320 85% 30%;
-    --secondary-900: 320 90% 25%;
-    --secondary-950: 320 95% 20%;
+    /* Colores secundarios - Amarillo/Dorado */
+    --secondary: 45 100% 50%;
+    --secondary-foreground: 210 100% 20%;
+    --secondary-50: 45 100% 98%;
+    --secondary-100: 45 100% 95%;
+    --secondary-200: 45 100% 90%;
+    --secondary-300: 45 100% 80%;
+    --secondary-400: 45 100% 70%;
+    --secondary-500: 45 100% 60%;
+    --secondary-600: 45 100% 50%;
+    --secondary-700: 45 100% 40%;
+    --secondary-800: 45 100% 30%;
+    --secondary-900: 45 100% 20%;
+    --secondary-950: 45 100% 10%;
 
-    /* Colores de acento - Azul Cian */
-    --accent: 190 75% 50%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --accent-50: 190 100% 98%;
-    --accent-100: 190 100% 95%;
-    --accent-200: 190 95% 90%;
-    --accent-300: 190 90% 80%;
-    --accent-400: 190 85% 70%;
-    --accent-500: 190 80% 60%;
-    --accent-600: 190 75% 50%;
-    --accent-700: 190 80% 40%;
-    --accent-800: 190 85% 30%;
-    --accent-900: 190 90% 25%;
-    --accent-950: 190 95% 20%;
+    /* Colores de acento - Azul más claro */
+    --accent: 210 100% 32%;
+    --accent-foreground: 0 0% 100%;
+    --accent-50: 210 100% 98%;
+    --accent-100: 210 100% 95%;
+    --accent-200: 210 100% 90%;
+    --accent-300: 210 100% 80%;
+    --accent-400: 210 100% 70%;
+    --accent-500: 210 100% 60%;
+    --accent-600: 210 100% 50%;
+    --accent-700: 210 100% 40%;
+    --accent-800: 210 100% 30%;
+    --accent-900: 210 100% 20%;
+    --accent-950: 210 100% 10%;
 
     /* Colores de utilidad */
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 0 0% 80%;
+    --muted-foreground: 0 0% 40%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
 
     /* Colores de estado */
     --success: 142 76% 36%;
-    --warning: 38 92% 50%;
+    --warning: 45 100% 50%;
     --error: 0 84.2% 60.2%;
-    --info: 200 98% 39%;
+    --info: 210 100% 32%;
 
-    /* Colores neutros */
-    --gray-50: 240 5% 98%;
-    --gray-100: 240 5% 96%;
-    --gray-200: 240 5% 90%;
-    --gray-300: 240 5% 80%;
-    --gray-400: 240 5% 70%;
-    --gray-500: 240 5% 60%;
-    --gray-600: 240 5% 50%;
-    --gray-700: 240 5% 40%;
-    --gray-800: 240 5% 30%;
-    --gray-900: 240 5% 20%;
-    --gray-950: 240 5% 10%;
+    /* Colores neutros - Grises */
+    --gray-50: 0 0% 98%;
+    --gray-100: 0 0% 96%;
+    --gray-200: 0 0% 90%;
+    --gray-300: 0 0% 80%;
+    --gray-400: 0 0% 70%;
+    --gray-500: 0 0% 60%;
+    --gray-600: 0 0% 40%;
+    --gray-700: 0 0% 30%;
+    --gray-800: 0 0% 20%;
+    --gray-900: 0 0% 10%;
+    --gray-950: 0 0% 5%;
   }
 
   .dark {
     /* Colores de interfaz base - Modo oscuro */
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 48%;
+    --background: 210 100% 20%;
+    --foreground: 0 0% 100%;
+    --card: 210 100% 20%;
+    --card-foreground: 0 0% 100%;
+    --popover: 210 100% 20%;
+    --popover-foreground: 0 0% 100%;
+    --border: 0 0% 40%;
+    --input: 0 0% 40%;
+    --ring: 210 100% 32%;
 
     /* Colores principales - Modo oscuro */
-    --primary: 270 80% 60%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 210 100% 32%;
+    --primary-foreground: 0 0% 100%;
 
     /* Colores secundarios - Modo oscuro */
-    --secondary: 320 80% 60%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 45 100% 50%;
+    --secondary-foreground: 210 100% 20%;
 
     /* Colores de acento - Modo oscuro */
-    --accent: 190 80% 60%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 210 100% 40%;
+    --accent-foreground: 0 0% 100%;
 
     /* Colores de utilidad - Modo oscuro */
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 0 0% 40%;
+    --muted-foreground: 0 0% 80%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
   }
 }
 
