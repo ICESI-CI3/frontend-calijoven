@@ -7,7 +7,7 @@ import { Alert } from '@/components/Alert';
 import { useLoginForm } from '../hooks/useLoginForm';
 
 export function LoginForm() {
-  const { register, errors, isLoading, error, onSubmit, rememberMe, setRememberMe } =
+  const { register, errors, isLoading, error, success, onSubmit, rememberMe, setRememberMe } =
     useLoginForm();
 
   return (
@@ -33,6 +33,7 @@ export function LoginForm() {
       </div>
 
       {error && <Alert type="error" message={error} />}
+      {success && <Alert type="success" message={success} />}
 
       <div className="flex items-center justify-between">
         <div className="flex items-center">

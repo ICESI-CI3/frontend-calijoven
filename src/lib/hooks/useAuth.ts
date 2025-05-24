@@ -32,7 +32,12 @@ export const useAuth = create<AuthState>()(
             throw new Error('Invalid token format');
           }
 
-          user.roles = payload.authorities || [];
+          user.roles = (payload.authorities || []).map((authority) => ({
+            id: authority,
+            name: authority,
+            description: '',
+            permissions: [],
+          }));
 
           await setAuthCookie(token, { rememberMe });
 

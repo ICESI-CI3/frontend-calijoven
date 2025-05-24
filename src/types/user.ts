@@ -1,12 +1,19 @@
 import { Permission } from '@/lib/constants/permissions';
 
+export type Role = {
+  id: string;
+  name: string;
+  description: string;
+  permissions: Permission[];
+};
+
 export type User = {
   id: string;
   name: string;
   email: string;
   profilePicture: string;
   banned: string;
-  roles: Permission[];
+  roles: Role[];
   city: string;
   leadingCommittees: string[];
 };
