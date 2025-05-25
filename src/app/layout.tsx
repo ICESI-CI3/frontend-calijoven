@@ -1,8 +1,6 @@
 import { Poppins } from 'next/font/google';
 import { Providers } from '@/providers';
 import '@/styles/globals.css';
-import { Footer } from '@/components/layout/Footer';
-import { UserProvider } from '@/providers/UserProvider';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -20,10 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="es" className={poppins.variable} suppressHydrationWarning>
       <body className={poppins.className}>
-        <UserProvider>
-          <Providers>{children}</Providers>
-        </UserProvider>
-        <Footer />
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
