@@ -8,7 +8,7 @@ import { Select } from "@/components/Select"
 import { Textarea } from "@/components/Textarea"
 import { Alert } from "@/components/Alert"
 import type { CreatePublicationDto, Publication, CreateTagDto, EventDto } from "@/types/publication"
-import { publicationService } from "@/services/publication.service"
+import { publicationService } from "@/modules/publications/services/publication.service"
 
 interface PublicationFormProps {
   publication?: Publication

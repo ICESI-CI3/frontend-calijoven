@@ -1,12 +1,12 @@
 import apiClient from '@/lib/api/client';
 import { API_ROUTES } from '@/lib/constants/api';
-import type { 
-  Publication, 
-  CreatePublicationDto, 
+import type {
+  Publication,
+  CreatePublicationDto,
   UpdatePublicationDto,
   PublicationFilters,
   FilterPublicationDto,
-  ReportFilters 
+  ReportFilters,
 } from '@/types/publication';
 
 export class PublicationError extends Error {
@@ -31,7 +31,7 @@ export const PublicationService = {
         tag: filters.tag,
         city: filters.city,
         type: filters.type,
-        unpublished: filters.unpublished
+        unpublished: filters.unpublished,
       };
 
       const params = new URLSearchParams(
@@ -73,36 +73,36 @@ export const PublicationService = {
   async createPublication(publicationData: CreatePublicationDto): Promise<Publication> {
     try {
       const formData = new FormData();
-      
+
       // Agregar datos básicos
       formData.append('title', publicationData.title);
       formData.append('description', publicationData.description);
       formData.append('content', publicationData.content);
       formData.append('type', publicationData.type);
-      
+
       if (publicationData.published !== undefined) {
         formData.append('published', String(publicationData.published));
       }
-      
+
       // Agregar ciudades
       if (publicationData.cities && publicationData.cities.length > 0) {
-        publicationData.cities.forEach(cityId => {
+        publicationData.cities.forEach((cityId) => {
           formData.append('cities', cityId);
         });
       }
-      
+
       // Agregar organizadores
       if (publicationData.organizers && publicationData.organizers.length > 0) {
-        publicationData.organizers.forEach(organizerId => {
+        publicationData.organizers.forEach((organizerId) => {
           formData.append('organizers', organizerId);
         });
       }
-      
+
       // Agregar tags
       if (publicationData.tags && publicationData.tags.length > 0) {
         formData.append('tags', JSON.stringify(publicationData.tags));
       }
-      
+
       // Agregar datos específicos según el tipo
       if (publicationData.type === 'event' && publicationData.event) {
         formData.append('event', JSON.stringify(publicationData.event));
@@ -111,10 +111,10 @@ export const PublicationService = {
       } else if (publicationData.type === 'offer' && publicationData.offer) {
         formData.append('offer', JSON.stringify(publicationData.offer));
       }
-      
+
       // Agregar archivos adjuntos
       if (publicationData.attachments && publicationData.attachments.length > 0) {
-        publicationData.attachments.forEach(file => {
+        publicationData.attachments.forEach((file) => {
           formData.append('attachments', file);
         });
       }
@@ -124,7 +124,7 @@ export const PublicationService = {
           'Content-Type': 'multipart/form-data',
         },
       });
-      
+
       return data;
     } catch (error) {
       console.error('Failed to create publication:', error);
@@ -138,36 +138,36 @@ export const PublicationService = {
   async updatePublication(id: string, publicationData: UpdatePublicationDto): Promise<Publication> {
     try {
       const formData = new FormData();
-      
+
       // Agregar datos básicos si existen
       if (publicationData.title) formData.append('title', publicationData.title);
       if (publicationData.description) formData.append('description', publicationData.description);
       if (publicationData.content) formData.append('content', publicationData.content);
       if (publicationData.type) formData.append('type', publicationData.type);
-      
+
       if (publicationData.published !== undefined) {
         formData.append('published', String(publicationData.published));
       }
-      
+
       // Agregar ciudades
       if (publicationData.cities && publicationData.cities.length > 0) {
-        publicationData.cities.forEach(cityId => {
+        publicationData.cities.forEach((cityId) => {
           formData.append('cities', cityId);
         });
       }
-      
+
       // Agregar organizadores
       if (publicationData.organizers && publicationData.organizers.length > 0) {
-        publicationData.organizers.forEach(organizerId => {
+        publicationData.organizers.forEach((organizerId) => {
           formData.append('organizers', organizerId);
         });
       }
-      
+
       // Agregar tags
       if (publicationData.tags && publicationData.tags.length > 0) {
         formData.append('tags', JSON.stringify(publicationData.tags));
       }
-      
+
       // Agregar datos específicos según el tipo
       if (publicationData.type === 'event' && publicationData.event) {
         formData.append('event', JSON.stringify(publicationData.event));
@@ -176,15 +176,15 @@ export const PublicationService = {
       } else if (publicationData.type === 'offer' && publicationData.offer) {
         formData.append('offer', JSON.stringify(publicationData.offer));
       }
-      
+
       // Agregar archivos adjuntos a eliminar
       if (publicationData.attachmentsToDelete && publicationData.attachmentsToDelete.length > 0) {
         formData.append('attachmentsToDelete', JSON.stringify(publicationData.attachmentsToDelete));
       }
-      
+
       // Agregar archivos adjuntos nuevos
       if (publicationData.attachments && publicationData.attachments.length > 0) {
-        publicationData.attachments.forEach(file => {
+        publicationData.attachments.forEach((file) => {
           formData.append('attachments', file);
         });
       }
@@ -194,7 +194,7 @@ export const PublicationService = {
           'Content-Type': 'multipart/form-data',
         },
       });
-      
+
       return data;
     } catch (error) {
       console.error('Failed to update publication:', error);
@@ -219,9 +219,13 @@ export const PublicationService = {
    */
   async generateGeneralReport(name: string, filters: ReportFilters = {}): Promise<Blob> {
     try {
-      const { data } = await apiClient.post(API_ROUTES.REPORTS.PUBLICATION.GENERAL, { name, filters }, {
-        responseType: 'blob'
-      });
+      const { data } = await apiClient.post(
+        API_ROUTES.REPORTS.PUBLICATION.GENERAL,
+        { name, filters },
+        {
+          responseType: 'blob',
+        }
+      );
       return data;
     } catch (error) {
       console.error('Failed to generate general report:', error);
@@ -234,15 +238,19 @@ export const PublicationService = {
    */
   async generateSingleReport(id: string, name: string): Promise<Blob> {
     try {
-      const { data } = await apiClient.post(`${API_ROUTES.REPORTS.PUBLICATION.BY_ID}/${id}`, { name }, {
-        responseType: 'blob'
-      });
+      const { data } = await apiClient.post(
+        `${API_ROUTES.REPORTS.PUBLICATION.BY_ID}/${id}`,
+        { name },
+        {
+          responseType: 'blob',
+        }
+      );
       return data;
     } catch (error) {
       console.error('Failed to generate single report:', error);
       throw new PublicationError('No se pudo generar el reporte individual.');
     }
-  }
+  },
 };
 
 export const publicationService = PublicationService;

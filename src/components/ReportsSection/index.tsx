@@ -5,7 +5,7 @@ import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { Alert } from '@/components/Alert';
 import type { ReportFilters } from '@/types/publication';
-import { publicationService } from '@/services/publication.service';
+import { publicationService } from '@/modules/publications/services/publication.service';
 
 export function ReportsSection() {
   const [reportName, setReportName] = useState('');

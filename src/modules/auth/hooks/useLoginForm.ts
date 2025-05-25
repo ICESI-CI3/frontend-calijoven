@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '@/lib/hooks/useAuth';
-import { AuthService } from '@/services/auth.service';
+import { AuthService } from '@/modules/auth/services/auth.service';
 import { ROUTES } from '@/lib/constants/routes';
 import { loginSchema, LoginFormData } from '@/types/auth';
 

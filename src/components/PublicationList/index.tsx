@@ -8,7 +8,7 @@ import { Alert } from '@/components/Alert';
 import { Spinner } from '@/components/Spinner';
 import { Modal } from '@/components/Modal';
 import type { Publication, PublicationFilters } from '@/types/publication';
-import { publicationService } from '@/services/publication.service';
+import { publicationService } from '@/modules/publications/services/publication.service';
 
 interface PublicationListProps {
   onEdit: (publication: Publication) => void;
