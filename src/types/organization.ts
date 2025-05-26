@@ -2,11 +2,14 @@ import { User } from './user';
 import { Committee } from './committee';
 import { Document } from './document';
 
-export type Organization = {
+export type BaseOrganization = {
   id: string;
   name: string;
   acronym: string;
   public: boolean;
+};
+
+export type Organization = BaseOrganization & {
   members: User[];
   committees: Committee[];
   documents: Document[];
