@@ -3,7 +3,6 @@
 import { ReactNode, useState } from 'react';
 import { Button } from '@/components/Button';
 import { cn } from '@/lib/utils';
-//icono de filtros
 import { XMarkIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 import { SparklesIcon } from '@heroicons/react/16/solid';
 
@@ -45,21 +44,7 @@ export function FilterGroup({
           {icon && <span className="text-gray-500">{icon}</span>}
           {label}
         </div>
-        <svg
-          className={cn(
-            'h-5 w-5 text-gray-500 transition-transform',
-            isExpanded ? 'rotate-180 transform' : ''
-          )}
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-        >
-          <path
-            fillRule="evenodd"
-            d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-            clipRule="evenodd"
-          />
-        </svg>
+        <ChevronDownIcon className="h-5 w-5 text-gray-500 transition-transform" />
       </button>
 
       {isExpanded && (
@@ -101,18 +86,7 @@ export function FilterBar({ children, onClear, className = '' }: FilterBarProps)
           Filtros</h3>
         {onClear && (
           <Button variant="outline" size="sm" onClick={onClear} className="text-sm">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="mr-1.5 h-4 w-4"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                clipRule="evenodd"
-              />
-            </svg>
+            <XMarkIcon className="h-4 w-4" />
             Limpiar Filtros
           </Button>
         )}

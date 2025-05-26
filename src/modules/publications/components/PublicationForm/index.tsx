@@ -14,21 +14,14 @@ import type {
   EventDto,
 } from '@/types/publication';
 import { publicationService } from '@/modules/publications/services/publication.service';
-
-// Definir la interfaz para las organizaciones del usuario
-interface Organization {
-  id: string;
-  name: string;
-  acronym?: string;
-  public?: boolean;
-}
+import { BaseOrganization } from '@/types/organization';
 
 interface PublicationFormProps {
   publication?: Publication;
   onSuccess: () => void;
   onCancel: () => void;
   defaultOrganizationId?: string;
-  userOrganizations?: Organization[];
+  userOrganizations?: BaseOrganization[];
 }
 
 export function PublicationForm({
@@ -116,11 +109,11 @@ export function PublicationForm({
     }
   };
 
-  const handleChange = (field: keyof CreatePublicationDto, value: any) => {
+  const handleChange = (field: keyof CreatePublicationDto, value: unknown) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleEventDataChange = (field: keyof EventDto, value: any) => {
+  const handleEventDataChange = (field: keyof EventDto, value: unknown) => {
     setFormData((prev) => ({
       ...prev,
       event: {

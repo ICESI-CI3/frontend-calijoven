@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { cn } from '@/lib/utils';
+import { ChevronDownIcon } from '@heroicons/react/24/outline';
 
 export interface Action {
   label: string;
@@ -17,11 +18,11 @@ export interface ActionMenuProps {
   align?: 'left' | 'right';
 }
 
-export function ActionMenu({ 
-  actions, 
+export function ActionMenu({
+  actions,
   label = 'Acciones',
   className = '',
-  align = 'right'
+  align = 'right',
 }: ActionMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -48,22 +49,11 @@ export function ActionMenu({
         onClick={() => setIsOpen(!isOpen)}
       >
         {label}
-        <svg
-          className="-mr-1 ml-2 h-5 w-5"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-          aria-hidden="true"
-        >
-          <path
-            fillRule="evenodd"
-            d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-            clipRule="evenodd"
-          />
-        </svg>
+        <ChevronDownIcon className="h-5 w-5" />
       </button>
 
       {isOpen && (
-        <div 
+        <div
           className={cn(
             'absolute z-10 mt-2 w-56 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none',
             align === 'right' ? 'right-0' : 'left-0'
@@ -74,8 +64,10 @@ export function ActionMenu({
               <button
                 key={index}
                 className={cn(
-                  'w-full text-left px-4 py-2 text-sm flex items-center gap-2',
-                  action.variant === 'danger' ? 'text-red-700 hover:bg-red-50' : 'text-gray-700 hover:bg-gray-100'
+                  'flex w-full items-center gap-2 px-4 py-2 text-left text-sm',
+                  action.variant === 'danger'
+                    ? 'text-red-700 hover:bg-red-50'
+                    : 'text-gray-700 hover:bg-gray-100'
                 )}
                 onClick={() => {
                   action.onClick();
@@ -92,4 +84,4 @@ export function ActionMenu({
       )}
     </div>
   );
-} 
+}

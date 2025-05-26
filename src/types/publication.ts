@@ -1,4 +1,3 @@
-import { User } from './user';
 import { Organization } from './organization';
 import { City } from './city';
 
