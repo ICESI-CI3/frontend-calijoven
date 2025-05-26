@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
 import { ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '@/lib/hooks/useAuth';
+import { Avatar } from '../Avatar';
 
 interface SidebarProps {
   commonItems: SidebarItem[];
@@ -101,7 +102,7 @@ export function Sidebar({ commonItems, adminItems }: SidebarProps) {
         )}
       >
         {/* Avatar del usuario */}
-        <div className="h-8 w-8 flex-shrink-0 rounded-full bg-gray-300"></div>
+        <Avatar src={user?.profilePicture || ''} alt={user?.name || ''} size="md" />
         <div
           className={cn(
             'flex-col overflow-hidden transition-all duration-300 ease-in-out',
@@ -112,7 +113,7 @@ export function Sidebar({ commonItems, adminItems }: SidebarProps) {
             {user?.name || 'Cargando...'}
           </span>
           <span className="whitespace-nowrap text-xs text-muted-foreground">
-            {user?.email || ''}
+            {user?.city.name || 'Cargando...'}
           </span>
         </div>
       </div>

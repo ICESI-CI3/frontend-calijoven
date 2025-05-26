@@ -1,4 +1,3 @@
-import { User } from './user';
 import { Organization } from './organization';
 import { City } from './city';
 
@@ -46,10 +45,11 @@ export interface PublicationFilters {
   tag?: string;
   city?: string;
   type?: string;
-  page?: number;
-  limit?: number;
   unpublished?: boolean;
   search?: string;
+  organization?: string;
+  sortBy?: string;
+  sortOrder?: 'ASC' | 'DESC';
 }
 
 export interface CreateTagDto {
@@ -91,13 +91,9 @@ export interface UpdatePublicationDto extends Partial<CreatePublicationDto> {
   attachmentsToDelete?: string[];
 }
 
-export interface FilterPublicationDto {
-  tag?: string;
-  city?: string;
-  type?: string;
+export interface FilterPublicationDto extends PublicationFilters {
   page?: number;
   limit?: number;
-  unpublished?: boolean;
 }
 
 export interface ReportFilters {

@@ -1,8 +1,11 @@
 import { User } from './user';
 
-export type Committee = {
+export type BaseCommittee = {
   id: string;
   name: string;
+};
+
+export type Committee = BaseCommittee & {
   leader: User;
   members: User[];
 };

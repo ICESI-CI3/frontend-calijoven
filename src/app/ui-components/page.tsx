@@ -9,12 +9,14 @@ import { Select } from '@/components/Select';
 import { Spinner } from '@/components/Spinner';
 import { Textarea } from '@/components/Textarea';
 import RequireAuth from '../../modules/auth/components/RequireAuth';
+import { Badge } from '@/components/Badge';
+import { Tag } from '@/components/Tag';
+import { Avatar } from '@/components/Avatar';
 import PublicationPreview from '@/modules/publications/components/PublicationPreview';
 import { PublicationService } from '@/modules/publications/services/publication.service';
 import { Publication } from '@/types/publication';
 
 export default function Home() {
-  // Estados para los componentes interactivos
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectValue, setSelectValue] = useState('');
   const [inputValue, setInputValue] = useState('');
@@ -253,6 +255,230 @@ export default function Home() {
                 <Button type="submit">Enviar</Button>
               </div>
             </form>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="mb-4 text-2xl font-semibold">Badges</h2>
+
+            <div className="space-y-4">
+              <div>
+                <h3 className="mb-2 text-xl font-medium">Badge Variants</h3>
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="default">Default</Badge>
+                  <Badge variant="primary">Primary</Badge>
+                  <Badge variant="success">Success</Badge>
+                  <Badge variant="warning">Warning</Badge>
+                  <Badge variant="danger">Danger</Badge>
+                  <Badge variant="info">Info</Badge>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="mb-2 text-xl font-medium">Badge Sizes</h3>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge size="sm">Small</Badge>
+                  <Badge size="md">Medium</Badge>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="mb-2 text-xl font-medium">Badge Shapes</h3>
+                <div className="flex flex-wrap gap-2">
+                  <Badge rounded="full">Rounded Full</Badge>
+                  <Badge rounded="md">Rounded Medium</Badge>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="mb-2 text-xl font-medium">Use Cases</h3>
+                <div className="space-y-2">
+                  <div>
+                    <p className="mb-1 text-sm font-medium text-gray-700">Status:</p>
+                    <div className="flex flex-wrap gap-2">
+                      <Badge variant="success">Publicado</Badge>
+                      <Badge variant="warning">Borrador</Badge>
+                      <Badge variant="danger">Rechazado</Badge>
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="mb-1 text-sm font-medium text-gray-700">Tipos de Publicación:</p>
+                    <div className="flex flex-wrap gap-2">
+                      <Badge variant="primary">Noticia</Badge>
+                      <Badge variant="info">Evento</Badge>
+                      <Badge variant="warning">Oferta</Badge>
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="mb-1 text-sm font-medium text-gray-700">Ciudades:</p>
+                    <div className="flex flex-wrap gap-2">
+                      <Badge>Cali</Badge>
+                      <Badge>Bogotá</Badge>
+                      <Badge>Medellín</Badge>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="mb-4 text-2xl font-semibold">Tags</h2>
+
+            <div className="space-y-4">
+              <div>
+                <h3 className="mb-2 text-xl font-medium">Tag Colors</h3>
+                <div className="flex flex-wrap gap-2">
+                  <Tag color="default">Default</Tag>
+                  <Tag color="primary">Primary</Tag>
+                  <Tag color="success">Success</Tag>
+                  <Tag color="warning">Warning</Tag>
+                  <Tag color="danger">Danger</Tag>
+                  <Tag color="info">Info</Tag>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="mb-2 text-xl font-medium">Removable Tags</h3>
+                <div className="flex flex-wrap gap-2">
+                  <Tag onRemove={() => alert('Tag removed')}>Removable</Tag>
+                  <Tag color="primary" onRemove={() => alert('Primary tag removed')}>
+                    Primary
+                  </Tag>
+                  <Tag color="success" onRemove={() => alert('Success tag removed')}>
+                    Success
+                  </Tag>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="mb-2 text-xl font-medium">Clickable Tags</h3>
+                <div className="flex flex-wrap gap-2">
+                  <Tag clickable onClick={() => alert('Default tag clicked')}>
+                    Clickable
+                  </Tag>
+                  <Tag color="primary" clickable onClick={() => alert('Primary tag clicked')}>
+                    Primary
+                  </Tag>
+                  <Tag
+                    color="info"
+                    clickable
+                    onClick={() => alert('Info tag clicked')}
+                    onRemove={() => alert('Info tag removed')}
+                  >
+                    Click or Remove
+                  </Tag>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="mb-2 text-xl font-medium">Use Cases</h3>
+                <div className="space-y-2">
+                  <div>
+                    <p className="mb-1 text-sm font-medium text-gray-700">Publication Tags:</p>
+                    <div className="flex flex-wrap gap-2">
+                      <Tag color="primary">Educación</Tag>
+                      <Tag color="primary">Juventud</Tag>
+                      <Tag color="primary">Desarrollo</Tag>
+                      <Tag color="primary" onRemove={() => {}}>
+                        Comunidad
+                      </Tag>
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="mb-1 text-sm font-medium text-gray-700">Selectable Filters:</p>
+                    <div className="flex flex-wrap gap-2">
+                      <Tag color="default" clickable>
+                        Todas
+                      </Tag>
+                      <Tag color="success" clickable>
+                        Activas
+                      </Tag>
+                      <Tag color="warning" clickable>
+                        Pendientes
+                      </Tag>
+                      <Tag color="danger" clickable>
+                        Rechazadas
+                      </Tag>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="mb-4 text-2xl font-semibold">Avatars</h2>
+
+            <div className="space-y-4">
+              <div>
+                <h3 className="mb-2 text-xl font-medium">Avatar Sizes</h3>
+                <div className="flex items-center gap-4">
+                  <Avatar size="xs" name="Extra Small" />
+                  <Avatar size="sm" name="Small Size" />
+                  <Avatar size="md" name="Medium Size" />
+                  <Avatar size="lg" name="Large Size" />
+                  <Avatar size="xl" name="Extra Large" />
+                </div>
+              </div>
+
+              <div>
+                <h3 className="mb-2 text-xl font-medium">With Image</h3>
+                <div className="flex items-center gap-4">
+                  <Avatar
+                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                    alt="User Profile"
+                    size="md"
+                  />
+                  <Avatar
+                    src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                    alt="User Profile"
+                    size="lg"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <h3 className="mb-2 text-xl font-medium">With Initials</h3>
+                <div className="flex items-center gap-4">
+                  <Avatar name="John Doe" size="md" />
+                  <Avatar name="Alice Smith" size="md" />
+                  <Avatar name="Robert Johnson" size="md" />
+                  <Avatar name="Maria García" size="md" />
+                  <Avatar name="Wei Zhang" size="md" />
+                </div>
+              </div>
+
+              <div>
+                <h3 className="mb-2 text-xl font-medium">Use Cases</h3>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-4">
+                    <Avatar name="John Doe" size="lg" />
+                    <div>
+                      <div className="font-medium">John Doe</div>
+                      <div className="text-sm text-gray-500">Administrator</div>
+                    </div>
+                  </div>
+
+                  <div className="rounded-lg border border-gray-200 bg-white p-4">
+                    <div className="mb-4 flex items-center gap-3">
+                      <Avatar name="Maria García" size="md" />
+                      <div>
+                        <div className="font-medium">Maria García</div>
+                        <div className="text-xs text-gray-500">Posted 2 hours ago</div>
+                      </div>
+                    </div>
+                    <p className="text-gray-700">
+                      This is a sample comment with an avatar. The avatar component automatically
+                      generates initials and background colors based on the user's name when no
+                      image is provided.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </section>
         </div>
       </div>

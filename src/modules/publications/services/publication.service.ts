@@ -32,6 +32,9 @@ export const PublicationService = {
         city: filters.city,
         type: filters.type,
         unpublished: filters.unpublished,
+        organization: filters.organization,
+        sortBy: filters.sortBy,
+        sortOrder: filters.sortOrder,
       };
 
       const params = new URLSearchParams(
@@ -219,13 +222,9 @@ export const PublicationService = {
    */
   async generateGeneralReport(name: string, filters: ReportFilters = {}): Promise<Blob> {
     try {
-      const { data } = await apiClient.post(
-        API_ROUTES.REPORTS.PUBLICATION.GENERAL,
-        { name, filters },
-        {
-          responseType: 'blob',
-        }
-      );
+      const { data } = await apiClient.post(API_ROUTES.REPORTS.PUBLICATION.GENERAL, { name, filters }, {
+        responseType: 'blob'
+      });
       return data;
     } catch (error) {
       console.error('Failed to generate general report:', error);
@@ -238,19 +237,15 @@ export const PublicationService = {
    */
   async generateSingleReport(id: string, name: string): Promise<Blob> {
     try {
-      const { data } = await apiClient.post(
-        `${API_ROUTES.REPORTS.PUBLICATION.BY_ID}/${id}`,
-        { name },
-        {
-          responseType: 'blob',
-        }
-      );
+      const { data } = await apiClient.post(`${API_ROUTES.REPORTS.PUBLICATION.BY_ID}/${id}`, { name }, {
+        responseType: 'blob'
+      });
       return data;
     } catch (error) {
       console.error('Failed to generate single report:', error);
       throw new PublicationError('No se pudo generar el reporte individual.');
     }
-  },
+  }
 };
 
 export const publicationService = PublicationService;
