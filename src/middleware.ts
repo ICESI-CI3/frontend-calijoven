@@ -1,10 +1,20 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { ROUTES } from '@/lib/constants/routes';
-import { AUTH_COOKIE_NAME } from '@/lib/auth/cookieService';
+import { AUTH_COOKIE_NAME } from '@/modules/auth/utils/cookieService';
 
 // Rutas públicas a las que se puede acceder sin autenticación
-const publicRoutes = [ROUTES.HOME, ROUTES.LOGIN, ROUTES.REGISTER, ROUTES.UI_COMPONENTS];
+const publicRoutes = [
+  ROUTES.HOME,
+  ROUTES.LOGIN,
+  ROUTES.REGISTER,
+  ROUTES.UI_COMPONENTS,
+  ROUTES.CDJ,
+  ROUTES.PDJ,
+  ROUTES.ORGANIZATIONS,
+  ROUTES.PUBLICATIONS.LIST,
+  ROUTES.PUBLICATIONS.DETAIL(''),
+];
 
 // Rutas que deben ignorarse para la verificación de autenticación
 const ignoredRoutes = ['/_next', '/favicon.ico', '/api'];
@@ -34,7 +44,7 @@ export function middleware(request: NextRequest) {
 
   // Redirigir a dashboard si está autenticado y visita páginas de login/registro
   if (isAuthPage && token) {
-    return NextResponse.redirect(new URL(ROUTES.DASHBOARD, request.url));
+    return NextResponse.redirect(new URL(ROUTES.MY_SPACE.HOME, request.url));
   }
 
   // Permitir rutas públicas

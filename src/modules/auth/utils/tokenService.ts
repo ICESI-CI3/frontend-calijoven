@@ -1,4 +1,4 @@
-import { Permission } from '../constants/permissions';
+import { Permission } from '../../../lib/constants/permissions';
 
 /**
  * Interfaz para el payload decodificado de un token JWT

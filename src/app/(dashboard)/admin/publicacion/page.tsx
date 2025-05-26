@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import type { Publication } from "@/types/publication"
-import RequireAuth from "@/app/(auth)/RequireAuth"
+import RequireAuth from "@/modules/auth/components/RequireAuth"
 import { PublicationList } from "@/components/PublicationList"
 import { PublicationForm } from "@/components/PublicationForm"
 import { ReportsSection } from "@/components/ReportsSection"

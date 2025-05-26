@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { AUTH_COOKIE_NAME } from '@/lib/auth/cookieService';
+import { AUTH_COOKIE_NAME } from '@/modules/auth/utils/cookieService';
 
 const BACKEND_URL = process.env.BACKEND_URL;
 

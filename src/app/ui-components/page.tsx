@@ -8,7 +8,7 @@ import { Modal } from '@/components/Modal';
 import { Select } from '@/components/Select';
 import { Spinner } from '@/components/Spinner';
 import { Textarea } from '@/components/Textarea';
-import RequireAuth from '../(auth)/RequireAuth';
+import RequireAuth from '../../modules/auth/components/RequireAuth';
 
 export default function Home() {
   // Estados para los componentes interactivos

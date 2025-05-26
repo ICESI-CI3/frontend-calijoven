@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { AUTH_COOKIE_NAME } from '@/lib/auth/cookieService';
+import { AUTH_COOKIE_NAME } from '@/modules/auth/utils/cookieService';
 
 export async function POST(request: NextRequest) {
   const response = NextResponse.json({ message: 'Logged out successfully' }, { status: 200 });

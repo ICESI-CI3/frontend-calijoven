@@ -1,8 +1,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { User } from '@/types/user';
-import { extractTokenPayload } from '../auth/tokenService';
-import { setAuthCookie, removeAuthCookie } from '../auth/cookieService';
+import { extractTokenPayload } from '../../modules/auth/utils/tokenService';
+import { setAuthCookie, removeAuthCookie } from '../../modules/auth/utils/cookieService';
 
 /**
  * Estado de autenticación

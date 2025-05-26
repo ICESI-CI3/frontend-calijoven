@@ -1,0 +1,78 @@
+import { PERMISSIONS } from '@/lib/constants/permissions';
+import { User } from '@/types/user';
+import {
+  Squares2X2Icon,
+  DocumentTextIcon,
+  ChatBubbleLeftRightIcon,
+  UserGroupIcon,
+  Cog6ToothIcon,
+  ClipboardDocumentCheckIcon,
+  StarIcon,
+  BuildingOfficeIcon,
+  PhotoIcon,
+} from '@heroicons/react/24/outline';
+import { ROUTES } from './routes';
+import { SidebarItem } from '@/components/layout/Sidebar';
+
+export const defaultSidebarItems: SidebarItem[] = [
+  { label: 'Inicio', href: ROUTES.MY_SPACE.HOME, icon: <Squares2X2Icon className="h-6 w-6" /> },
+  {
+    label: 'Publicaciones',
+    href: ROUTES.MY_SPACE.PUBLICATIONS,
+    icon: <StarIcon className="h-6 w-6" />,
+  },
+  {
+    label: 'PQRS',
+    href: ROUTES.MY_SPACE.PQRS,
+    icon: <ChatBubbleLeftRightIcon className="h-6 w-6" />,
+  },
+  {
+    label: 'Configuración',
+    href: ROUTES.MY_SPACE.CONFIGURATION,
+    icon: <Cog6ToothIcon className="h-6 w-6" />,
+  },
+];
+
+export const sidebarItemsPerPermission: { [key: string]: SidebarItem[] } = {
+  [PERMISSIONS.READ_USER || PERMISSIONS.MANAGE_USER]: [
+    { label: 'Usuarios', href: ROUTES.ADMIN.USERS, icon: <UserGroupIcon className="h-6 w-6" /> },
+  ],
+  [PERMISSIONS.MANAGE_ORGANIZATION]: [
+    {
+      label: 'Organizaciones',
+      href: ROUTES.ADMIN.ORGANIZATIONS,
+      icon: <BuildingOfficeIcon className="h-6 w-6" />,
+    },
+  ],
+  [PERMISSIONS.MANAGE_PUBLICATION]: [
+    {
+      label: 'Publicaciones',
+      href: ROUTES.ADMIN.PUBLICATIONS,
+      icon: <DocumentTextIcon className="h-6 w-6" />,
+    },
+  ],
+  [PERMISSIONS.MANAGE_BANNER]: [
+    { label: 'Banners', href: ROUTES.ADMIN.BANNERS, icon: <PhotoIcon className="h-6 w-6" /> },
+  ],
+  [PERMISSIONS.MANAGE_PQRS]: [
+    {
+      label: 'PQRS',
+      href: ROUTES.ADMIN.PQRS,
+      icon: <ChatBubbleLeftRightIcon className="h-6 w-6" />,
+    },
+  ],
+};
+
+export const buildSidebarItems = (user: User | null) => {
+  if (!user) return [];
+
+  const items: SidebarItem[] = [];
+
+  for (const permission of user.roles) {
+    try {
+      items.push(...sidebarItemsPerPermission[permission]);
+    } catch {}
+  }
+
+  return items;
+};

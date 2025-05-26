@@ -5,8 +5,8 @@ import {
   validateToken,
   getTokenExpirySeconds,
   hasUserIdentifier,
-} from '@/lib/auth/tokenService';
-import { AUTH_COOKIE_NAME } from '@/lib/auth/cookieService';
+} from '@/modules/auth/utils/tokenService';
+import { AUTH_COOKIE_NAME } from '@/modules/auth/utils/cookieService';
 
 /**
  * Verifica el estado actual de la sesión del usuario
