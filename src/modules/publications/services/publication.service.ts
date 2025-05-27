@@ -16,6 +16,11 @@ export class PublicationError extends Error {
   }
 }
 
+type PublicationResponse = {
+  data: Publication[];
+  total: number;
+};
+
 /**
  * Servicio que encapsula la lógica de publicaciones con el backend
  */
@@ -23,7 +28,7 @@ export const PublicationService = {
   /**
    * Obtiene un listado paginado de publicaciones
    */
-  async getPublications(filters: PublicationFilters = {}, page = 1, limit = 10) {
+  async getPublications(filters: PublicationFilters = {}, page = 1, limit = 10): Promise<PublicationResponse> {
     try {
       const filterParams: FilterPublicationDto = {
         page,

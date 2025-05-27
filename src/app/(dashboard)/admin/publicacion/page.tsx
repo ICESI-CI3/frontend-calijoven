@@ -99,7 +99,6 @@ export default function PublicationsDashboard() {
   };
 
   return (
-    <RequireAuth permissions={['MANAGE_PUBLICATION']} requireAll>
       <div className="min-h-screen bg-gray-50">
         <div className="bg-white shadow">
           <div className="container mx-auto px-4 py-6">
@@ -116,6 +115,5 @@ export default function PublicationsDashboard() {
 
         <div className="container mx-auto px-4 py-6">{renderContent()}</div>
       </div>
-    </RequireAuth>
   );
 }

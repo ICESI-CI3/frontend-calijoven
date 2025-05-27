@@ -7,7 +7,6 @@ import { Modal } from '@/components/Modal';
 import { Table, TableColumn } from '@/components/Table';
 import { BadgeVariant } from '@/components/Badge';
 import { IconBadge, StatusIcons, TypeIcons } from '@/components/IconBadge';
-import { ActionMenu } from '@/components/ActionMenu';
 import { Pagination } from '@/components/Pagination';
 import { FilterBar, FilterGroup } from '@/components/FilterBar';
 import { Toggle } from '@/components/Toggle';
