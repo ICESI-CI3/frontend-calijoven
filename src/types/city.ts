@@ -1,6 +1,10 @@
-export type City = {
+
+export type BaseCity = {
   id: string;
   name: string;
+};
+
+export type City = BaseCity & {
   departmentId: number;
 };
 

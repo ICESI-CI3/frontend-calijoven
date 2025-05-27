@@ -1,28 +1,27 @@
-import { User } from './user';
 import { Organization } from './organization';
 import { City } from './city';
 
 export type PublicationTypeEnum = 'event' | 'news' | 'offer';
 
-export interface PublicationType {
+export type PublicationType = {
   name: string;
   description: string;
 }
 
-export interface Attachment {
+export type Attachment = {
   id: string;
   name: string;
   format: string;
   url: string;
 }
 
-export interface Tag {
+export type Tag = {
   id: string;
   name: string;
   description: string;
 }
 
-export interface Publication {
+export type Publication = {
   id: string;
   title: string;
   description: string;
@@ -42,37 +41,38 @@ export interface Publication {
   createdAt: string;
 }
 
-export interface PublicationFilters {
+export type PublicationFilters = {
   tag?: string;
   city?: string;
   type?: string;
-  page?: number;
-  limit?: number;
   unpublished?: boolean;
   search?: string;
+  organization?: string;
+  sortBy?: string;
+  sortOrder?: 'ASC' | 'DESC';
 }
 
-export interface CreateTagDto {
+export type CreateTagDto = {
   name: string;
   description?: string;
 }
 
-export interface EventDto {
+export type EventDto = {
   location?: string;
   date?: string;
 }
 
-export interface NewsDto {
+export type NewsDto = {
   author?: string;
 }
 
-export interface OfferDto {
+export type OfferDto = {
   offerType?: string;
   external_link?: string;
   deadline?: string;
 }
 
-export interface CreatePublicationDto {
+export type CreatePublicationDto = {
   title: string;
   description: string;
   content: string;
@@ -87,20 +87,16 @@ export interface CreatePublicationDto {
   attachments?: File[];
 }
 
-export interface UpdatePublicationDto extends Partial<CreatePublicationDto> {
+export type UpdatePublicationDto = Partial<CreatePublicationDto> & {
   attachmentsToDelete?: string[];
 }
 
-export interface FilterPublicationDto {
-  tag?: string;
-  city?: string;
-  type?: string;
+export type FilterPublicationDto = PublicationFilters & {
   page?: number;
   limit?: number;
-  unpublished?: boolean;
 }
 
-export interface ReportFilters {
+export type ReportFilters = {
   types?: string[];
   organizationIds?: string[];
   authorIds?: string[];

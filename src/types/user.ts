@@ -1,14 +1,18 @@
 import { Permission } from '@/lib/constants/permissions';
+import { BaseCity } from './city';
+import { BaseCommittee } from './committee';
+import { BaseOrganization } from './organization';
 
 export type User = {
   id: string;
   name: string;
-  email: string;
   profilePicture: string;
-  banned: string;
+  banned: boolean;
   roles: Permission[];
-  city: string;
-  leadingCommittees: string[];
+  city: BaseCity;
+  leadingCommittees: BaseCommittee[];
+  committees: BaseCommittee[];
+  organizations: BaseOrganization[];
 };
 
 export type UserUpdateRequest = {
