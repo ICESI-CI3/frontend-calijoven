@@ -7,11 +7,9 @@ import { PublicationList } from '@/modules/publications/components/PublicationLi
 import { ReportsSection } from '@/modules/publications/components/ReportsSection';
 import { useAuth } from '@/lib/hooks/useAuth';
 import { Select } from '@/components/Select';
-
-type ViewMode = 'list' | 'reports';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/Tabs';
 
 export default function PublicationsDashboard() {
-  const [currentView, setCurrentView] = useState<ViewMode>('list');
   const router = useRouter();
   const { user } = useAuth();
   const [selectedOrganization, setSelectedOrganization] = useState<string>('');
@@ -41,78 +39,57 @@ export default function PublicationsDashboard() {
     setSelectedOrganization(value);
   };
 
-  const renderNavigation = () => (
-    <div className="mb-6 border-b border-gray-200 bg-white">
-      <div className="container mx-auto px-4">
-        <div className="flex flex-col items-center justify-between py-4 md:flex-row">
-          <nav className="mb-4 flex space-x-8 md:mb-0">
-            <button
-              onClick={() => setCurrentView('list')}
-              className={`border-b-2 px-1 py-4 text-sm font-medium ${
-                currentView === 'list'
-                  ? 'border-primary text-primary'
-                  : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-              }`}
-            >
-              Gestión de Publicaciones
-            </button>
-            <button
-              onClick={() => setCurrentView('reports')}
-              className={`border-b-2 px-1 py-4 text-sm font-medium ${
-                currentView === 'reports'
-                  ? 'border-primary text-primary'
-                  : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-              }`}
-            >
-              Reportes
-            </button>
-          </nav>
-
-          <div className="w-full md:w-64">
-            <Select
-              options={organizationOptions}
-              value={selectedOrganization}
-              onChange={handleOrganizationChange}
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderContent = () => {
-    switch (currentView) {
-      case 'list':
-        return (
-          <PublicationList
-            onEdit={handleEdit}
-            onCreateNew={handleCreateNew}
-            organizationId={selectedOrganization}
-          />
-        );
-      case 'reports':
-        return <ReportsSection />;
-      default:
-        return null;
-    }
-  };
-
   return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="bg-white shadow">
-          <div className="container mx-auto px-4 py-6">
-            <h1 className="text-3xl font-bold text-gray-900">
-              Dashboard Administrativo - Publicaciones
-            </h1>
-            <p className="mt-2 text-gray-600">
-              Gestiona eventos, noticias y ofertas de la plataforma
-            </p>
+    <div className="min-h-screen bg-gray-50">
+      <div className="bg-white shadow">
+        <div className="container mx-auto px-4 py-6">
+          <h1 className="text-3xl font-bold text-gray-900">
+            Dashboard Administrativo - Publicaciones
+          </h1>
+          <p className="mt-2 text-gray-600">
+            Gestiona eventos, noticias y ofertas de la plataforma
+          </p>
+        </div>
+      </div>
+
+      <Tabs defaultValue="list" className="w-full">
+        <div className="bg-white border-b border-gray-200">
+          <div className="container mx-auto px-4">
+            <div className="flex flex-col items-center justify-between py-4 md:flex-row">
+              <TabsList className="mb-4 md:mb-0">
+                <TabsTrigger value="list">
+                  Gestión de Publicaciones
+                </TabsTrigger>
+                <TabsTrigger value="reports">
+                  Reportes
+                </TabsTrigger>
+              </TabsList>
+
+              <div className="w-full md:w-64">
+                <Select
+                  options={organizationOptions}
+                  value={selectedOrganization}
+                  onChange={handleOrganizationChange}
+                />
+              </div>
+            </div>
           </div>
         </div>
 
-        {renderNavigation()}
+        <div className="container mx-auto px-4 py-6">
+          <TabsContent value="list">
+            <PublicationList
+              onEdit={handleEdit}
+              onCreateNew={handleCreateNew}
+              organizationId={selectedOrganization}
+            />
+          </TabsContent>
 
-        <div className="container mx-auto px-4 py-6">{renderContent()}</div>
-      </div>
+          <TabsContent value="reports">
+            <ReportsSection />
+          </TabsContent>
+        </div>
+      </Tabs>
+    </div>
   );
 }

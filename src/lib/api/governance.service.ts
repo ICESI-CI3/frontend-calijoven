@@ -2,6 +2,13 @@ import { apiClient } from './client';
 import { API_ROUTES } from '../constants/api';
 import { BaseCity, City } from '@/types/city';
 
+export interface PaginatedResponse<T> {
+  data: T[];
+  total: number;
+  page: number;
+  totalPages: number;
+}
+
 /**
  * Servicio para gestionar datos de gobernanza (ciudades, departamentos, comunas)
  */
@@ -16,6 +23,25 @@ export const governanceService = {
     } catch (error) {
       console.error('Failed to fetch cities:', error);
       throw new Error('No se pudieron obtener las ciudades');
+    }
+  },
+
+  /**
+   * Búsqueda paginada de ciudades
+   */
+  async searchCities(search: string, page: number = 1, limit: number = 50): Promise<PaginatedResponse<BaseCity>> {
+    try {
+      const { data } = await apiClient.get(API_ROUTES.GOVERNANCE.CITIES.BASE, {
+        params: {
+          search,
+          page,
+          limit,
+        },
+      });
+      return data;
+    } catch (error) {
+      console.error('Failed to search cities:', error);
+      throw new Error('No se pudieron buscar las ciudades');
     }
   },
 
