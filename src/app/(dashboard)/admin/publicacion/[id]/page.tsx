@@ -53,46 +53,44 @@ export default function PublicationPage() {
   };
 
   return (
-    <RequireAuth permissions={['MANAGE_PUBLICATION']} requireAll>
-      <div className="min-h-screen bg-gray-50">
-        <div className="bg-white shadow">
-          <div className="container mx-auto px-4 py-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">
-                  {isNewPublication ? 'Crear Nueva Publicación' : 'Editar Publicación'}
-                </h1>
-                <p className="mt-2 text-gray-600">
-                  {isNewPublication
-                    ? 'Crea una nueva publicación para la Plataforma Distrital de Juventudes'
-                    : 'Actualiza la información de esta publicación'}
-                </p>
-              </div>
-              <Button variant="outline" onClick={handleCancel}>
-                Volver al listado
-              </Button>
+    <div className="min-h-screen bg-gray-50">
+      <div className="bg-white shadow">
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">
+                {isNewPublication ? 'Crear Nueva Publicación' : 'Editar Publicación'}
+              </h1>
+              <p className="mt-2 text-gray-600">
+                {isNewPublication
+                  ? 'Crea una nueva publicación para la Plataforma Distrital de Juventudes'
+                  : 'Actualiza la información de esta publicación'}
+              </p>
             </div>
+            <Button variant="outline" onClick={handleCancel}>
+              Volver al listado
+            </Button>
           </div>
         </div>
-
-        <div className="container mx-auto px-4 py-6">
-          {error && <Alert type="error" message={error} onClose={() => setError(null)} />}
-
-          {isLoading ? (
-            <div className="flex justify-center py-12">
-              <Spinner size="lg" />
-            </div>
-          ) : (
-            <PublicationForm
-              publication={publication}
-              onSuccess={handleSuccess}
-              onCancel={handleCancel}
-              defaultOrganizationId={organizationId || ''}
-              userOrganizations={user?.organizations || []}
-            />
-          )}
-        </div>
       </div>
-    </RequireAuth>
+
+      <div className="container mx-auto px-4 py-6">
+        {error && <Alert type="error" message={error} onClose={() => setError(null)} />}
+
+        {isLoading ? (
+          <div className="flex justify-center py-12">
+            <Spinner size="lg" />
+          </div>
+        ) : (
+          <PublicationForm
+            publication={publication}
+            onSuccess={handleSuccess}
+            onCancel={handleCancel}
+            defaultOrganizationId={organizationId || ''}
+            userOrganizations={user?.organizations || []}
+          />
+        )}
+      </div>
+    </div>
   );
 }

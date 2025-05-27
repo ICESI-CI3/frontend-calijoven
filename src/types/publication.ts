@@ -21,6 +21,30 @@ export type Tag = {
   description: string;
 }
 
+/**{
+            "id": "e415f9d3-49fd-488e-a443-17eb889c49c4",
+            "title": "Taller de Programación",
+            "description": "Taller introductorio de programación para jóvenes",
+            "published_at": null,
+            "type": {
+                "name": "event",
+                "description": "Eventos"
+            },
+            "attachments": [],
+            "organizers": [],
+            "content": "Contenido detallado del taller de programación...",
+            "cities": [],
+            "tags": [],
+            "createdAt": "2025-05-27T18:21:29.993Z",
+            "event": {
+                "id": "e415f9d3-49fd-488e-a443-17eb889c49c4",
+                "date": "2025-06-02T21:11:15.121Z",
+                "location": "Cali, Colombia",
+                "registrationLink": "https://example.com/register"
+            },
+            "news": null,
+            "offer": null
+        }, */
 export type Publication = {
   id: string;
   title: string;
@@ -39,6 +63,9 @@ export type Publication = {
   tags: Tag[];
   attachments?: Attachment[];
   createdAt: string;
+  event?: EventDto;
+  news?: NewsDto;
+  offer?: OfferDto;
 }
 
 export type PublicationFilters = {

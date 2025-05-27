@@ -7,7 +7,15 @@ import type {
   PublicationFilters,
   FilterPublicationDto,
   ReportFilters,
+  Tag
 } from '@/types/publication';
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  total: number;
+  page: number;
+  totalPages: number;
+}
 
 export class PublicationError extends Error {
   constructor(message: string) {
@@ -16,6 +24,11 @@ export class PublicationError extends Error {
   }
 }
 
+type PublicationResponse = {
+  data: Publication[];
+  total: number;
+};
+
 /**
  * Servicio que encapsula la lógica de publicaciones con el backend
  */
@@ -23,7 +36,7 @@ export const PublicationService = {
   /**
    * Obtiene un listado paginado de publicaciones
    */
-  async getPublications(filters: PublicationFilters = {}, page = 1, limit = 10) {
+  async getPublications(filters: PublicationFilters = {}, page = 1, limit = 10): Promise<PublicationResponse> {
     try {
       const filterParams: FilterPublicationDto = {
         page,
@@ -245,7 +258,26 @@ export const PublicationService = {
       console.error('Failed to generate single report:', error);
       throw new PublicationError('No se pudo generar el reporte individual.');
     }
-  }
+  },
+
+  /**
+   * Búsqueda paginada de tags
+   */
+  async searchTags(search: string, page: number = 1, limit: number = 50): Promise<PaginatedResponse<Tag>> {
+    try {
+      const { data } = await apiClient.get(`${API_ROUTES.PUBLICATIONS.BASE}/tags`, {
+        params: {
+          search,
+          page,
+          limit,
+        },
+      });
+      return data;
+    } catch (error) {
+      console.error('Error searching tags:', error);
+      throw new Error('No se pudieron buscar las etiquetas');
+    }
+  },
 };
 
 export const publicationService = PublicationService;

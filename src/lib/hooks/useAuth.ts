@@ -1,8 +1,9 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { createJSONStorage, persist } from 'zustand/middleware';
 import { User } from '@/types/user';
 import { extractTokenPayload } from '../../modules/auth/utils/tokenService';
 import { setAuthCookie, removeAuthCookie } from '../../modules/auth/utils/cookieService';
+import { useEffect } from 'react';
 
 /**
  * Estado de autenticación
@@ -12,17 +13,18 @@ import { setAuthCookie, removeAuthCookie } from '../../modules/auth/utils/cookie
  */
 interface AuthState {
   user: User | null;
-  isAuthenticated: boolean;
+  isHydrated: boolean;
   login: (user: User, token: string, rememberMe?: boolean) => Promise<void>;
   logout: () => Promise<void>;
   updateUser: (user: User) => void;
+  setHydrated: (state: boolean) => void;
 }
 
 export const useAuth = create<AuthState>()(
   persist(
     (set) => ({
       user: null,
-      isAuthenticated: false,
+      isHydrated: false,
 
       login: async (user: User, token: string, rememberMe = false) => {
         try {
@@ -38,7 +40,6 @@ export const useAuth = create<AuthState>()(
 
           set({
             user,
-            isAuthenticated: true,
           });
         } catch (error) {
           console.error('Login error:', error);
@@ -48,13 +49,9 @@ export const useAuth = create<AuthState>()(
 
       logout: async () => {
         try {
-          // Eliminar cookie
           await removeAuthCookie();
-
-          // Limpiar estado
           set({
             user: null,
-            isAuthenticated: false,
           });
         } catch (error) {
           console.error('Logout error:', error);
@@ -65,12 +62,36 @@ export const useAuth = create<AuthState>()(
       updateUser: (user: User) =>
         set({
           user,
-          isAuthenticated: true,
         }),
+
+      setHydrated: (state: boolean) => set({ isHydrated: state }),
     }),
     {
       name: 'auth-user-storage',
       partialize: (state) => ({ user: state.user }),
+      storage: createJSONStorage(() =>
+        typeof window !== 'undefined'
+          ? localStorage
+          : {
+              getItem: () => null,
+              setItem: () => {},
+              removeItem: () => {},
+            }
+      ),
+      onRehydrateStorage: () => (state) => {
+        if (state) state.setHydrated(true);
+      },
     }
   )
 );
+
+export function useHydration() {
+  const isHydrated = useAuth((state) => state.isHydrated);
+  const setHydrated = useAuth((state) => state.setHydrated);
+
+  useEffect(() => {
+    setHydrated(true);
+  }, [setHydrated]);
+
+  return isHydrated;
+}
