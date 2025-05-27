@@ -15,6 +15,7 @@ export const ROUTES = {
   CDJ: '/cdj',
   PDJ: '/pdj',
   ORGANIZATIONS: '/organizaciones-aliadas',
+  TRANSPARENCY: '/transparencia',
 
   // Rutas autenticadas
   MY_SPACE: {
