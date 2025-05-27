@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Alert } from '@/components/Alert';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
@@ -12,6 +12,9 @@ import RequireAuth from '../../modules/auth/components/RequireAuth';
 import { Badge } from '@/components/Badge';
 import { Tag } from '@/components/Tag';
 import { Avatar } from '@/components/Avatar';
+import PublicationPreview from '@/modules/publications/components/PublicationPreview';
+import { PublicationService } from '@/modules/publications/services/publication.service';
+import { Publication } from '@/types/publication';
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -19,6 +22,28 @@ export default function Home() {
   const [inputValue, setInputValue] = useState('');
   const [textareaValue, setTextareaValue] = useState('');
   const [showAlert, setShowAlert] = useState(true);
+  const [publications, setPublications] = useState<Publication[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchPublications = async () => {
+      try {
+        console.log('Fetching publications...');
+        const data = await PublicationService.getPublications();
+        console.log('Raw data received from PublicationService.getPublications:', data);
+        console.log('Data being used to set publications state (data.data):', data.data);
+        setPublications(data.data || []);
+      } catch (err) {
+        setError('Error al cargar las publicaciones');
+        console.error('Error fetching publications:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPublications();
+  }, []);
 
   const selectOptions = [
     { value: 'option1', label: 'Opción 1' },
@@ -40,6 +65,26 @@ export default function Home() {
       <div className="container mx-auto px-4 py-8">
         <div className="mx-auto max-w-5xl">
           <h1 className="mb-8 text-3xl font-bold">Componentes UI de Cali Joven</h1>
+
+          {/* Sección de PublicationPreview */}
+          <section className="mb-12 rounded-lg border border-gray-200 bg-card p-6 shadow-sm">
+            <h2 className="mb-6 text-2xl font-semibold">Vista previa de publicación</h2>
+            {isLoading ? (
+              <div className="flex justify-center">
+                <Spinner size="lg" />
+              </div>
+            ) : error ? (
+              <Alert type="error" message={error} />
+            ) : publications.length > 0 ? (
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {publications.map((publication) => (
+                  <PublicationPreview key={publication.id} publication={publication} />
+                ))}
+              </div>
+            ) : (
+              <p className="text-center text-gray-500">No hay publicaciones disponibles</p>
+            )}
+          </section>
 
           {/* Sección de botones */}
           <section className="mb-12 rounded-lg border border-gray-200 bg-card p-6 shadow-sm">
