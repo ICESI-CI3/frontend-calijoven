@@ -54,7 +54,7 @@ export function Toggle({
   );
 
   const labelClasses = cn(
-    'text-sm font-medium text-gray-700',
+    'text-xs sm:text-sm font-medium text-gray-700',
     disabled && 'text-gray-400'
   );
 

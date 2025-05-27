@@ -13,7 +13,14 @@ import { FilterBar, FilterGroup } from '@/components/FilterBar';
 import { Toggle } from '@/components/Toggle';
 import type { Publication, PublicationFilters } from '@/types/publication';
 import { publicationService } from '@/modules/publications/services/publication.service';
-import { DocumentTextIcon, NewspaperIcon, PencilIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
+import {
+  DocumentTextIcon,
+  ExclamationCircleIcon,
+  NewspaperIcon,
+  PencilIcon,
+  PlusIcon,
+  TrashIcon,
+} from '@heroicons/react/24/outline';
 
 interface PublicationListProps {
   onEdit: (publication: Publication) => void;
@@ -170,8 +177,8 @@ export function PublicationList({
       flex: 3,
       render: (publication) => (
         <div>
-          <div className="text-sm font-medium text-gray-900">{publication.title}</div>
-          <div className="max-w-xs truncate text-sm text-gray-500">{publication.description}</div>
+          <div className="text-xs sm:text-sm font-medium text-gray-900">{publication.title}</div>
+          <div className="max-w-xs truncate text-xs text-gray-500">{publication.description}</div>
         </div>
       ),
     },
@@ -192,7 +199,7 @@ export function PublicationList({
       header: 'Fecha',
       flex: 1,
       render: (publication) => (
-        <span className="text-sm text-gray-500">
+        <span className="text-xs sm:text-sm text-gray-500">
           {new Date(publication.createdAt).toLocaleDateString()}
         </span>
       ),
@@ -203,38 +210,43 @@ export function PublicationList({
       align: 'center',
       flex: 1,
       render: (publication) => (
-        <ActionMenu
-          actions={[
-            {
-              label: 'Editar',
-              icon: <PencilIcon className="h-4 w-4" />,
-              onClick: () => onEdit(publication),
-            },
-            {
-              label: 'Generar Reporte',
-              icon: <DocumentTextIcon className="h-4 w-4" />,
-              onClick: () => handleGenerateReport(publication),
-            },
-            {
-              label: 'Eliminar',
-              icon: <TrashIcon className="h-4 w-4" />,
-              variant: 'danger',
-              onClick: () => setDeleteModal({ isOpen: true, publication }),
-            },
-          ]}
-        />
+        <div className="z-10 flex justify-center space-x-2">
+          <button
+            className="inline-flex items-center justify-center rounded-md bg-gray-50 p-2 text-gray-700 hover:bg-gray-100"
+            onClick={() => onEdit(publication)}
+            title="Editar"
+          >
+            <PencilIcon className="h-4 w-4" />
+          </button>
+
+          <button
+            className="inline-flex items-center justify-center rounded-md bg-gray-50 p-2 text-gray-700 hover:bg-gray-100"
+            onClick={() => handleGenerateReport(publication)}
+            title="Generar Reporte"
+          >
+            <DocumentTextIcon className="h-4 w-4" />
+          </button>
+
+          <button
+            className="inline-flex items-center justify-center rounded-md bg-gray-50 p-2 text-red-600 hover:bg-red-50"
+            onClick={() => setDeleteModal({ isOpen: true, publication })}
+            title="Eliminar"
+          >
+            <TrashIcon className="h-4 w-4" />
+          </button>
+        </div>
       ),
     },
   ];
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-2">
         <h2 className="flex items-center gap-2 text-2xl font-bold">
           <NewspaperIcon className="h-6 w-6 text-primary" />
           Gestión de Publicaciones
         </h2>
-        <Button onClick={onCreateNew} className="flex items-center gap-1">
+        <Button onClick={onCreateNew} className="flex items-center gap-1 text-xs sm:text-sm">
           <PlusIcon className="h-5 w-5" />
           Crear Nueva Publicación
         </Button>
@@ -291,21 +303,7 @@ export function PublicationList({
       >
         <div className="space-y-4">
           <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0">
-            <svg
-              className="h-6 w-6 text-red-600"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="1.5"
-              stroke="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
-              />
-            </svg>
+            <ExclamationCircleIcon className="h-6 w-6 text-red-600" />
           </div>
           <div className="mt-3 text-center sm:mt-0 sm:text-left">
             <h3 className="text-lg font-medium leading-6 text-gray-900">
@@ -330,18 +328,7 @@ export function PublicationList({
               onClick={() => deleteModal.publication && handleDelete(deleteModal.publication)}
               className="flex items-center gap-1"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                  clipRule="evenodd"
-                />
-              </svg>
+              <TrashIcon className="h-4 w-4" />
               Eliminar
             </Button>
           </div>

@@ -27,7 +27,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen flex-col sm:flex-row">
       <Sidebar commonItems={commonItems} adminItems={adminItems} />
       <main className="flex-1 bg-background p-6 overflow-y-auto">{children}</main>
     </div>
