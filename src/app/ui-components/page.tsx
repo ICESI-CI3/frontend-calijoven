@@ -259,7 +259,7 @@ export default function Home() {
 
           <section className="mb-8">
             <h2 className="mb-4 text-2xl font-semibold">Badges</h2>
-            
+
             <div className="space-y-4">
               <div>
                 <h3 className="mb-2 text-xl font-medium">Badge Variants</h3>
@@ -272,7 +272,7 @@ export default function Home() {
                   <Badge variant="info">Info</Badge>
                 </div>
               </div>
-              
+
               <div>
                 <h3 className="mb-2 text-xl font-medium">Badge Sizes</h3>
                 <div className="flex flex-wrap items-center gap-2">
@@ -280,7 +280,7 @@ export default function Home() {
                   <Badge size="md">Medium</Badge>
                 </div>
               </div>
-              
+
               <div>
                 <h3 className="mb-2 text-xl font-medium">Badge Shapes</h3>
                 <div className="flex flex-wrap gap-2">
@@ -288,7 +288,7 @@ export default function Home() {
                   <Badge rounded="md">Rounded Medium</Badge>
                 </div>
               </div>
-              
+
               <div>
                 <h3 className="mb-2 text-xl font-medium">Use Cases</h3>
                 <div className="space-y-2">
@@ -300,7 +300,7 @@ export default function Home() {
                       <Badge variant="danger">Rechazado</Badge>
                     </div>
                   </div>
-                  
+
                   <div>
                     <p className="mb-1 text-sm font-medium text-gray-700">Tipos de Publicación:</p>
                     <div className="flex flex-wrap gap-2">
@@ -309,7 +309,7 @@ export default function Home() {
                       <Badge variant="warning">Oferta</Badge>
                     </div>
                   </div>
-                  
+
                   <div>
                     <p className="mb-1 text-sm font-medium text-gray-700">Ciudades:</p>
                     <div className="flex flex-wrap gap-2">
@@ -325,7 +325,7 @@ export default function Home() {
 
           <section className="mb-8">
             <h2 className="mb-4 text-2xl font-semibold">Tags</h2>
-            
+
             <div className="space-y-4">
               <div>
                 <h3 className="mb-2 text-xl font-medium">Tag Colors</h3>
@@ -338,24 +338,32 @@ export default function Home() {
                   <Tag color="info">Info</Tag>
                 </div>
               </div>
-              
+
               <div>
                 <h3 className="mb-2 text-xl font-medium">Removable Tags</h3>
                 <div className="flex flex-wrap gap-2">
                   <Tag onRemove={() => alert('Tag removed')}>Removable</Tag>
-                  <Tag color="primary" onRemove={() => alert('Primary tag removed')}>Primary</Tag>
-                  <Tag color="success" onRemove={() => alert('Success tag removed')}>Success</Tag>
+                  <Tag color="primary" onRemove={() => alert('Primary tag removed')}>
+                    Primary
+                  </Tag>
+                  <Tag color="success" onRemove={() => alert('Success tag removed')}>
+                    Success
+                  </Tag>
                 </div>
               </div>
-              
+
               <div>
                 <h3 className="mb-2 text-xl font-medium">Clickable Tags</h3>
                 <div className="flex flex-wrap gap-2">
-                  <Tag clickable onClick={() => alert('Default tag clicked')}>Clickable</Tag>
-                  <Tag color="primary" clickable onClick={() => alert('Primary tag clicked')}>Primary</Tag>
-                  <Tag 
-                    color="info" 
-                    clickable 
+                  <Tag clickable onClick={() => alert('Default tag clicked')}>
+                    Clickable
+                  </Tag>
+                  <Tag color="primary" clickable onClick={() => alert('Primary tag clicked')}>
+                    Primary
+                  </Tag>
+                  <Tag
+                    color="info"
+                    clickable
                     onClick={() => alert('Info tag clicked')}
                     onRemove={() => alert('Info tag removed')}
                   >
@@ -363,7 +371,7 @@ export default function Home() {
                   </Tag>
                 </div>
               </div>
-              
+
               <div>
                 <h3 className="mb-2 text-xl font-medium">Use Cases</h3>
                 <div className="space-y-2">
@@ -373,17 +381,27 @@ export default function Home() {
                       <Tag color="primary">Educación</Tag>
                       <Tag color="primary">Juventud</Tag>
                       <Tag color="primary">Desarrollo</Tag>
-                      <Tag color="primary" onRemove={() => {}}>Comunidad</Tag>
+                      <Tag color="primary" onRemove={() => {}}>
+                        Comunidad
+                      </Tag>
                     </div>
                   </div>
-                  
+
                   <div>
                     <p className="mb-1 text-sm font-medium text-gray-700">Selectable Filters:</p>
                     <div className="flex flex-wrap gap-2">
-                      <Tag color="default" clickable>Todas</Tag>
-                      <Tag color="success" clickable>Activas</Tag>
-                      <Tag color="warning" clickable>Pendientes</Tag>
-                      <Tag color="danger" clickable>Rechazadas</Tag>
+                      <Tag color="default" clickable>
+                        Todas
+                      </Tag>
+                      <Tag color="success" clickable>
+                        Activas
+                      </Tag>
+                      <Tag color="warning" clickable>
+                        Pendientes
+                      </Tag>
+                      <Tag color="danger" clickable>
+                        Rechazadas
+                      </Tag>
                     </div>
                   </div>
                 </div>
@@ -393,7 +411,7 @@ export default function Home() {
 
           <section className="mb-8">
             <h2 className="mb-4 text-2xl font-semibold">Avatars</h2>
-            
+
             <div className="space-y-4">
               <div>
                 <h3 className="mb-2 text-xl font-medium">Avatar Sizes</h3>
@@ -405,23 +423,23 @@ export default function Home() {
                   <Avatar size="xl" name="Extra Large" />
                 </div>
               </div>
-              
+
               <div>
                 <h3 className="mb-2 text-xl font-medium">With Image</h3>
                 <div className="flex items-center gap-4">
-                  <Avatar 
+                  <Avatar
                     src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
                     alt="User Profile"
                     size="md"
                   />
-                  <Avatar 
+                  <Avatar
                     src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
                     alt="User Profile"
                     size="lg"
                   />
                 </div>
               </div>
-              
+
               <div>
                 <h3 className="mb-2 text-xl font-medium">With Initials</h3>
                 <div className="flex items-center gap-4">
@@ -432,7 +450,7 @@ export default function Home() {
                   <Avatar name="Wei Zhang" size="md" />
                 </div>
               </div>
-              
+
               <div>
                 <h3 className="mb-2 text-xl font-medium">Use Cases</h3>
                 <div className="space-y-4">
@@ -443,7 +461,7 @@ export default function Home() {
                       <div className="text-sm text-gray-500">Administrator</div>
                     </div>
                   </div>
-                  
+
                   <div className="rounded-lg border border-gray-200 bg-white p-4">
                     <div className="mb-4 flex items-center gap-3">
                       <Avatar name="Maria García" size="md" />
@@ -453,8 +471,9 @@ export default function Home() {
                       </div>
                     </div>
                     <p className="text-gray-700">
-                      This is a sample comment with an avatar. The avatar component automatically generates
-                      initials and background colors based on the user's name when no image is provided.
+                      This is a sample comment with an avatar. The avatar component automatically
+                      generates initials and background colors based on the user's name when no
+                      image is provided.
                     </p>
                   </div>
                 </div>

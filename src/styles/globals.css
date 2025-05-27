@@ -85,6 +85,11 @@
     --gray-800: 0 0% 20%;
     --gray-900: 0 0% 10%;
     --gray-950: 0 0% 5%;
+
+    /* Colores adicionales para gradientes y texto */
+    --gradient-from: 0 0% 0% 80%;
+    --gradient-to: 0 0% 0% 0%;
+    --text-white: 0 0% 100%;
   }
 
   .dark {
