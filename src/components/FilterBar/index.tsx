@@ -37,7 +37,7 @@ export function FilterGroup({
     <div className={cn('rounded-md bg-gray-50 p-2 pb-4 last:border-0 last:pb-0', className)}>
       <button
         type="button"
-        className="flex w-full items-center justify-between py-2 text-left text-sm font-medium text-gray-700"
+        className="flex w-full items-center justify-between py-2 text-left text-xs sm:text-sm font-medium text-gray-700"
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="flex items-center gap-1">
@@ -53,7 +53,7 @@ export function FilterGroup({
             <button
               key={option.value}
               className={cn(
-                'inline-flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
+                'inline-flex items-center gap-1 rounded-md px-3 py-1.5 text-xs font-medium transition-colors sm:text-sm',
                 selectedValue === option.value
                   ? 'bg-primary text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'

@@ -45,7 +45,7 @@ export function ActionMenu({
     <div className={cn('relative inline-block text-left', className)} ref={menuRef}>
       <button
         type="button"
-        className="inline-flex items-center justify-center rounded-md bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+        className="inline-flex items-center justify-center rounded-md bg-gray-50 px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-100"
         onClick={() => setIsOpen(!isOpen)}
       >
         {label}
@@ -55,7 +55,7 @@ export function ActionMenu({
       {isOpen && (
         <div
           className={cn(
-            'absolute z-10 mt-2 w-56 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none',
+            'absolute z-10 mt-2 w-56 rounded-md bg-white shadow-lg focus:outline-none',
             align === 'right' ? 'right-0' : 'left-0'
           )}
         >

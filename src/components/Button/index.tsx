@@ -40,7 +40,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
       outline: 'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
       ghost: 'hover:bg-accent hover:text-accent-foreground',
-      danger: 'bg-error text-destructive-foreground hover:bg-error/90',
+      danger: 'bg-red-500 text-white hover:bg-red-600',
     };
 
     const sizes = {

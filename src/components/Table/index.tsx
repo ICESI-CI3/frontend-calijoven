@@ -136,13 +136,13 @@ export function Table<T>({
             value={searchValue}
             onChange={handleSearch}
             placeholder="Buscar por título o descripción..."
-            className="w-full"
+            className="w-full text-xs sm:text-sm"
             label="Buscar"
           />
         </div>
       )}
 
-        <div className="w-full overflow-x-auto">
+        <div className="w-full overflow-x-auto overflow-y-visible">
           <table className="w-full">
           <colgroup>
             {columns.map((column) => {

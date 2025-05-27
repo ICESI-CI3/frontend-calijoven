@@ -15,50 +15,50 @@ import { ROUTES } from './routes';
 import { SidebarItem } from '@/components/layout/Sidebar';
 
 export const defaultSidebarItems: SidebarItem[] = [
-  { label: 'Inicio', href: ROUTES.MY_SPACE.HOME, icon: <Squares2X2Icon className="h-6 w-6" /> },
+  { label: 'Inicio', href: ROUTES.MY_SPACE.HOME, icon: <Squares2X2Icon className='h-full w-full' /> },
   {
     label: 'Publicaciones',
     href: ROUTES.MY_SPACE.PUBLICATIONS,
-    icon: <StarIcon className="h-6 w-6" />,
+    icon: <StarIcon className='h-full w-full' />,
   },
   {
     label: 'PQRS',
     href: ROUTES.MY_SPACE.PQRS,
-    icon: <ChatBubbleLeftRightIcon className="h-6 w-6" />,
+    icon: <ChatBubbleLeftRightIcon className='h-full w-full' />,
   },
   {
     label: 'Configuración',
     href: ROUTES.MY_SPACE.CONFIGURATION,
-    icon: <Cog6ToothIcon className="h-6 w-6" />,
+    icon: <Cog6ToothIcon className='h-full w-full' />,
   },
 ];
 
 export const sidebarItemsPerPermission: { [key: string]: SidebarItem[] } = {
   [PERMISSIONS.READ_USER || PERMISSIONS.MANAGE_USER]: [
-    { label: 'Usuarios', href: ROUTES.ADMIN.USERS, icon: <UserGroupIcon className="h-6 w-6" /> },
+    { label: 'Usuarios', href: ROUTES.ADMIN.USERS, icon: <UserGroupIcon className='h-full w-full' /> },
   ],
   [PERMISSIONS.MANAGE_ORGANIZATION]: [
     {
       label: 'Organizaciones',
       href: ROUTES.ADMIN.ORGANIZATIONS,
-      icon: <BuildingOfficeIcon className="h-6 w-6" />,
+      icon: <BuildingOfficeIcon className='h-full w-full' />,
     },
   ],
   [PERMISSIONS.MANAGE_PUBLICATION]: [
     {
       label: 'Publicaciones',
       href: ROUTES.ADMIN.PUBLICATIONS,
-      icon: <DocumentTextIcon className="h-6 w-6" />,
+      icon: <DocumentTextIcon className='h-full w-full' />,
     },
   ],
   [PERMISSIONS.MANAGE_BANNER]: [
-    { label: 'Banners', href: ROUTES.ADMIN.BANNERS, icon: <PhotoIcon className="h-6 w-6" /> },
+    { label: 'Banners', href: ROUTES.ADMIN.BANNERS, icon: <PhotoIcon className='h-full w-full' /> },
   ],
   [PERMISSIONS.MANAGE_PQRS]: [
     {
       label: 'PQRS',
       href: ROUTES.ADMIN.PQRS,
-      icon: <ChatBubbleLeftRightIcon className="h-6 w-6" />,
+      icon: <ChatBubbleLeftRightIcon className='h-full w-full' />,
     },
   ],
 };
