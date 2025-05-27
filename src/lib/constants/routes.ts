@@ -9,8 +9,8 @@ export const ROUTES = {
 
   HOME: '/',
   PUBLICATIONS: {
-    LIST: '/publicacion',
-    DETAIL: (id: string) => `/publicacion/${id}`,
+    LIST: '/publications',
+    DETAIL: (id: string) => `/publications/${id}`,
   },
   CDJ: '/cdj',
   PDJ: '/pdj',
