@@ -74,7 +74,7 @@ const PublicationPreview: FC<PublicationPreviewProps> = ({ publication }) => {
         <Button
           variant="outline"
           size="sm"
-          onClick={() => router.push(ROUTES.PUBLICATIONS.DETAIL(publication.id))}
+          onClick={() => router.push(ROUTES.PUBLICATIONS.DETAIL(publication.id).PATH)}
         >
           Leer más
         </Button>

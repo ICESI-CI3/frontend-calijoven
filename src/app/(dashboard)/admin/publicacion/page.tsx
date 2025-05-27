@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { Publication } from '@/types/publication';
-import RequireAuth from '@/modules/auth/components/RequireAuth';
 import { PublicationList } from '@/modules/publications/components/PublicationList';
 import { ReportsSection } from '@/modules/publications/components/ReportsSection';
 import { useAuth } from '@/lib/hooks/useAuth';

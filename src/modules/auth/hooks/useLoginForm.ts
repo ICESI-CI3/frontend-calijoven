@@ -53,7 +53,7 @@ export function useLoginForm() {
 
       // Esperar 1.5 segundos para mostrar el mensaje de éxito antes de redirigir
       setTimeout(() => {
-        router.push(ROUTES.MY_SPACE.HOME);
+        router.push(ROUTES.MY_SPACE.HOME.PATH);
       }, 1500);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error desconocido');

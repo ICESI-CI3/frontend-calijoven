@@ -1,20 +1,11 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { ROUTES } from '@/lib/constants/routes';
+import { getPublicRoutes, hasPermissionForRoute } from '@/lib/constants/routes';
 import { AUTH_COOKIE_NAME } from '@/modules/auth/utils/cookieService';
+import { extractTokenPayload } from '@/modules/auth/utils/tokenService';
 
 // Rutas públicas a las que se puede acceder sin autenticación
-const publicRoutes = [
-  ROUTES.HOME,
-  ROUTES.LOGIN,
-  ROUTES.REGISTER,
-  ROUTES.UI_COMPONENTS,
-  ROUTES.CDJ,
-  ROUTES.PDJ,
-  ROUTES.ORGANIZATIONS,
-  ROUTES.PUBLICATIONS.LIST,
-  ROUTES.PUBLICATIONS.DETAIL(''),
-];
+const publicRoutes = getPublicRoutes();
 
 // Rutas que deben ignorarse para la verificación de autenticación
 const ignoredRoutes = ['/_next', '/favicon.ico', '/api'];
@@ -40,11 +31,11 @@ export function middleware(request: NextRequest) {
 
   // Verificar autenticación
   const token = request.cookies.get(AUTH_COOKIE_NAME)?.value;
-  const isAuthPage = ([ROUTES.LOGIN, ROUTES.REGISTER] as string[]).includes(path);
+  const isAuthPage = ['/login', '/registro'].includes(path);
 
   // Redirigir a dashboard si está autenticado y visita páginas de login/registro
   if (isAuthPage && token) {
-    return NextResponse.redirect(new URL(ROUTES.MY_SPACE.HOME, request.url));
+    return NextResponse.redirect(new URL('/mi-espacio', request.url));
   }
 
   // Permitir rutas públicas
@@ -54,9 +45,18 @@ export function middleware(request: NextRequest) {
 
   // Redirigir a login si accede a ruta protegida sin token
   if (!token) {
-    const loginUrl = new URL(ROUTES.LOGIN, request.url);
+    const loginUrl = new URL('/login', request.url);
     loginUrl.searchParams.set('callbackUrl', path);
     return NextResponse.redirect(loginUrl);
+  }
+
+  // Verificar permisos para rutas protegidas
+  const payload = extractTokenPayload(token);
+  const userPermissions = payload?.authorities || [];
+
+  if (!hasPermissionForRoute(path, userPermissions)) {
+    // Redirigir a página de acceso denegado
+    return NextResponse.redirect(new URL('/not-found', request.url));
   }
 
   return NextResponse.next();
