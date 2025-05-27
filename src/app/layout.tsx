@@ -1,6 +1,7 @@
 import { Poppins } from 'next/font/google';
 import { Providers } from '@/providers';
 import '@/styles/globals.css';
+import { ConditionalFooter } from '@/components/layout/ConditionalFooter';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -19,6 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="es" className={poppins.variable} suppressHydrationWarning>
       <body className={poppins.className}>
         <Providers>{children}</Providers>
+        <ConditionalFooter />
       </body>
     </html>
   );
