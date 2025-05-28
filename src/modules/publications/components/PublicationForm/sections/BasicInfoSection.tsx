@@ -6,6 +6,7 @@ import { Badge } from '@/components/Badge';
 import type { CreatePublicationDto } from '@/types/publication';
 import { Info } from '@/components/Info';
 import { RichTextEditor } from '@/components/RichTextEditor';
+import { publicationTypes } from '@/lib/constants/publicationTypes';
 
 interface BasicInfoSectionProps {
   formData: CreatePublicationDto;
@@ -43,18 +44,14 @@ export function BasicInfoSection({ formData, isEditing, onChange }: BasicInfoSec
               <div className="rounded-md border bg-gray-50 p-2">
                 <Badge
                   variant={
-                    formData.type === 'event'
+                    formData.type === publicationTypes.event.value
                       ? 'primary'
-                      : formData.type === 'news'
+                      : formData.type === publicationTypes.news.value
                         ? 'info'
                         : 'warning'
                   }
                 >
-                  {formData.type === 'event'
-                    ? 'Evento'
-                    : formData.type === 'news'
-                      ? 'Noticia'
-                      : 'Oferta'}
+                  {publicationTypes[formData.type as keyof typeof publicationTypes].label}
                 </Badge>
               </div>
               <p className="mt-1 text-xs text-gray-500">
@@ -66,9 +63,10 @@ export function BasicInfoSection({ formData, isEditing, onChange }: BasicInfoSec
               <Select
                 label="Tipo de Publicación *"
                 options={[
-                  { value: 'event', label: 'Evento' },
-                  { value: 'news', label: 'Noticia' },
-                  { value: 'offer', label: 'Oferta' },
+                  ...Object.values(publicationTypes).map((type) => ({
+                    value: type.value,
+                    label: type.label,
+                  })),
                 ]}
                 value={formData.type}
                 onChange={(value) => onChange('type', value)}

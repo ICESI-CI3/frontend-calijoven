@@ -9,12 +9,13 @@ import { useAuth } from '@/lib/hooks/useAuth';
 import { useRouter } from 'next/navigation';
 import { ROUTES } from '@/lib/constants/routes';
 import { Button } from '@/components/Button';
-
+import { publicationTypes } from '@/lib/constants/publicationTypes';
 const TABS = [
   { value: '', label: 'Todas' },
-  { value: 'event', label: 'Eventos' },
-  { value: 'news', label: 'Noticias' },
-  { value: 'offer', label: 'Ofertas' },
+  ...Object.values(publicationTypes).map((type) => ({
+    value: type.value,
+    label: type.label,
+  })),
 ];
 
 export default function PublicationsPage() {

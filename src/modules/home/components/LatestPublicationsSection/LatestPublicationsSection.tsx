@@ -25,7 +25,7 @@ export function LatestPublicationsSection() {
     <section className="container mx-auto px-4 py-12">
       <div className="mb-6 flex items-center justify-between">
         <h2 className="text-left text-xl font-bold text-foreground">Noticias, Eventos y Ofertas</h2>
-        <Link href={ROUTES.PUBLICATIONS.LIST}>
+        <Link href={ROUTES.PUBLICATIONS.LIST.PATH}>
           <Button variant="outline" size="sm">
             Ver todas las publicaciones
           </Button>
