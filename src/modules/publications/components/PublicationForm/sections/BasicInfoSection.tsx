@@ -5,6 +5,7 @@ import { Textarea } from '@/components/Textarea';
 import { Badge } from '@/components/Badge';
 import type { CreatePublicationDto } from '@/types/publication';
 import { Info } from '@/components/Info';
+import { RichTextEditor } from '@/components/RichTextEditor';
 
 interface BasicInfoSectionProps {
   formData: CreatePublicationDto;
@@ -95,13 +96,8 @@ export function BasicInfoSection({ formData, isEditing, onChange }: BasicInfoSec
       </div>
 
       <div>
-        <Textarea
-          label="Contenido *"
-          value={formData.content}
-          onChange={(value) => onChange('content', value)}
-          placeholder="Contenido completo de la publicación"
-          rows={8}
-        />
+        <p className="mb-2 block text-sm font-medium text-foreground">Contenido *</p>
+        <RichTextEditor value={formData.content} onChange={(value) => onChange('content', value)} />
         <p className="mt-1 text-xs text-gray-500">
           Detalla toda la información importante. Puedes incluir enlaces y detalles específicos.
         </p>
