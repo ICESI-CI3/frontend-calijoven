@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { PublicationForm } from '@/modules/publications/components/PublicationForm';
 import { publicationService } from '@/modules/publications/services/publication.service';
-import RequireAuth from '@/modules/auth/components/RequireAuth';
 import { Button } from '@/components/Button';
 import { Alert } from '@/components/Alert';
 import { Spinner } from '@/components/Spinner';
@@ -23,7 +22,7 @@ export default function PublicationPage() {
   const isNewPublication = id === 'nueva';
   const router = useRouter();
   const { user } = useAuth();
-  const [publication, setPublication] = useState<Publication | undefined>(undefined);
+  const [publication, setPublication] = useState<Publication | null | undefined>(null);
   const [isLoading, setIsLoading] = useState(!isNewPublication);
   const [error, setError] = useState<string | null>(null);
 
@@ -41,6 +40,8 @@ export default function PublicationPage() {
       };
 
       fetchPublication();
+    } else {
+      setPublication(undefined);
     }
   }, [id, isNewPublication]);
 
@@ -77,7 +78,7 @@ export default function PublicationPage() {
       <div className="container mx-auto px-4 py-6">
         {error && <Alert type="error" message={error} onClose={() => setError(null)} />}
 
-        {isLoading ? (
+        {isLoading || publication === null ? (
           <div className="flex justify-center py-12">
             <Spinner size="lg" />
           </div>

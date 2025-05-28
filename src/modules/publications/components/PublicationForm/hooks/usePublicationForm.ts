@@ -23,7 +23,6 @@ interface UsePublicationFormProps {
 export function usePublicationForm({
   publication,
   defaultOrganizationId = '',
-  userOrganizations = [],
   onSuccess,
 }: UsePublicationFormProps) {
   const [formData, setFormData] = useState<CreatePublicationDto>({
@@ -56,8 +55,8 @@ export function usePublicationForm({
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
-        //const offerTypesData = await offerTypesService.getOfferTypes();
-        //setOfferTypes(offerTypesData);
+        const offerTypesData = await offerTypesService.getOfferTypes();
+        setOfferTypes(offerTypesData);
       } catch (error) {
         console.error('Failed to fetch initial data:', error);
         setError('No se pudieron cargar algunos datos. Por favor, inténtalo de nuevo.');
