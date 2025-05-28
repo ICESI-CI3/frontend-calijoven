@@ -44,12 +44,12 @@ export const ROUTES = {
   // Public content
   PUBLICATIONS: {
     LIST: {
-      PATH: '/publicacion',
+      PATH: '/publicaciones',
       PUBLIC: true,
       LABEL: 'Publicaciones',
     },
     DETAIL: (id: string) => ({
-      PATH: `/publicacion/${id}`,
+      PATH: `/publicaciones/${id}`,
       PUBLIC: true,
     }),
   },
@@ -191,24 +191,29 @@ export function getRouteWithParams<T extends (...args: unknown[]) => Route>(
  * Retreive all public routes
  */
 export function getPublicRoutes(): string[] {
-  function extractPublicPaths(routes: Record<string, Route>, paths: string[] = []): string[] {
+  function extractPublicPaths(routes: Record<string, Route | ((...args: any[]) => Route)>, paths: string[] = []): string[] {
     for (const key in routes) {
       const route = routes[key];
 
-      if (typeof route === 'function') continue;
+      if (typeof route === 'function') {
+        // Para rutas dinámicas, usamos un patrón que coincida con cualquier ID
+        const dynamicPath = route('dummy-id').PATH.replace('dummy-id', '[^/]+');
+        paths.push(dynamicPath);
+        continue;
+      }
 
       if (route?.PATH && route?.PUBLIC === true) {
         paths.push(route.PATH);
       }
 
       if (route && typeof route === 'object' && !route.PATH) {
-        extractPublicPaths(route as unknown as Record<string, Route>, paths);
+        extractPublicPaths(route as unknown as Record<string, Route | ((...args: any[]) => Route)>, paths);
       }
     }
     return paths;
   }
 
-  return extractPublicPaths(ROUTES as unknown as Record<string, Route>);
+  return extractPublicPaths(ROUTES as unknown as Record<string, Route | ((...args: any[]) => Route)>);
 }
 
 /**
