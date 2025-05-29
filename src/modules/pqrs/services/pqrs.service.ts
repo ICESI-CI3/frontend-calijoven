@@ -6,6 +6,7 @@ import type {
   UpdatePQRSDto,
   PQRSFilters,
   PaginatedPQRSResponse,
+  PQRSStatusEntity,
   PQRSTypeEntity
 } from '@/types/pqrs';
 
@@ -17,22 +18,60 @@ export class PQRSError extends Error {
 }
 
 export const PQRSService = {
-  // Obtener tipos de PQRS
+  // Obtener tipos de PQRS (petición, queja, etc.)
   async getPQRSTypes(): Promise<PQRSTypeEntity[]> {
-    // Retornamos tipos que coinciden con la estructura del backend y frontend
-    return [
-      { id: '1', name: 'petition', label: 'Petición' },
-      { id: '2', name: 'complaint', label: 'Queja' },
-      { id: '3', name: 'claim', label: 'Reclamo' },
-      { id: '4', name: 'suggestion', label: 'Sugerencia' }
-    ];
+    try {
+      console.log('Fetching PQRS types...');
+      const { data } = await apiClient.get('/typesPqrs');
+      console.log('PQRS types response:', data);
+      return data;
+    } catch (error) {
+      console.error('Error fetching PQRS types:', error);
+      throw new PQRSError('No se pudieron obtener los tipos de PQRS');
+    }
+  },
+
+  // Obtener un tipo específico de PQRS
+  async getPQRSTypeById(name: string): Promise<PQRSTypeEntity> {
+    try {
+      const { data } = await apiClient.get(`/typesPqrs/name/${name}`);
+      return data;
+    } catch (error) {
+      console.error('Error fetching PQRS type by name:', error);
+      throw new PQRSError('No se pudo obtener el tipo de PQRS');
+    }
+  },
+
+  // Obtener estados de PQRS
+  async getStatusTypes(): Promise<PQRSStatusEntity[]> {
+    try {
+      const { data } = await apiClient.get('/types');
+      console.log('Estados de PQRS obtenidos:', data);
+      return data;
+    } catch (error) {
+      console.error('Error fetching PQRS status types:', error);
+      throw new PQRSError('No se pudieron obtener los estados de PQRS');
+    }
+  },
+
+  // Obtener un estado específico de PQRS
+  async getStatusById(name: string): Promise<PQRSStatusEntity> {
+    try {
+      const { data } = await apiClient.get(`/types/${name}`);
+      console.log('Estado específico obtenido:', data);
+      return data;
+    } catch (error) {
+      console.error('Error fetching PQRS status by name:', error);
+      throw new PQRSError('No se pudo obtener el estado de PQRS');
+    }
   },
 
   // Obtener PQRS con paginación y filtros
   async getPQRS(
     page = 1,
     limit = 10,
-    filters?: PQRSFilters
+    filters?: PQRSFilters,
+    isAdmin: boolean = false
   ): Promise<PaginatedPQRSResponse> {
     try {
       const params = new URLSearchParams({
@@ -40,11 +79,25 @@ export const PQRSService = {
         limit: limit.toString(),
       });
 
-      if (filters?.status?.name) {
-        params.append('status', filters.status.name);
+      if (filters?.type?.name) {
+        params.append('type', filters.type.name);
       }
 
-      const { data } = await apiClient.get(`${API_ROUTES.PQRS.BASE}?${params}`);
+      const endpoint = isAdmin ? API_ROUTES.PQRS.ADMIN.BASE : API_ROUTES.PQRS.BASE;
+      const { data } = await apiClient.get(`${endpoint}?${params}`);
+      
+      // Si la respuesta es un array, la convertimos al formato paginado
+      if (Array.isArray(data)) {
+        return {
+          items: data,
+          total: data.length,
+          page: 1,
+          limit: data.length,
+          totalPages: 1
+        };
+      }
+
+      // Si ya viene en formato paginado, lo retornamos tal cual
       return data;
     } catch (error: any) {
       console.error('Error fetching PQRS:', error);
@@ -73,12 +126,14 @@ export const PQRSService = {
       
       const requestData = {
         ...restData,
-        priority: restData.priority?.toLowerCase()
+        priority: restData.priority?.toLowerCase(),
+        status: 'pending' // Establecer el estado pending directamente
       };
 
       console.log('Datos de PQRS a crear:', {
         originalPriority: pqrsData.priority,
         normalizedPriority: requestData.priority,
+        status: requestData.status,
         fullData: requestData
       });
 
@@ -128,13 +183,12 @@ export const PQRSService = {
   // Actualizar una PQRS existente
   async updatePQRS(id: string, pqrsData: UpdatePQRSDto): Promise<PQRS> {
     try {
+      console.log('Actualizando PQRS:', { id, data: pqrsData });
       const { data } = await apiClient.put(
         API_ROUTES.PQRS.BY_ID(id),
-        pqrsData,
-        {
-          withCredentials: true
-        }
+        pqrsData
       );
+      console.log('PQRS actualizada:', data);
       return data;
     } catch (error) {
       console.error('Error updating PQRS:', error);

@@ -6,8 +6,7 @@ export type PQRSPriority = 'low' | 'medium' | 'high';
 
 export interface PQRSTypeEntity {
   id: string;
-  name: PQRSType;
-  label: string;
+  name: string;
 }
 
 export interface PQRSStatusEntity {
@@ -55,7 +54,7 @@ export interface UpdatePQRSDto {
 }
 
 export interface PQRSFilters {
-  status?: PQRSStatusEntity;
+  type?: PQRSTypeEntity;
 }
 
 export interface PaginatedPQRSResponse {

@@ -7,8 +7,14 @@ import { Select } from "@/components/Select";
 import { Textarea } from "@/components/Textarea";
 import { Alert } from "@/components/Alert";
 import { Spinner } from "@/components/Spinner";
-import type { CreatePQRSDto, PQRS, PQRSTypeEntity } from "@/types/pqrs";
+import type { CreatePQRSDto, PQRS, PQRSPriority, PQRSTypeEntity } from "@/types/pqrs";
 import PQRSService from "@/modules/pqrs/services/pqrs.service";
+
+const priorityOptions = [
+  { value: 'low', label: 'Baja' },
+  { value: 'medium', label: 'Media' },
+  { value: 'high', label: 'Alta' }
+];
 
 interface PQRSFormProps {
   onSuccess: () => void;
@@ -19,40 +25,34 @@ export function PQRSForm({ onSuccess, onCancel }: PQRSFormProps) {
   const [formData, setFormData] = useState<CreatePQRSDto>({
     title: '',
     description: '',
-    typeId: ''
+    typeId: '',
+    priority: 'medium'
   });
 
   const [attachments, setAttachments] = useState<File[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [loadingTypes, setLoadingTypes] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [types, setTypes] = useState<PQRSTypeEntity[]>([]);
-  const [loadingTypes, setLoadingTypes] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    loadPQRSTypes();
-  }, []);
-
-  const loadPQRSTypes = async () => {
-    try {
-      setLoadingTypes(true);
-      const typesData = await PQRSService.getPQRSTypes();
-      setTypes(typesData);
-      
-      // Si hay tipos disponibles, establecer el primero como valor por defecto
-      if (typesData.length > 0) {
-        setFormData(prev => ({
-          ...prev,
-          typeId: typesData[0].id
-        }));
+    const loadTypes = async () => {
+      try {
+        console.log('Loading PQRS types...');
+        const types = await PQRSService.getPQRSTypes();
+        console.log('PQRS types loaded:', types);
+        setTypes(types);
+      } catch (error) {
+        console.error('Error loading PQRS types:', error);
+        setError('No se pudieron cargar los tipos de PQRS');
+      } finally {
+        setLoadingTypes(false);
       }
-    } catch (error) {
-      setError('No se pudieron cargar los tipos de PQRS');
-      console.error('Error loading PQRS types:', error);
-    } finally {
-      setLoadingTypes(false);
-    }
-  };
+    };
+
+    loadTypes();
+  }, []);
 
   const handleChange = (field: keyof CreatePQRSDto, value: string) => {
     console.log('Cambio en el formulario:', { field, value });
@@ -76,70 +76,41 @@ export function PQRSForm({ onSuccess, onCancel }: PQRSFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    setIsLoading(true);
-
-    // Validación básica
-    if (!formData.title.trim()) {
-      setError('El título es requerido');
-      setIsLoading(false);
-      return;
-    }
-
-    if (!formData.description.trim()) {
-      setError('La descripción es requerida');
-      setIsLoading(false);
-      return;
-    }
-
-    if (!formData.typeId) {
-      setError('El tipo de PQRS es requerido');
-      setIsLoading(false);
-      return;
-    }
+    setLoading(true);
 
     try {
-      console.log('Datos del formulario antes de enviar:', formData);
+      if (!formData.title.trim()) {
+        throw new Error('El título es requerido');
+      }
 
-      const dataToSend: CreatePQRSDto = {
+      if (!formData.description.trim()) {
+        throw new Error('La descripción es requerida');
+      }
+
+      if (!formData.typeId) {
+        throw new Error('Debes seleccionar un tipo de PQRS');
+      }
+
+      const dataToSend = {
         ...formData,
-        title: formData.title.trim(),
-        description: formData.description.trim(),
+        type: formData.typeId,
         attachments
       };
 
-      console.log('Datos preparados para enviar:', dataToSend);
-
-      const result = await PQRSService.createPQRS(dataToSend);
-      console.log('PQRS creada exitosamente:', result);
+      console.log('Enviando PQRS:', dataToSend);
+      await PQRSService.createPQRS(dataToSend);
       onSuccess();
     } catch (error: any) {
-      console.error('Error detallado al crear PQRS:', {
-        error,
-        message: error?.message,
-        response: error?.response?.data,
-        status: error?.response?.status,
-        config: error?.config
-      });
-      
-      let errorMessage = 'No se pudo crear la PQRS. ';
-      
-      if (error?.response?.data?.message) {
-        errorMessage += error.response.data.message;
-      } else if (error?.message) {
-        errorMessage += error.message;
-      } else {
-        errorMessage += 'Por favor, verifica tu conexión e intenta nuevamente.';
-      }
-      
-      setError(errorMessage);
+      console.error('Error creating PQRS:', error);
+      setError(error.message || 'No se pudo crear la PQRS');
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
   if (loadingTypes) {
     return (
-      <div className="flex justify-center items-center p-8">
+      <div className="flex justify-center items-center p-4">
         <Spinner size="lg" />
       </div>
     );
@@ -171,7 +142,7 @@ export function PQRSForm({ onSuccess, onCancel }: PQRSFormProps) {
           rows={5}
         />
 
-        <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Select
             label="Tipo"
             options={types.map(type => ({
@@ -180,6 +151,13 @@ export function PQRSForm({ onSuccess, onCancel }: PQRSFormProps) {
             }))}
             value={formData.typeId}
             onChange={(value) => handleChange('typeId', value)}
+          />
+
+          <Select
+            label="Prioridad"
+            options={priorityOptions}
+            value={formData.priority || 'medium'}
+            onChange={(value) => handleChange('priority', value as PQRSPriority)}
           />
         </div>
 
@@ -220,21 +198,19 @@ export function PQRSForm({ onSuccess, onCancel }: PQRSFormProps) {
           </Button>
         </div>
 
-        <div className="flex justify-end gap-4">
+        <div className="flex justify-end space-x-4">
           <Button
             type="button"
             variant="outline"
             onClick={onCancel}
-            disabled={isLoading}
           >
             Cancelar
           </Button>
           <Button
             type="submit"
-            isLoading={isLoading}
-            disabled={isLoading || types.length === 0}
+            disabled={loading}
           >
-            Crear PQRS
+            {loading ? 'Creando...' : 'Crear PQRS'}
           </Button>
         </div>
       </form>
