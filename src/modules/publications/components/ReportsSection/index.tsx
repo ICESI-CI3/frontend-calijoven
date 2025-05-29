@@ -6,6 +6,7 @@ import { Input } from '@/components/Input';
 import { Alert } from '@/components/Alert';
 import type { ReportFilters } from '@/types/publication';
 import { publicationService } from '@/modules/publications/services/publication.service';
+import { publicationTypes } from '@/lib/constants/publicationTypes';
 
 export function ReportsSection() {
   const [reportName, setReportName] = useState('');
@@ -45,12 +46,6 @@ export function ReportsSection() {
     }
   };
 
-  const publicationTypes = [
-    { value: 'news', label: 'Noticias' },
-    { value: 'event', label: 'Eventos' },
-    { value: 'offer', label: 'Ofertas' },
-  ];
-
   return (
     <div className="rounded-lg border border-gray-200 bg-white p-6">
       <h3 className="mb-6 text-xl font-semibold">Generar Reporte General</h3>
@@ -76,7 +71,7 @@ export function ReportsSection() {
                 Tipos de Publicación
               </label>
               <div className="space-y-2">
-                {publicationTypes.map((type) => (
+                {Object.values(publicationTypes).map((type) => (
                   <label key={type.value} className="flex items-center">
                     <input
                       type="checkbox"

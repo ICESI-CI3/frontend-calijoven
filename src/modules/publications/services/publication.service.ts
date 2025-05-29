@@ -1,5 +1,6 @@
 import apiClient from '@/lib/api/client';
 import { API_ROUTES } from '@/lib/constants/api';
+import { publicationTypes } from '@/lib/constants/publicationTypes';
 import type {
   Publication,
   CreatePublicationDto,
@@ -120,12 +121,12 @@ export const PublicationService = {
       }
 
       // Agregar datos específicos según el tipo
-      if (publicationData.type === 'event' && publicationData.event) {
-        formData.append('event', JSON.stringify(publicationData.event));
-      } else if (publicationData.type === 'news' && publicationData.news) {
-        formData.append('news', JSON.stringify(publicationData.news));
-      } else if (publicationData.type === 'offer' && publicationData.offer) {
-        formData.append('offer', JSON.stringify(publicationData.offer));
+      if (publicationData.type === publicationTypes.event.value && publicationData.event) {
+        formData.append(publicationTypes.event.value, JSON.stringify(publicationData.event));
+      } else if (publicationData.type === publicationTypes.news.value && publicationData.news) {
+        formData.append(publicationTypes.news.value, JSON.stringify(publicationData.news));
+      } else if (publicationData.type === publicationTypes.offer.value && publicationData.offer) {
+        formData.append(publicationTypes.offer.value, JSON.stringify(publicationData.offer));
       }
 
       // Agregar archivos adjuntos
@@ -185,12 +186,12 @@ export const PublicationService = {
       }
 
       // Agregar datos específicos según el tipo
-      if (publicationData.type === 'event' && publicationData.event) {
-        formData.append('event', JSON.stringify(publicationData.event));
-      } else if (publicationData.type === 'news' && publicationData.news) {
-        formData.append('news', JSON.stringify(publicationData.news));
-      } else if (publicationData.type === 'offer' && publicationData.offer) {
-        formData.append('offer', JSON.stringify(publicationData.offer));
+      if (publicationData.type === publicationTypes.event.value && publicationData.event) {
+        formData.append(publicationTypes.event.value, JSON.stringify(publicationData.event));
+      } else if (publicationData.type === publicationTypes.news.value && publicationData.news) {
+        formData.append(publicationTypes.news.value, JSON.stringify(publicationData.news));
+      } else if (publicationData.type === publicationTypes.offer.value && publicationData.offer) {
+        formData.append(publicationTypes.offer.value, JSON.stringify(publicationData.offer));
       }
 
       // Agregar archivos adjuntos a eliminar
@@ -250,7 +251,7 @@ export const PublicationService = {
    */
   async generateSingleReport(id: string, name: string): Promise<Blob> {
     try {
-      const { data } = await apiClient.post(`${API_ROUTES.REPORTS.PUBLICATION.BY_ID}/${id}`, { name }, {
+      const { data } = await apiClient.post(`${API_ROUTES.REPORTS.PUBLICATION.BY_ID(id)}`, { name }, {
         responseType: 'blob'
       });
       return data;

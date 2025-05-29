@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     const payload = extractTokenPayload(token);
 
     if (!payload || isTokenExpired(payload)) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         {
           valid: false,
           reason: payload ? 'expired' : 'invalid-format',
@@ -32,6 +32,16 @@ export async function GET(request: NextRequest) {
         },
         { status: 401 }
       );
+      response.cookies.set({
+        name: AUTH_COOKIE_NAME,
+        value: '',
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        path: '/',
+        maxAge: 0,
+      });
+      return response;
     }
 
     if (!hasUserIdentifier(payload)) {

@@ -1,9 +1,10 @@
 'use client';
 
 import { ReactNode } from 'react';
-import { useAuth } from '@/lib/hooks/useAuth';
+import { useAuth, useHydration } from '@/lib/hooks/useAuth';
 import type { Permission } from '@/lib/constants/permissions';
 import { hasAnyPermission, hasAllPermissions } from '@/lib/helpers/permissionUtils';
+import { Spinner } from '@/components/Spinner';
 
 interface RequireAuthProps {
   permissions?: Permission[];
@@ -23,6 +24,15 @@ export default function RequireAuth({
   children,
 }: RequireAuthProps) {
   const { user } = useAuth();
+  const isHydrated = useHydration();
+
+  if (!isHydrated) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Spinner size="lg" />
+      </div>
+    );
+  }
 
   if (!user) {
     return <>{fallback}</>;
