@@ -1,50 +1,61 @@
-export type PQRSStatus = 'pending' | 'in_progress' | 'resolved' | 'rejected' | 'closed';
+export type PQRSStatusType = 'pending' | 'in_progress' | 'resolved' | 'rejected' | 'closed';
 
 export type PQRSType = 'petition' | 'complaint' | 'claim' | 'suggestion';
 
 export type PQRSPriority = 'low' | 'medium' | 'high';
 
+export interface PQRSTypeEntity {
+  id: string;
+  name: PQRSType;
+  label: string;
+}
+
+export interface PQRSStatusEntity {
+  name: string;
+  description: string;
+}
+
 export interface PQRS {
   id: string;
   title: string;
   description: string;
-  type: PQRSType;
-  status: PQRSStatus;
-  priority: PQRSPriority;
+  type: PQRSType | null;
+  status: PQRSStatusEntity;
+  priority?: PQRSPriority;
   userId: string;
   createdAt: string;
   updatedAt: string;
   response?: string;
   attachments?: string[];
   category?: string;
+  adminComment?: string | null;
+  user?: {
+    id: string;
+    name: string;
+    profilePicture: string;
+    banned: boolean;
+  };
 }
 
 export interface CreatePQRSDto {
   title: string;
   description: string;
-  type: PQRSType;
-  category?: string;
-  attachments?: File[];
+  typeId: string;
   priority?: PQRSPriority;
+  attachments?: File[];
 }
 
 export interface UpdatePQRSDto {
   title?: string;
   description?: string;
-  status?: PQRSStatus;
+  status?: PQRSStatusEntity;
   response?: string;
   category?: string;
   priority?: PQRSPriority;
 }
 
 export interface PQRSFilters {
-  status?: PQRSStatus;
-  type?: PQRSType;
-  category?: string;
-  priority?: PQRSPriority;
-  startDate?: string;
-  endDate?: string;
-  search?: string;
+  status?: PQRSStatusEntity;
 }
 
 export interface PaginatedPQRSResponse {

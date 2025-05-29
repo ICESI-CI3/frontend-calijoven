@@ -1,64 +1,36 @@
 'use client';
 
-import { Input } from '@/components/Input';
 import { Select } from '@/components/Select';
-import type { PQRSFilters, PQRSStatus, PQRSType, PQRSPriority } from '@/types/pqrs';
-
-const statusOptions = [
-  { value: 'pending', label: 'Pendiente' },
-  { value: 'in_progress', label: 'En Proceso' },
-  { value: 'resolved', label: 'Resuelto' },
-  { value: 'rejected', label: 'Rechazado' },
-  { value: 'closed', label: 'Cerrado' }
-];
-
-const typeOptions = [
-  { value: 'petition', label: 'Petición' },
-  { value: 'complaint', label: 'Queja' },
-  { value: 'claim', label: 'Reclamo' },
-  { value: 'suggestion', label: 'Sugerencia' }
-];
-
-const priorityOptions = [
-  { value: 'low', label: 'Baja' },
-  { value: 'medium', label: 'Media' },
-  { value: 'high', label: 'Alta' }
-];
+import { useEffect, useState } from 'react';
+import type { PQRSFilters, PQRSStatusEntity } from '@/types/pqrs';
 
 interface PQRSFiltersProps {
   filters: PQRSFilters;
-  onFilterChange: (filterName: keyof PQRSFilters, value: string) => void;
+  onFilterChange: (key: keyof PQRSFilters, value: any) => void;
 }
 
+const statusOptions: PQRSStatusEntity[] = [
+  { name: 'OPEN', description: 'Abierta' },
+  { name: 'IN_PROGRESS', description: 'En Progreso' },
+  { name: 'CLOSED', description: 'Cerrada' }
+];
+
 export function PQRSFilters({ filters, onFilterChange }: PQRSFiltersProps) {
+  const handleStatusChange = (value: string) => {
+    const status = statusOptions.find(s => s.name === value);
+    onFilterChange('status', status);
+  };
+
   return (
-    <div className="mb-6 grid grid-cols-1 gap-4 bg-white p-4 rounded-lg shadow sm:grid-cols-4">
+    <div className="mb-6">
       <Select
+        value={filters.status?.name || ''}
+        onChange={handleStatusChange}
         label="Estado"
-        options={statusOptions}
-        value={filters.status || ''}
-        onChange={(value) => onFilterChange('status', value as PQRSStatus)}
-      />
-
-      <Select
-        label="Tipo"
-        options={typeOptions}
-        value={filters.type || ''}
-        onChange={(value) => onFilterChange('type', value as PQRSType)}
-      />
-
-      <Select
-        label="Prioridad"
-        options={priorityOptions}
-        value={filters.priority || ''}
-        onChange={(value) => onFilterChange('priority', value as PQRSPriority)}
-      />
-
-      <Input
-        label="Buscar"
-        placeholder="Buscar por título..."
-        value={filters.search || ''}
-        onChange={(e) => onFilterChange('search', e.target.value)}
+        options={statusOptions.map(status => ({
+          value: status.name,
+          label: status.description
+        }))}
       />
     </div>
   );

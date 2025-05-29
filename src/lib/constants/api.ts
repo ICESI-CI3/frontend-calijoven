@@ -37,6 +37,7 @@ export const API_ROUTES = {
   PQRS: {
     BASE: '/pqrs',
     BY_ID: (id: string) => `/pqrs/${id}`,
+    TYPES: '/pqrs/types',
     ADMIN: {
       BASE: '/admin/pqrs',
       BY_ID: (id: string) => `/admin/pqrs/${id}`,

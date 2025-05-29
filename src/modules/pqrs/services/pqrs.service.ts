@@ -5,7 +5,8 @@ import type {
   CreatePQRSDto,
   UpdatePQRSDto,
   PQRSFilters,
-  PaginatedPQRSResponse
+  PaginatedPQRSResponse,
+  PQRSTypeEntity
 } from '@/types/pqrs';
 
 export class PQRSError extends Error {
@@ -16,6 +17,17 @@ export class PQRSError extends Error {
 }
 
 export const PQRSService = {
+  // Obtener tipos de PQRS
+  async getPQRSTypes(): Promise<PQRSTypeEntity[]> {
+    // Retornamos tipos que coinciden con la estructura del backend y frontend
+    return [
+      { id: '1', name: 'petition', label: 'Petición' },
+      { id: '2', name: 'complaint', label: 'Queja' },
+      { id: '3', name: 'claim', label: 'Reclamo' },
+      { id: '4', name: 'suggestion', label: 'Sugerencia' }
+    ];
+  },
+
   // Obtener PQRS con paginación y filtros
   async getPQRS(
     page = 1,
@@ -26,20 +38,20 @@ export const PQRSService = {
       const params = new URLSearchParams({
         page: page.toString(),
         limit: limit.toString(),
-        ...(filters?.status && { status: filters.status }),
-        ...(filters?.type && { type: filters.type }),
-        ...(filters?.category && { category: filters.category }),
-        ...(filters?.priority && { priority: filters.priority }),
-        ...(filters?.search && { search: filters.search }),
-        ...(filters?.startDate && { startDate: filters.startDate }),
-        ...(filters?.endDate && { endDate: filters.endDate })
       });
+
+      if (filters?.status?.name) {
+        params.append('status', filters.status.name);
+      }
 
       const { data } = await apiClient.get(`${API_ROUTES.PQRS.BASE}?${params}`);
       return data;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching PQRS:', error);
-      throw new PQRSError('No se pudieron obtener las PQRS');
+      throw new PQRSError(
+        error.response?.data?.message || 
+        'No se pudieron obtener las PQRS'
+      );
     }
   },
 
@@ -57,38 +69,59 @@ export const PQRSService = {
   // Crear una nueva PQRS
   async createPQRS(pqrsData: CreatePQRSDto): Promise<PQRS> {
     try {
+      const { attachments, ...restData } = pqrsData;
+      
+      const requestData = {
+        ...restData,
+        priority: restData.priority?.toLowerCase()
+      };
+
+      console.log('Datos de PQRS a crear:', {
+        originalPriority: pqrsData.priority,
+        normalizedPriority: requestData.priority,
+        fullData: requestData
+      });
+
+      if (!attachments || attachments.length === 0) {
+        const { data } = await apiClient.post(API_ROUTES.PQRS.BASE, requestData);
+        console.log('Respuesta de creación de PQRS:', data);
+        return data;
+      }
+
       const formData = new FormData();
+      formData.append('data', JSON.stringify(requestData));
       
-      // Agregar datos básicos
-      formData.append('title', pqrsData.title);
-      formData.append('description', pqrsData.description);
-      formData.append('type', pqrsData.type);
-      
-      if (pqrsData.category) {
-        formData.append('category', pqrsData.category);
-      }
-
-      if (pqrsData.priority) {
-        formData.append('priority', pqrsData.priority);
-      }
-
-      // Agregar archivos adjuntos si existen
-      if (pqrsData.attachments && pqrsData.attachments.length > 0) {
-        pqrsData.attachments.forEach(file => {
-          formData.append('attachments', file);
-        });
-      }
+      attachments.forEach((file) => {
+        formData.append('attachments', file);
+      });
 
       const { data } = await apiClient.post(API_ROUTES.PQRS.BASE, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-        },
+        }
       });
       
       return data;
-    } catch (error) {
-      console.error('Error creating PQRS:', error);
-      throw new PQRSError('No se pudo crear la PQRS');
+    } catch (error: any) {
+      console.error('Error creating PQRS:', {
+        error: error,
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        requestConfig: error.config
+      });
+      
+      if (error.response) {
+        const message = error.response.data?.message;
+        if (Array.isArray(message)) {
+          throw new PQRSError(message.join(', '));
+        }
+        throw new PQRSError(message || 'No se pudo crear la PQRS');
+      } else if (error.request) {
+        throw new PQRSError('No se recibió respuesta del servidor. Verifica tu conexión a internet.');
+      } else {
+        throw new PQRSError(`Error al crear la PQRS: ${error.message}`);
+      }
     }
   },
 
@@ -97,7 +130,10 @@ export const PQRSService = {
     try {
       const { data } = await apiClient.put(
         API_ROUTES.PQRS.BY_ID(id),
-        pqrsData
+        pqrsData,
+        {
+          withCredentials: true
+        }
       );
       return data;
     } catch (error) {
@@ -109,7 +145,9 @@ export const PQRSService = {
   // Eliminar una PQRS
   async deletePQRS(id: string): Promise<void> {
     try {
-      await apiClient.delete(API_ROUTES.PQRS.BY_ID(id));
+      await apiClient.delete(API_ROUTES.PQRS.BY_ID(id), {
+        withCredentials: true
+      });
     } catch (error) {
       console.error('Error deleting PQRS:', error);
       throw new PQRSError('No se pudo eliminar la PQRS');

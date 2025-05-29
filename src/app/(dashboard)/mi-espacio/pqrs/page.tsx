@@ -19,6 +19,10 @@ export default function PQRSPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
 
   useEffect(() => {
+    console.log('Iniciando carga de PQRS con:', {
+      page,
+      filters
+    });
     loadPQRS();
   }, [page, filters]);
 
@@ -26,28 +30,83 @@ export default function PQRSPage() {
     try {
       setLoading(true);
       setError(null);
+      setPqrs([]); // Limpiar los datos anteriores mientras carga
+      
+      console.log('Realizando petición getPQRS con parámetros:', {
+        page,
+        limit: 10,
+        filters
+      });
+      
       const response = await PQRSService.getPQRS(page, 10, filters);
+      
+      // Validar la respuesta
+      if (!response || !Array.isArray(response.items)) {
+        throw new Error('La respuesta del servidor no tiene el formato esperado');
+      }
+      
+      console.log('Respuesta recibida:', {
+        items: response.items.length,
+        totalPages: response.totalPages,
+        total: response.total,
+        currentPage: response.page
+      });
+      
       setPqrs(response.items);
-      setTotalPages(response.totalPages);
-    } catch (error) {
-      setError('No se pudieron cargar las PQRS');
-      console.error('Error:', error);
+      setTotalPages(response.totalPages || 1);
+      
+      // Si la página actual es mayor que el total de páginas, volver a la primera
+      if (page > (response.totalPages || 1)) {
+        setPage(1);
+      }
+    } catch (error: any) {
+      console.error('Error detallado al cargar PQRS:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status
+      });
+      
+      let errorMessage = 'No se pudieron cargar las PQRS. ';
+      if (error.response?.data?.message) {
+        errorMessage += error.response.data.message;
+      } else if (error.message) {
+        errorMessage += error.message;
+      }
+      
+      setError(errorMessage);
+      setPqrs([]);
+      setTotalPages(1);
+      setPage(1);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleFilterChange = (filterName: keyof PQRSFiltersType, value: string) => {
-    setFilters(prev => ({
-      ...prev,
-      [filterName]: value || undefined
-    }));
-    setPage(1);
+  const handleFilterChange = (filterName: keyof PQRSFiltersType, value: any) => {
+    console.log('Cambiando filtro:', {
+      filterName,
+      value
+    });
+    
+    setFilters(prev => {
+      const newFilters = { ...prev };
+      
+      if (value === undefined || value === '') {
+        delete newFilters[filterName];
+      } else {
+        newFilters[filterName] = value;
+      }
+      
+      return newFilters;
+    });
+    
+    setPage(1); // Resetear a la primera página al cambiar filtros
   };
 
   const handleCreateSuccess = () => {
     setShowCreateModal(false);
-    loadPQRS();
+    setPage(1); // Volver a la primera página
+    loadPQRS(); // Recargar la lista
   };
 
   return (
