@@ -66,3 +66,9 @@ storybook-static/
 # Cache
 .cache/
 .eslintcache
+
+# Playwright
+playwright-report/
+test-results/
+error-context.md
+*.json
