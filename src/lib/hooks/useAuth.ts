@@ -18,11 +18,14 @@ interface AuthState {
   logout: () => Promise<void>;
   updateUser: (user: User) => void;
   setHydrated: (state: boolean) => void;
+  clearUser: () => void;
+  checkSession: () => Promise<boolean>;
+  restoreUserFromSession: () => Promise<void>;
 }
 
 export const useAuth = create<AuthState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       user: null,
       isHydrated: false,
 
@@ -65,6 +68,53 @@ export const useAuth = create<AuthState>()(
         }),
 
       setHydrated: (state: boolean) => set({ isHydrated: state }),
+
+      clearUser: () => set({ user: null }),
+
+      checkSession: async () => {
+        try {
+          const response = await fetch('/api/auth/session', {
+            method: 'GET',
+            credentials: 'include',
+          });
+
+          if (!response.ok) {
+            const currentUser = get().user;
+            if (currentUser) {
+              set({ user: null });
+            }
+            return false;
+          }
+
+          const data = await response.json();
+          return data.valid === true;
+        } catch (error) {
+          console.error('Error checking session:', error);
+          const currentUser = get().user;
+          if (currentUser) {
+            set({ user: null });
+          }
+          return false;
+        }
+      },
+
+      restoreUserFromSession: async () => {
+        try {
+          const response = await fetch('/api/auth/session', {
+            method: 'GET',
+            credentials: 'include',
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            if (data.valid && data.user) {
+              set({ user: data.user });
+            }
+          }
+        } catch (error) {
+          console.error('Error restoring user from session:', error);
+        }
+      },
     }),
     {
       name: 'auth-user-storage',
@@ -79,7 +129,12 @@ export const useAuth = create<AuthState>()(
             }
       ),
       onRehydrateStorage: () => (state) => {
-        if (state) state.setHydrated(true);
+        if (state) {
+          state.setHydrated(true);
+          if (!state.user) {
+            state.restoreUserFromSession();
+          }
+        }
       },
     }
   )
@@ -94,4 +149,90 @@ export function useHydration() {
   }, [setHydrated]);
 
   return isHydrated;
+}
+
+/**
+ * Hook to periodically check the validity of the session
+ * Only runs when there is an authenticated user
+ */
+export function useSessionValidator() {
+  const user = useAuth((state) => state.user);
+  const checkSession = useAuth((state) => state.checkSession);
+  const isHydrated = useAuth((state) => state.isHydrated);
+
+  useEffect(() => {
+    if (!isHydrated || !user) {
+      return;
+    }
+
+    checkSession();
+
+    const interval = setInterval(() => {
+      checkSession();
+    }, 5 * 60 * 1000);
+
+    const handleFocus = () => {
+      checkSession();
+    };
+
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [user, checkSession, isHydrated]);
+}
+
+/**
+ * Hook to synchronize the authentication state between tabs
+ * Detects when the localStorage is cleared in another tab
+ */
+export function useAuthSync() {
+  const user = useAuth((state) => state.user);
+  const clearUser = useAuth((state) => state.clearUser);
+  const updateUser = useAuth((state) => state.updateUser);
+
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'auth-user-storage') {
+        if (e.newValue === null && user) {
+          // Se eliminó el storage y tenemos un usuario, limpiarlo
+          clearUser();
+        } else if (e.newValue && !user) {
+          // Se agregó un usuario al storage y no tenemos usuario, restaurarlo
+          try {
+            const authData = JSON.parse(e.newValue);
+            if (authData.state?.user) {
+              updateUser(authData.state.user);
+            }
+          } catch (error) {
+            console.error('Error parsing auth storage:', error);
+          }
+        }
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [user, clearUser, updateUser]);
+}
+
+/**
+ * Hook para manejar la restauración automática del usuario
+ * Se ejecuta una sola vez después de la hidratación
+ */
+export function useUserRestoration() {
+  const user = useAuth((state) => state.user);
+  const isHydrated = useAuth((state) => state.isHydrated);
+  const restoreUserFromSession = useAuth((state) => state.restoreUserFromSession);
+
+  useEffect(() => {
+    if (isHydrated && !user) {
+      restoreUserFromSession();
+    }
+  }, [isHydrated, user, restoreUserFromSession]);
 }

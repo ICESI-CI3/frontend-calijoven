@@ -172,6 +172,12 @@ export const ROUTES = {
       PERMISSIONS: [PERMISSIONS.MANAGE_PQRS],
     }),
   },
+
+  ERRORS: {
+    NOT_FOUND: {
+      PATH: '/not-found',
+    },
+  },
 } as const;
 
 /**
