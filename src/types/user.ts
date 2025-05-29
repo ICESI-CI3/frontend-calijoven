@@ -6,8 +6,10 @@ import { BaseOrganization } from './organization';
 export type User = {
   id: string;
   name: string;
+  email: string;
   profilePicture: string;
   banned: boolean;
+  isPublic: boolean;
   roles: Permission[];
   city: BaseCity;
   leadingCommittees: BaseCommittee[];
