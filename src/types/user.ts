@@ -2,6 +2,7 @@ import { Permission } from '@/lib/constants/permissions';
 import { BaseCity } from './city';
 import { BaseCommittee } from './committee';
 import { BaseOrganization } from './organization';
+import { Role } from '@/lib/constants/roles';
 
 export type User = {
   id: string;
@@ -11,6 +12,7 @@ export type User = {
   banned: boolean;
   isPublic: boolean;
   roles: Permission[];
+  userTypes: Role[];
   city: BaseCity;
   leadingCommittees: BaseCommittee[];
   committees: BaseCommittee[];
