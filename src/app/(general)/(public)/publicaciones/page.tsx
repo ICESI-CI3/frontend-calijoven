@@ -2,16 +2,15 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/lib/hooks/useAuth';
 import { PublicationsList } from '@/modules/publications/components/PublicationsList';
 import { PublicationsHeader } from '@/modules/publications/components/PublicationsHeader';
+import { Publication } from '@/types/publication';
 
 export default function PublicationsPage() {
   const [activeTab, setActiveTab] = useState('');
   const router = useRouter();
-  const { user } = useAuth();
 
-  const handleEdit = (publication: any) => {
+  const handleEdit = (publication: Publication) => {
     router.push(`/publicaciones/${publication.id}/editar`);
   };
 
@@ -25,7 +24,7 @@ export default function PublicationsPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <PublicationsHeader isAuthenticated={!!user} />
+      <PublicationsHeader />
       
       <PublicationsList
         activeTab={activeTab}
