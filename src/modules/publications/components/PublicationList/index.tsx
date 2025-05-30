@@ -21,6 +21,8 @@ import {
   TrashIcon,
 } from '@heroicons/react/24/outline';
 import { publicationTypes } from '@/lib/constants/publicationTypes';
+import { ROUTES } from '@/lib/constants/routes';
+import { useRouter } from 'next/navigation';
 
 interface PublicationListProps {
   onEdit: (publication: Publication) => void;
@@ -35,6 +37,7 @@ export function PublicationList({
   onCreateNew,
   organizationId = '',
 }: PublicationListProps) {
+  const router = useRouter();
   const [publications, setPublications] = useState<Publication[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -177,9 +180,16 @@ export function PublicationList({
       align: 'left',
       flex: 3,
       render: (publication) => (
-        <div>
-          <div className="text-xs font-medium text-gray-900 sm:text-sm">{publication.title}</div>
-          <div className="max-w-xs truncate text-xs text-gray-500">{publication.description}</div>
+        <div
+          className="group cursor-pointer"
+          onClick={() => router.push(ROUTES.PUBLICATIONS.DETAIL(publication.id).PATH)}
+        >
+          <div className="text-xs font-medium text-gray-900 sm:text-sm group-hover:text-primary group-hover:underline group-hover:underline-offset-2">
+            {publication.title}
+          </div>
+          <div className="max-w-xs truncate text-xs text-gray-500 group-hover:text-primary group-hover:underline group-hover:underline-offset-2">
+            {publication.description}
+          </div>
         </div>
       ),
     },

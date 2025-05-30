@@ -10,6 +10,7 @@ interface RequireAuthProps {
   permissions?: Permission[];
   requireAll?: boolean;
   fallback?: ReactNode;
+  loader?: ReactNode;
   children: ReactNode;
 }
 
@@ -21,31 +22,30 @@ export default function RequireAuth({
   permissions = [],
   requireAll = false,
   fallback = null,
+  loader = <Spinner />,
   children,
 }: RequireAuthProps) {
-  const { user } = useAuth();
   const isHydrated = useHydration();
+  const user = useAuth((state) => state.user);
+  const isAuthenticated = useAuth((state) => state.isAuthenticated());
 
   if (!isHydrated) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Spinner size="lg" />
-      </div>
-    );
+    return loader;
   }
 
-  if (!user) {
-    return <>{fallback}</>;
+  if (!isAuthenticated) {
+    return fallback;
   }
 
-  if (permissions.length === 0) {
-    return <>{children}</>;
+  if (permissions.length > 0 && user?.roles) {
+    const hasPermission = requireAll
+      ? hasAllPermissions(user.roles, permissions)
+      : hasAnyPermission(user.roles, permissions);
+
+    if (!hasPermission) {
+      return fallback;
+    }
   }
 
-  const userPermissions = user.roles || [];
-  const hasRequiredPermissions = requireAll
-    ? hasAllPermissions(userPermissions, permissions)
-    : hasAnyPermission(userPermissions, permissions);
-
-  return <>{hasRequiredPermissions ? children : fallback}</>;
+  return <>{children}</>;
 }
