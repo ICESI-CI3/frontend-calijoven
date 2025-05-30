@@ -94,13 +94,20 @@ export default function AdminPQRSPage() {
         throw new Error('Estado no válido');
       }
 
-      await PQRSService.updatePQRS(pqrsId, { status: statusType });
+      await PQRSService.updatePQRS(pqrsId, { 
+        status: newStatus // Send just the status name
+      }, true);
+      
       // Recargar la lista después de actualizar
       loadPQRS();
     } catch (error) {
       console.error('Error updating PQRS status:', error);
       setError('No se pudo actualizar el estado de la PQRS');
     }
+  };
+
+  const handleDelete = () => {
+    loadPQRS(); // Recargar la lista después de eliminar
   };
 
   if (loading) {
@@ -125,6 +132,7 @@ export default function AdminPQRSPage() {
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={setCurrentPage}
+        onDelete={handleDelete}
       />
     </div>
   );

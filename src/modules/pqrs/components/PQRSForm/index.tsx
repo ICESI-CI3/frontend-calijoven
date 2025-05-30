@@ -41,8 +41,20 @@ export function PQRSForm({ onSuccess, onCancel }: PQRSFormProps) {
       try {
         console.log('Loading PQRS types...');
         const types = await PQRSService.getPQRSTypes();
-        console.log('PQRS types loaded:', types);
+        console.log('PQRS types loaded:', {
+          types,
+          count: types.length,
+          firstType: types[0]
+        });
         setTypes(types);
+
+        // Si no hay tipo seleccionado y hay tipos disponibles, seleccionar el primero
+        if (!formData.typeId && types.length > 0) {
+          setFormData(prev => ({
+            ...prev,
+            typeId: types[0].id
+          }));
+        }
       } catch (error) {
         console.error('Error loading PQRS types:', error);
         setError('No se pudieron cargar los tipos de PQRS');
@@ -56,6 +68,10 @@ export function PQRSForm({ onSuccess, onCancel }: PQRSFormProps) {
 
   const handleChange = (field: keyof CreatePQRSDto, value: string) => {
     console.log('Cambio en el formulario:', { field, value });
+    if (field === 'typeId') {
+      const selectedType = types.find(t => t.id === value);
+      console.log('Tipo seleccionado:', selectedType);
+    }
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -79,11 +95,11 @@ export function PQRSForm({ onSuccess, onCancel }: PQRSFormProps) {
     setLoading(true);
 
     try {
-      if (!formData.title.trim()) {
+      if (!formData.title?.trim()) {
         throw new Error('El título es requerido');
       }
 
-      if (!formData.description.trim()) {
+      if (!formData.description?.trim()) {
         throw new Error('La descripción es requerida');
       }
 
@@ -91,14 +107,28 @@ export function PQRSForm({ onSuccess, onCancel }: PQRSFormProps) {
         throw new Error('Debes seleccionar un tipo de PQRS');
       }
 
-      const dataToSend = {
-        ...formData,
-        type: formData.typeId,
+      // Verificar que el tipo seleccionado existe
+      const selectedType = types.find(t => t.id === formData.typeId);
+      if (!selectedType) {
+        throw new Error('El tipo seleccionado no es válido');
+      }
+
+      const dataToSend: CreatePQRSDto = {
+        title: String(formData.title).trim(),
+        description: String(formData.description).trim(),
+        typeId: formData.typeId,
+        priority: formData.priority,
         attachments
       };
 
-      console.log('Enviando PQRS:', dataToSend);
-      await PQRSService.createPQRS(dataToSend);
+      console.log('Enviando PQRS:', {
+        formData,
+        selectedType,
+        availableTypes: types.map(t => ({ id: t.id, name: t.name }))
+      });
+      
+      const response = await PQRSService.createPQRS(dataToSend);
+      console.log('PQRS creada:', response);
       onSuccess();
     } catch (error: any) {
       console.error('Error creating PQRS:', error);
@@ -150,7 +180,10 @@ export function PQRSForm({ onSuccess, onCancel }: PQRSFormProps) {
               label: type.name
             }))}
             value={formData.typeId}
-            onChange={(value) => handleChange('typeId', value)}
+            onChange={(value) => {
+              console.log('Tipo seleccionado:', value);
+              handleChange('typeId', value);
+            }}
           />
 
           <Select

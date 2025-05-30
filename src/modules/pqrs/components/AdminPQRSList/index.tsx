@@ -3,6 +3,9 @@
 import { Button } from '@/components/Button';
 import { Select } from '@/components/Select';
 import type { PQRS, PQRSStatusEntity } from '@/types/pqrs';
+import { useState } from 'react';
+import { Modal } from '@/components/Modal';
+import PQRSService from '@/modules/pqrs/services/pqrs.service';
 
 interface AdminPQRSListProps {
   pqrs: PQRS[];
@@ -11,6 +14,7 @@ interface AdminPQRSListProps {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
+  onDelete?: () => void;
 }
 
 export function AdminPQRSList({
@@ -19,8 +23,29 @@ export function AdminPQRSList({
   onStatusChange,
   currentPage,
   totalPages,
-  onPageChange
+  onPageChange,
+  onDelete
 }: AdminPQRSListProps) {
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [selectedPqrsId, setSelectedPqrsId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleDelete = async () => {
+    if (!selectedPqrsId) return;
+
+    try {
+      await PQRSService.deletePQRS(selectedPqrsId);
+      setDeleteModalOpen(false);
+      setSelectedPqrsId(null);
+      if (onDelete) {
+        onDelete();
+      }
+    } catch (error) {
+      console.error('Error deleting PQRS:', error);
+      setError('No se pudo eliminar la PQRS');
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="overflow-x-auto">
@@ -59,10 +84,7 @@ export function AdminPQRSList({
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
-                    {item.type === 'petition' && 'Petición'}
-                    {item.type === 'complaint' && 'Queja'}
-                    {item.type === 'claim' && 'Reclamo'}
-                    {item.type === 'suggestion' && 'Sugerencia'}
+                    {item.type?.name || 'No especificado'}
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
@@ -78,15 +100,16 @@ export function AdminPQRSList({
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {new Date(item.createdAt).toLocaleDateString()}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                   <Button
                     variant="outline"
                     onClick={() => {
-                      // Aquí puedes agregar la lógica para ver detalles
-                      console.log('Ver detalles de:', item.id);
+                      setSelectedPqrsId(item.id);
+                      setDeleteModalOpen(true);
                     }}
+                    className="text-red-600 hover:text-red-900"
                   >
-                    Ver detalles
+                    Eliminar
                   </Button>
                 </td>
               </tr>
@@ -115,6 +138,45 @@ export function AdminPQRSList({
           </div>
         </div>
       )}
+
+      <Modal
+        isOpen={deleteModalOpen}
+        onClose={() => {
+          setDeleteModalOpen(false);
+          setSelectedPqrsId(null);
+          setError(null);
+        }}
+        title="Eliminar PQRS"
+      >
+        <div className="p-6">
+          <p className="text-sm text-gray-500">
+            ¿Estás seguro de que deseas eliminar esta PQRS? Esta acción no se puede deshacer.
+          </p>
+          {error && (
+            <div className="mt-4 text-sm text-red-600">
+              {error}
+            </div>
+          )}
+          <div className="mt-6 flex justify-end space-x-3">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setDeleteModalOpen(false);
+                setSelectedPqrsId(null);
+                setError(null);
+              }}
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleDelete}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Eliminar
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 } 

@@ -85,10 +85,7 @@ export function PQRSList({ pqrs, loading, error, totalPages, currentPage, onPage
                   <div className="flex items-center gap-2 ml-4">
                     <span className="text-sm font-medium text-gray-700">Tipo:</span>
                     <span className="px-3 py-1.5 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
-                      {item.type === 'petition' && 'Petición'}
-                      {item.type === 'complaint' && 'Queja'}
-                      {item.type === 'claim' && 'Reclamo'}
-                      {item.type === 'suggestion' && 'Sugerencia'}
+                      {item.type?.name || 'No especificado'}
                     </span>
                   </div>
                 </div>

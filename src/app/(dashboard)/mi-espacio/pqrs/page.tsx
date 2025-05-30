@@ -30,77 +30,46 @@ export default function PQRSPage() {
     try {
       setLoading(true);
       setError(null);
-      setPqrs([]); // Limpiar los datos anteriores mientras carga
-      
-      console.log('Realizando petición getPQRS con parámetros:', {
-        page,
-        limit: 10,
-        filters
-      });
-      
+      console.log('Cargando PQRS con filtros:', filters);
       const response = await PQRSService.getPQRS(page, 10, filters);
-      
-      // Validar la respuesta
-      if (!response || !Array.isArray(response.items)) {
-        throw new Error('La respuesta del servidor no tiene el formato esperado');
-      }
-      
-      console.log('Respuesta recibida:', {
-        items: response.items.length,
-        totalPages: response.totalPages,
-        total: response.total,
-        currentPage: response.page
-      });
-      
+      console.log('Respuesta de PQRS:', response);
       setPqrs(response.items);
       setTotalPages(response.totalPages || 1);
-      
-      // Si la página actual es mayor que el total de páginas, volver a la primera
-      if (page > (response.totalPages || 1)) {
-        setPage(1);
-      }
     } catch (error: any) {
-      console.error('Error detallado al cargar PQRS:', {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status
-      });
-      
-      let errorMessage = 'No se pudieron cargar las PQRS. ';
-      if (error.response?.data?.message) {
-        errorMessage += error.response.data.message;
-      } else if (error.message) {
-        errorMessage += error.message;
-      }
-      
-      setError(errorMessage);
-      setPqrs([]);
-      setTotalPages(1);
-      setPage(1);
+      console.error('Error loading PQRS:', error);
+      setError('No se pudieron cargar las PQRS');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleFilterChange = (filterName: keyof PQRSFiltersType, value: any) => {
-    console.log('Cambiando filtro:', {
-      filterName,
-      value
-    });
-    
-    setFilters(prev => {
-      const newFilters = { ...prev };
+  const handleFilterChange = async (filterName: keyof PQRSFiltersType, value: any) => {
+    try {
+      console.log('Cambiando filtro:', { filterName, value });
       
-      if (value === undefined || value === '') {
-        delete newFilters[filterName];
+      if (filterName === 'type' && value) {
+        const type = await PQRSService.getPQRSTypeById(value);
+        setFilters(prev => ({
+          ...prev,
+          type: type
+        }));
       } else {
-        newFilters[filterName] = value;
+        setFilters(prev => {
+          const newFilters = { ...prev };
+          if (!value) {
+            delete newFilters[filterName];
+          } else {
+            newFilters[filterName] = value;
+          }
+          return newFilters;
+        });
       }
       
-      return newFilters;
-    });
-    
-    setPage(1); // Resetear a la primera página al cambiar filtros
+      setPage(1); // Resetear a la primera página al cambiar filtros
+    } catch (error) {
+      console.error('Error al cambiar filtro:', error);
+      setError('Error al aplicar el filtro');
+    }
   };
 
   const handleCreateSuccess = () => {

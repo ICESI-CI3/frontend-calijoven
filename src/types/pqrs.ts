@@ -18,7 +18,8 @@ export interface PQRS {
   id: string;
   title: string;
   description: string;
-  type: PQRSType | null;
+  type: PQRSTypeEntity | null;
+  typeId?: string;
   status: PQRSStatusEntity;
   priority?: PQRSPriority;
   userId: string;
@@ -47,7 +48,7 @@ export interface CreatePQRSDto {
 export interface UpdatePQRSDto {
   title?: string;
   description?: string;
-  status?: PQRSStatusEntity;
+  status?: string | PQRSStatusEntity;
   response?: string;
   category?: string;
   priority?: PQRSPriority;
