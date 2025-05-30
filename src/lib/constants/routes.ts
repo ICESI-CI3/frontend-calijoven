@@ -193,18 +193,19 @@ export function getRouteWithParams<T extends (...args: unknown[]) => Route>(
   return routeFactory(...params);
 }
 
-/**
- * Retreive all public routes
- */
 export function getPublicRoutes(): string[] {
-  function extractPublicPaths(routes: Record<string, Route | ((...args: any[]) => Route)>, paths: string[] = []): string[] {
+  function extractPublicPaths(
+    routes: Record<string, Route | ((...args: unknown[]) => Route)>,
+    paths: string[] = []
+  ): string[] {
     for (const key in routes) {
       const route = routes[key];
 
       if (typeof route === 'function') {
-        // Para rutas dinámicas, usamos un patrón que coincida con cualquier ID
-        const dynamicPath = route('dummy-id').PATH.replace('dummy-id', '[^/]+');
-        paths.push(dynamicPath);
+        const dynamicPath = route('[dummy-id]');
+        if (dynamicPath.PUBLIC) {
+          paths.push(dynamicPath.PATH);
+        }
         continue;
       }
 
@@ -213,48 +214,108 @@ export function getPublicRoutes(): string[] {
       }
 
       if (route && typeof route === 'object' && !route.PATH) {
-        extractPublicPaths(route as unknown as Record<string, Route | ((...args: any[]) => Route)>, paths);
+        extractPublicPaths(
+          route as unknown as Record<string, Route | ((...args: unknown[]) => Route)>,
+          paths
+        );
       }
     }
     return paths;
   }
 
-  return extractPublicPaths(ROUTES as unknown as Record<string, Route | ((...args: any[]) => Route)>);
+  return extractPublicPaths(
+    ROUTES as unknown as Record<string, Route | ((...args: unknown[]) => Route)>
+  );
+}
+
+export function matchesDynamicRoute(currentPath: string, routePattern: string): boolean {
+  if (!routePattern.includes('[') && !routePattern.includes('dummy-id')) {
+    return currentPath === routePattern;
+  }
+
+  const regexPattern = routePattern
+    .replace(/dummy-id/g, '[^/]+')
+    .replace(/\[id\]/g, '[^/]+')
+    .replace(/\[slug\]/g, '[^/]+');
+
+  const regex = new RegExp(`^${regexPattern}$`);
+  return regex.test(currentPath);
 }
 
 /**
- * Get a map of routes protected by permissions
+ * Get the protected routes with their permissions
  */
 export function getPermissionProtectedRoutes(): Record<string, Permission[]> {
   const protectedRoutes: Record<string, Permission[]> = {};
 
-  function extractProtectedPaths(routes: Record<string, Route>): void {
+  function extractProtectedPaths(
+    routes: Record<string, Route | ((...args: unknown[]) => Route)>
+  ): void {
     for (const key in routes) {
       const route = routes[key];
 
-      if (typeof route === 'function') continue;
+      if (typeof route === 'function') {
+        const dynamicRoute = route('dummy-id');
+        if (dynamicRoute.PERMISSIONS && dynamicRoute.PERMISSIONS.length > 0) {
+          protectedRoutes[dynamicRoute.PATH] = dynamicRoute.PERMISSIONS;
+        }
+        continue;
+      }
 
       if (route?.PATH && route?.PERMISSIONS && route.PERMISSIONS.length > 0) {
         protectedRoutes[route.PATH] = route.PERMISSIONS;
       }
 
       if (route && typeof route === 'object' && !route.PATH) {
-        extractProtectedPaths(route as unknown as Record<string, Route>);
+        extractProtectedPaths(
+          route as unknown as Record<string, Route | ((...args: unknown[]) => Route)>
+        );
       }
     }
   }
 
-  extractProtectedPaths(ROUTES as unknown as Record<string, Route>);
+  extractProtectedPaths(ROUTES as unknown as Record<string, Route | ((...args: unknown[]) => Route)>);
   return protectedRoutes;
 }
 
 /**
- * Check if the user has permission to access a specific route
+ * Check if the user has permission to access a specific route (including dynamic routes)
  */
 export function hasPermissionForRoute(path: string, userPermissions: Permission[] = []): boolean {
   const protectedRoutes = getPermissionProtectedRoutes();
 
-  if (!protectedRoutes[path]) return true;
+  if (protectedRoutes[path]) {
+    return protectedRoutes[path].some((permission) => userPermissions.includes(permission));
+  }
 
-  return protectedRoutes[path].some((permission) => userPermissions.includes(permission));
+  for (const [routePattern, requiredPermissions] of Object.entries(protectedRoutes)) {
+    if (matchesDynamicRoute(path, routePattern)) {
+      return requiredPermissions.some((permission) => userPermissions.includes(permission));
+    }
+  }
+
+  return true;
+}
+
+export function isPublicRoute(pathname: string): boolean {
+  const publicRoutes = getPublicRoutes();
+
+  return publicRoutes.some((route) => {
+    if (pathname === route) return true;
+
+    if (pathname.startsWith(`${route}/`)) return true;
+
+    if (matchesDynamicRoute(pathname, route)) return true;
+
+    return false;
+  });
+}
+
+export function isAuthRoute(pathname: string): boolean {
+  return (
+    pathname === ROUTES.AUTH.LOGIN.PATH ||
+    pathname === ROUTES.AUTH.REGISTER.PATH ||
+    pathname.startsWith(`${ROUTES.AUTH.LOGIN.PATH}/`) ||
+    pathname.startsWith(`${ROUTES.AUTH.REGISTER.PATH}/`)
+  );
 }

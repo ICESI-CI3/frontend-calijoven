@@ -85,6 +85,7 @@ export type Publication = {
   news?: NewsDto;
   offer?: OfferDto;
   registrations?: Registration[];
+  registered?: number;
 }
 
 export type PublicationFilters = {

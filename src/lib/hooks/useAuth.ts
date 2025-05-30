@@ -1,8 +1,13 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { User } from '@/types/user';
-import { extractTokenPayload } from '../../modules/auth/utils/tokenService';
-import { setAuthCookie, removeAuthCookie } from '../../modules/auth/utils/cookieService';
+import {
+  extractTokenPayload,
+  setTokenInStorage,
+  getTokenFromStorage,
+  removeTokenFromStorage,
+  validateToken,
+} from '../../modules/auth/utils/tokenService';
 import { useEffect } from 'react';
 
 /**
@@ -13,23 +18,25 @@ import { useEffect } from 'react';
  */
 interface AuthState {
   user: User | null;
+  token: string | null;
   isHydrated: boolean;
-  login: (user: User, token: string, rememberMe?: boolean) => Promise<void>;
-  logout: () => Promise<void>;
+  login: (user: User, token: string) => void;
+  logout: () => void;
   updateUser: (user: User) => void;
   setHydrated: (state: boolean) => void;
-  clearUser: () => void;
-  checkSession: () => Promise<boolean>;
-  restoreUserFromSession: () => Promise<void>;
+  clearAuth: () => void;
+  isAuthenticated: () => boolean;
+  getStoredToken: () => string | null;
 }
 
 export const useAuth = create<AuthState>()(
   persist(
     (set, get) => ({
       user: null,
+      token: null,
       isHydrated: false,
 
-      login: async (user: User, token: string, rememberMe = false) => {
+      login: (user: User, token: string) => {
         try {
           const payload = extractTokenPayload(token);
 
@@ -37,12 +44,16 @@ export const useAuth = create<AuthState>()(
             throw new Error('Invalid token format');
           }
 
+          // Add roles from token payload to user
           user.roles = payload.authorities || [];
 
-          await setAuthCookie(token, { rememberMe });
+          // Store token in localStorage
+          setTokenInStorage(token);
 
+          // Update Zustand state
           set({
             user,
+            token,
           });
         } catch (error) {
           console.error('Login error:', error);
@@ -50,11 +61,15 @@ export const useAuth = create<AuthState>()(
         }
       },
 
-      logout: async () => {
+      logout: () => {
         try {
-          await removeAuthCookie();
+          // Remove token from localStorage
+          removeTokenFromStorage();
+
+          // Clear Zustand state
           set({
             user: null,
+            token: null,
           });
         } catch (error) {
           console.error('Logout error:', error);
@@ -69,56 +84,32 @@ export const useAuth = create<AuthState>()(
 
       setHydrated: (state: boolean) => set({ isHydrated: state }),
 
-      clearUser: () => set({ user: null }),
-
-      checkSession: async () => {
-        try {
-          const response = await fetch('/api/auth/session', {
-            method: 'GET',
-            credentials: 'include',
-          });
-
-          if (!response.ok) {
-            const currentUser = get().user;
-            if (currentUser) {
-              set({ user: null });
-            }
-            return false;
-          }
-
-          const data = await response.json();
-          return data.valid === true;
-        } catch (error) {
-          console.error('Error checking session:', error);
-          const currentUser = get().user;
-          if (currentUser) {
-            set({ user: null });
-          }
-          return false;
-        }
+      clearAuth: () => {
+        removeTokenFromStorage();
+        set({
+          user: null,
+          token: null,
+        });
       },
 
-      restoreUserFromSession: async () => {
-        try {
-          const response = await fetch('/api/auth/session', {
-            method: 'GET',
-            credentials: 'include',
-          });
+      isAuthenticated: () => {
+        const state = get();
+        const storedToken = getTokenFromStorage();
 
-          if (response.ok) {
-            const data = await response.json();
-            if (data.valid && data.user) {
-              set({ user: data.user });
-            }
-          }
-        } catch (error) {
-          console.error('Error restoring user from session:', error);
-        }
+        // Check if we have a user and a valid token
+        return !!(state.user && storedToken && validateToken(storedToken));
+      },
+
+      getStoredToken: () => {
+        return getTokenFromStorage();
       },
     }),
     {
-      name: 'auth-user-storage',
-      partialize: (state) => ({ user: state.user }),
+      name: 'auth-storage',
+      partialize: (state) => ({
+        user: state.user,
+        token: state.token,
+      }),
       storage: createJSONStorage(() =>
         typeof window !== 'undefined'
           ? localStorage
@@ -131,8 +122,16 @@ export const useAuth = create<AuthState>()(
       onRehydrateStorage: () => (state) => {
         if (state) {
           state.setHydrated(true);
-          if (!state.user) {
-            state.restoreUserFromSession();
+
+          // Sync token from separate localStorage item
+          const storedToken = getTokenFromStorage();
+          if (storedToken && !state.token) {
+            state.token = storedToken;
+          }
+
+          // Validate stored token
+          if (state.token && !validateToken(state.token)) {
+            state.clearAuth();
           }
         }
       },
@@ -152,27 +151,36 @@ export function useHydration() {
 }
 
 /**
- * Hook to periodically check the validity of the session
+ * Hook to periodically check the validity of the token
  * Only runs when there is an authenticated user
  */
-export function useSessionValidator() {
-  const user = useAuth((state) => state.user);
-  const checkSession = useAuth((state) => state.checkSession);
+export function useTokenValidator() {
+  const isAuthenticated = useAuth((state) => state.isAuthenticated());
+  const clearAuth = useAuth((state) => state.clearAuth);
   const isHydrated = useAuth((state) => state.isHydrated);
+  const getStoredToken = useAuth((state) => state.getStoredToken);
 
   useEffect(() => {
-    if (!isHydrated || !user) {
+    if (!isHydrated) {
       return;
     }
 
-    checkSession();
+    const checkTokenValidity = () => {
+      const token = getStoredToken();
+      if (token && !validateToken(token)) {
+        clearAuth();
+      }
+    };
 
-    const interval = setInterval(() => {
-      checkSession();
-    }, 5 * 60 * 1000);
+    // Check immediately
+    checkTokenValidity();
 
+    // Check every 5 minutes
+    const interval = setInterval(checkTokenValidity, 5 * 60 * 1000);
+
+    // Check when window gains focus
     const handleFocus = () => {
-      checkSession();
+      checkTokenValidity();
     };
 
     window.addEventListener('focus', handleFocus);
@@ -181,7 +189,7 @@ export function useSessionValidator() {
       clearInterval(interval);
       window.removeEventListener('focus', handleFocus);
     };
-  }, [user, checkSession, isHydrated]);
+  }, [isAuthenticated, clearAuth, isHydrated, getStoredToken]);
 }
 
 /**
@@ -190,17 +198,18 @@ export function useSessionValidator() {
  */
 export function useAuthSync() {
   const user = useAuth((state) => state.user);
-  const clearUser = useAuth((state) => state.clearUser);
+  const clearAuth = useAuth((state) => state.clearAuth);
   const updateUser = useAuth((state) => state.updateUser);
 
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'auth-user-storage') {
+      // Handle auth storage changes
+      if (e.key === 'auth-storage') {
         if (e.newValue === null && user) {
-          // Se eliminó el storage y tenemos un usuario, limpiarlo
-          clearUser();
+          // Auth storage was cleared, clear our state
+          clearAuth();
         } else if (e.newValue && !user) {
-          // Se agregó un usuario al storage y no tenemos usuario, restaurarlo
+          // Auth storage was added, try to restore
           try {
             const authData = JSON.parse(e.newValue);
             if (authData.state?.user) {
@@ -211,6 +220,14 @@ export function useAuthSync() {
           }
         }
       }
+
+      // Handle token storage changes
+      if (e.key === 'auth-token') {
+        if (e.newValue === null && user) {
+          // Token was removed, clear auth
+          clearAuth();
+        }
+      }
     };
 
     window.addEventListener('storage', handleStorageChange);
@@ -218,21 +235,5 @@ export function useAuthSync() {
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
-  }, [user, clearUser, updateUser]);
-}
-
-/**
- * Hook para manejar la restauración automática del usuario
- * Se ejecuta una sola vez después de la hidratación
- */
-export function useUserRestoration() {
-  const user = useAuth((state) => state.user);
-  const isHydrated = useAuth((state) => state.isHydrated);
-  const restoreUserFromSession = useAuth((state) => state.restoreUserFromSession);
-
-  useEffect(() => {
-    if (isHydrated && !user) {
-      restoreUserFromSession();
-    }
-  }, [isHydrated, user, restoreUserFromSession]);
+  }, [user, clearAuth, updateUser]);
 }
