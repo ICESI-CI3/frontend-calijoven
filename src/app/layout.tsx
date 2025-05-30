@@ -1,7 +1,7 @@
 import { Poppins } from 'next/font/google';
 import { Providers } from '@/providers';
 import '@/styles/globals.css';
-import { SessionValidator } from '@/components/SessionValidator';
+import { GlobalAuthGuard } from '@/modules/auth/components/GlobalAuthGuard';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -21,8 +21,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={poppins.className}>
         <div className="pt-10">
           <Providers>
-            <SessionValidator />
-            {children}
+            <GlobalAuthGuard>
+              {children}
+            </GlobalAuthGuard>
           </Providers>
         </div>
       </body>
