@@ -1,14 +1,16 @@
 'use client';
 
 import { ReactNode } from 'react';
-import { useAuth } from '@/lib/hooks/useAuth';
+import { useAuth, useHydration } from '@/lib/hooks/useAuth';
 import type { Permission } from '@/lib/constants/permissions';
 import { hasAnyPermission, hasAllPermissions } from '@/lib/helpers/permissionUtils';
+import { Spinner } from '@/components/Spinner';
 
 interface RequireAuthProps {
   permissions?: Permission[];
   requireAll?: boolean;
   fallback?: ReactNode;
+  loader?: ReactNode;
   children: ReactNode;
 }
 
@@ -20,22 +22,30 @@ export default function RequireAuth({
   permissions = [],
   requireAll = false,
   fallback = null,
+  loader = <Spinner />,
   children,
 }: RequireAuthProps) {
-  const { user } = useAuth();
+  const isHydrated = useHydration();
+  const user = useAuth((state) => state.user);
+  const isAuthenticated = useAuth((state) => state.isAuthenticated());
 
-  if (!user) {
-    return <>{fallback}</>;
+  if (!isHydrated) {
+    return loader;
   }
 
-  if (permissions.length === 0) {
-    return <>{children}</>;
+  if (!isAuthenticated) {
+    return fallback;
   }
 
-  const userPermissions = user.roles || [];
-  const hasRequiredPermissions = requireAll
-    ? hasAllPermissions(userPermissions, permissions)
-    : hasAnyPermission(userPermissions, permissions);
+  if (permissions.length > 0 && user?.roles) {
+    const hasPermission = requireAll
+      ? hasAllPermissions(user.roles, permissions)
+      : hasAnyPermission(user.roles, permissions);
 
-  return <>{hasRequiredPermissions ? children : fallback}</>;
+    if (!hasPermission) {
+      return fallback;
+    }
+  }
+
+  return <>{children}</>;
 }

@@ -45,6 +45,24 @@ export type Tag = {
             "news": null,
             "offer": null
         }, */
+export type Registration = {
+  id: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  publication: {
+    id: string;
+    title: string;
+    description: string;
+    type: PublicationType;
+    date?: string;
+    location?: string;
+  };
+  registeredAt: string;
+};
+
 export type Publication = {
   id: string;
   title: string;
@@ -66,6 +84,8 @@ export type Publication = {
   event?: EventDto;
   news?: NewsDto;
   offer?: OfferDto;
+  registrations?: Registration[];
+  registered?: number;
 }
 
 export type PublicationFilters = {

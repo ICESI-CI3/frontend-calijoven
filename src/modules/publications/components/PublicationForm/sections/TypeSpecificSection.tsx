@@ -3,6 +3,7 @@ import { Input } from '@/components/Input';
 import { Select } from '@/components/Select';
 import { IconBadge } from '@/components/IconBadge';
 import type { CreatePublicationDto, EventDto, NewsDto, OfferDto } from '@/types/publication';
+import { publicationTypes } from '@/lib/constants/publicationTypes';
 
 interface TypeSpecificSectionProps {
   formData: CreatePublicationDto;
@@ -24,7 +25,7 @@ export function TypeSpecificSection({
     label: type.name,
   }));
 
-  if (formData.type === 'event') {
+  if (formData.type === publicationTypes.event.value) {
     return (
       <div className="space-y-6">
         <div className="rounded-lg border border-gray-100 bg-gray-50 p-4">
@@ -42,7 +43,7 @@ export function TypeSpecificSection({
               <Input
                 label="Fecha del Evento *"
                 type="datetime-local"
-                value={formData.event?.date || ''}
+                value={formData.event?.date ? new Date(formData.event.date).toISOString().slice(0, 16) : ''}
                 onChange={(e) => onEventChange('date', e.target.value)}
               />
               <p className="mt-1 text-xs text-primary">La fecha y hora de inicio del evento.</p>
@@ -65,7 +66,7 @@ export function TypeSpecificSection({
     );
   }
 
-  if (formData.type === 'news') {
+  if (formData.type === publicationTypes.news.value) {
     return (
       <div className="space-y-6">
         <div className="rounded-lg border border-gray-100 bg-gray-50 p-4">
@@ -92,7 +93,7 @@ export function TypeSpecificSection({
     );
   }
 
-  if (formData.type === 'offer') {
+  if (formData.type === publicationTypes.offer.value) {
     return (
       <div className="space-y-6">
         <div className="rounded-lg border border-gray-100 bg-gray-50 p-4">
@@ -122,7 +123,7 @@ export function TypeSpecificSection({
               <Input
                 label="Fecha Límite *"
                 type="datetime-local"
-                value={formData.offer?.deadline || ''}
+                value={formData.offer?.deadline ? new Date(formData.offer.deadline).toISOString().slice(0, 16) : ''}
                 onChange={(e) => onOfferChange('deadline', e.target.value)}
               />
               <p className="mt-1 text-xs text-primary">

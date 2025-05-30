@@ -67,7 +67,10 @@ export default function LoginPage() {
             </div>
             <p className="mt-10 text-center text-sm text-muted-foreground">
               ¿No tienes una cuenta?{' '}
-              <Link href={ROUTES.AUTH.REGISTER.PATH} className="font-medium text-primary hover:underline">
+              <Link
+                href={ROUTES.AUTH.REGISTER.PATH}
+                className="font-medium text-primary hover:underline"
+              >
                 Regístrate aquí
               </Link>
             </p>
