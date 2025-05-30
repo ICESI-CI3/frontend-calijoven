@@ -9,6 +9,7 @@ import { Alert } from '@/components/Alert';
 import { Spinner } from '@/components/Spinner';
 import { useAuth } from '@/lib/hooks/useAuth';
 import { Publication } from '@/types/publication';
+import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 
 type PublicationPageProps = {
   id: string;
@@ -57,7 +58,11 @@ export default function PublicationPage() {
     <div className="min-h-screen bg-gray-50">
       <div className="bg-white shadow">
         <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col items-start gap-4">
+          <Button variant="ghost" onClick={() => router.back()} className="flex items-center gap-2">
+            <ArrowLeftIcon className="h-4 w-4" />
+            Volver a la lista
+          </Button>
             <div>
               <h1 className="text-3xl font-bold text-gray-900">
                 {isNewPublication ? 'Crear Nueva Publicación' : 'Editar Publicación'}
@@ -68,9 +73,6 @@ export default function PublicationPage() {
                   : 'Actualiza la información de esta publicación'}
               </p>
             </div>
-            <Button variant="outline" onClick={handleCancel}>
-              Volver al listado
-            </Button>
           </div>
         </div>
       </div>

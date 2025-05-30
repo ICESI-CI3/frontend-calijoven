@@ -1,182 +1,190 @@
 'use client';
 
+import React from 'react';
+import { PQRS } from '@/types/pqrs';
+import { Table, TableColumn } from '@/components/Table';
+import { Badge } from '@/components/Badge';
 import { Button } from '@/components/Button';
-import { Select } from '@/components/Select';
-import type { PQRS, PQRSStatusEntity } from '@/types/pqrs';
-import { useState } from 'react';
-import { Modal } from '@/components/Modal';
-import PQRSService from '@/modules/pqrs/services/pqrs.service';
+import { Card } from '@/components/Card';
+import { Spinner } from '@/components/Spinner';
+import { Alert } from '@/components/Alert';
+import { formatDate } from '@/lib/utils';
+import { EyeIcon } from '@heroicons/react/24/outline';
+import { useRouter } from 'next/navigation';
+import { ROUTES } from '@/lib/constants/routes';
+import { FilterBar, FilterGroup } from '@/components/FilterBar';
+import { useAdminPQRS } from '@/modules/pqrs/hooks/useAdminPQRS';
 
-interface AdminPQRSListProps {
-  pqrs: PQRS[];
-  statusTypes: PQRSStatusEntity[];
-  onStatusChange: (pqrsId: string, newStatus: string) => void;
-  currentPage: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
-  onDelete?: () => void;
-}
+export const AdminPQRSList = () => {
+  const router = useRouter();
+  const {
+    pqrs,
+    total,
+    totalPages,
+    statuses,
+    types,
+    isLoading,
+    isError,
+    error,
+    filters,
+    page,
+    handleFilterChange,
+    handlePageChange,
+    clearFilters,
+    refetch,
+  } = useAdminPQRS();
 
-export function AdminPQRSList({
-  pqrs,
-  statusTypes,
-  onStatusChange,
-  currentPage,
-  totalPages,
-  onPageChange,
-  onDelete
-}: AdminPQRSListProps) {
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [selectedPqrsId, setSelectedPqrsId] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const columns: TableColumn<PQRS>[] = [
+    {
+      key: 'title',
+      header: 'Título',
+      align: 'left',
+      flex: 3,
+      render: (pqrs: PQRS) => (
+        <div>
+          <p className="font-medium text-gray-900">{pqrs.title}</p>
+          <p className="text-sm text-gray-500 line-clamp-2">{pqrs.description}</p>
+        </div>
+      ),
+    },
+    {
+      key: 'user',
+      header: 'Usuario',
+      align: 'left',
+      flex: 2,
+      render: (pqrs: PQRS) => (
+        <div>
+          <p className="font-medium text-gray-900">{pqrs.user?.name || 'Usuario desconocido'}</p>
+        </div>
+      ),
+    },
+    {
+      key: 'type',
+      header: 'Tipo',
+      align: 'center',
+      flex: 1,
+      render: (pqrs: PQRS) => (
+        <span className="text-sm text-gray-600">{pqrs.type?.name || 'Sin tipo'}</span>
+      ),
+    },
+    {
+      key: 'status',
+      header: 'Estado',
+      align: 'center',
+      flex: 1,
+      render: (pqrs: PQRS) => (
+        <Badge>
+          {pqrs.status.description}
+        </Badge>
+      ),
+    },
+    {
+      key: 'createdAt',
+      header: 'Fecha de creación',
+      align: 'center',
+      flex: 1,
+      render: (pqrs: PQRS) => (
+        <span className="text-sm text-gray-600">
+          {formatDate(pqrs.createdAt)}
+        </span>
+      ),
+    },
+    {
+      key: 'actions',
+      header: 'Acciones',
+      align: 'center',
+      flex: 1,
+      render: (pqrs: PQRS) => (
+        <div className="flex gap-2 justify-center">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => router.push(ROUTES.ADMIN.PQRS_DETAIL(pqrs.id).PATH)}
+          >
+            <EyeIcon className="w-4 h-4 mr-1" />
+            Ver
+          </Button>
+        </div>
+      ),
+    },
+  ];
 
-  const handleDelete = async () => {
-    if (!selectedPqrsId) return;
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center py-12">
+        <Spinner size="lg" />
+      </div>
+    );
+  }
 
-    try {
-      await PQRSService.deletePQRS(selectedPqrsId);
-      setDeleteModalOpen(false);
-      setSelectedPqrsId(null);
-      if (onDelete) {
-        onDelete();
-      }
-    } catch (error) {
-      console.error('Error deleting PQRS:', error);
-      setError('No se pudo eliminar la PQRS');
-    }
-  };
+  if (isError) {
+    return (
+      <Card title="Error">
+        <div className="text-center py-12">
+          <Alert 
+            type="error" 
+            message={error instanceof Error ? error.message : 'Error al cargar las PQRS'} 
+          />
+          <Button onClick={() => refetch()} className="mt-4">
+            Reintentar
+          </Button>
+        </div>
+      </Card>
+    );
+  }
 
   return (
-    <div className="space-y-4">
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white shadow-sm rounded-lg">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Título
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Usuario
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Tipo
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Estado
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Fecha
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Acciones
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {pqrs.map((item) => (
-              <tr key={item.id}>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">{item.title}</div>
-                  <div className="text-sm text-gray-500">{item.description}</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">{item.user?.name}</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
-                    {item.type?.name || 'No especificado'}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <Select
-                    value={item.status?.name || ''}
-                    onChange={(value) => onStatusChange(item.id, value)}
-                    options={statusTypes.map(status => ({
-                      value: status.name,
-                      label: status.description
-                    }))}
-                  />
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {new Date(item.createdAt).toLocaleDateString()}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setSelectedPqrsId(item.id);
-                      setDeleteModalOpen(true);
-                    }}
-                    className="text-red-600 hover:text-red-900"
-                  >
-                    Eliminar
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+    <div className="space-y-6">
+      {/* Filtros */}
+      <FilterBar onClear={clearFilters}>
+        <FilterGroup 
+          label="Estado"
+          options={[
+            { label: 'Todos los estados', value: '' },
+            ...statuses.map((status) => ({
+              label: status.description,
+              value: status.name,
+            }))
+          ]}
+          selectedValue={filters.status || ''}
+          onChange={(value) => handleFilterChange({ status: value || undefined })}
+        />
+        
+        <FilterGroup 
+          label="Tipo"
+          options={[
+            { label: 'Todos los tipos', value: '' },
+            ...types.map((type) => ({
+              label: type.name,
+              value: type.name,
+            }))
+          ]}
+          selectedValue={filters.type || ''}
+          onChange={(value) => handleFilterChange({ type: value || undefined })}
+        />
+      </FilterBar>
 
-      {totalPages > 1 && (
-        <div className="flex justify-center mt-6">
-          <div className="flex gap-2">
-            <Button
-              onClick={() => onPageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              variant="outline"
-            >
-              Anterior
-            </Button>
-            <Button
-              onClick={() => onPageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              variant="outline"
-            >
-              Siguiente
-            </Button>
+      {/* Resultados */}
+        {pqrs.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-gray-500">
+              {total === 0 ? 'No hay PQRS registradas' : 'No se encontraron PQRS con los filtros aplicados'}
+            </p>
           </div>
-        </div>
-      )}
-
-      <Modal
-        isOpen={deleteModalOpen}
-        onClose={() => {
-          setDeleteModalOpen(false);
-          setSelectedPqrsId(null);
-          setError(null);
-        }}
-        title="Eliminar PQRS"
-      >
-        <div className="p-6">
-          <p className="text-sm text-gray-500">
-            ¿Estás seguro de que deseas eliminar esta PQRS? Esta acción no se puede deshacer.
-          </p>
-          {error && (
-            <div className="mt-4 text-sm text-red-600">
-              {error}
-            </div>
-          )}
-          <div className="mt-6 flex justify-end space-x-3">
-            <Button
-              variant="outline"
-              onClick={() => {
-                setDeleteModalOpen(false);
-                setSelectedPqrsId(null);
-                setError(null);
-              }}
-            >
-              Cancelar
-            </Button>
-            <Button
-              onClick={handleDelete}
-              className="bg-red-600 hover:bg-red-700 text-white"
-            >
-              Eliminar
-            </Button>
-          </div>
-        </div>
-      </Modal>
+        ) : (
+          <Table
+            data={pqrs}
+            columns={columns}
+            keyExtractor={(pqrs) => pqrs.id}
+            className="w-full"
+            pagination={{
+              enabled: true,
+              currentPage: page,
+              totalPages: totalPages,
+              onPageChange: handlePageChange
+            }}
+          />
+        )}
     </div>
   );
-} 
+};

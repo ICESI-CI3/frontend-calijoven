@@ -7,7 +7,8 @@ import type {
   PQRSFilters,
   PaginatedPQRSResponse,
   PQRSStatusEntity,
-  PQRSTypeEntity
+  PQRSTypeEntity,
+  AdminPQRSFilters,
 } from '@/types/pqrs';
 
 export class PQRSError extends Error {
@@ -22,11 +23,11 @@ export const PQRSService = {
   async getPQRSTypes(): Promise<PQRSTypeEntity[]> {
     try {
       console.log('Fetching PQRS types...');
-      const { data } = await apiClient.get('/typesPqrs');
+      const { data } = await apiClient.get('pqrs/types');
       console.log('PQRS types response:', {
         data,
         count: Array.isArray(data) ? data.length : 0,
-        firstType: Array.isArray(data) && data.length > 0 ? data[0] : null
+        firstType: Array.isArray(data) && data.length > 0 ? data[0] : null,
       });
       return data;
     } catch (error) {
@@ -39,7 +40,7 @@ export const PQRSService = {
   async getPQRSTypeById(id: string): Promise<PQRSTypeEntity> {
     try {
       console.log('Fetching PQRS type by ID:', id);
-      const { data } = await apiClient.get(`/typesPqrs/${id}`);
+      const { data } = await apiClient.get(`pqrs/types/${id}`);
       console.log('PQRS type response:', data);
       return data;
     } catch (error) {
@@ -51,7 +52,7 @@ export const PQRSService = {
   // Obtener estados de PQRS
   async getStatusTypes(): Promise<PQRSStatusEntity[]> {
     try {
-      const { data } = await apiClient.get('/types');
+      const { data } = await apiClient.get('pqrs/status');
       console.log('Estados de PQRS obtenidos:', data);
       return data;
     } catch (error) {
@@ -63,7 +64,7 @@ export const PQRSService = {
   // Obtener un estado específico de PQRS
   async getStatusById(name: string): Promise<PQRSStatusEntity> {
     try {
-      const { data } = await apiClient.get(`/types/${name}`);
+      const { data } = await apiClient.get(`pqrs/status/${name}`);
       console.log('Estado específico obtenido:', data);
       return data;
     } catch (error) {
@@ -83,7 +84,7 @@ export const PQRSService = {
       const params = new URLSearchParams({
         page: page.toString(),
         limit: limit.toString(),
-        relations: 'type,status,user'
+        relations: 'type,status,user',
       });
 
       if (filters?.type?.id) {
@@ -95,73 +96,77 @@ export const PQRSService = {
         endpoint,
         url: `${endpoint}?${params}`,
         params: Object.fromEntries(params.entries()),
-        filters
+        filters,
       });
-      
+
       const { data } = await apiClient.get(`${endpoint}?${params}`);
-      
+
       // Si la respuesta es un array, la convertimos al formato paginado y aseguramos que tenga toda la información
       if (Array.isArray(data)) {
         console.log('PQRS response is array, first item:', data[0]);
-        const items = await Promise.all(data.map(async (item: PQRS) => {
-          if (!item.type && item.typeId) {
-            try {
-              console.log('Fetching missing type for PQRS:', {
-                pqrsId: item.id,
-                typeId: item.typeId
-              });
-              const type = await PQRSService.getPQRSTypeById(item.typeId);
-              console.log('Found type:', type);
-              return { ...item, type };
-            } catch (error) {
-              console.error('Error fetching type for PQRS:', {
-                pqrsId: item.id,
-                typeId: item.typeId,
-                error
-              });
-              return item;
+        const items = await Promise.all(
+          data.map(async (item: PQRS) => {
+            if (!item.type && item.typeId) {
+              try {
+                console.log('Fetching missing type for PQRS:', {
+                  pqrsId: item.id,
+                  typeId: item.typeId,
+                });
+                const type = await PQRSService.getPQRSTypeById(item.typeId);
+                console.log('Found type:', type);
+                return { ...item, type };
+              } catch (error) {
+                console.error('Error fetching type for PQRS:', {
+                  pqrsId: item.id,
+                  typeId: item.typeId,
+                  error,
+                });
+                return item;
+              }
             }
-          }
-          return item;
-        }));
+            return item;
+          })
+        );
 
         return {
           items,
           total: items.length,
           page: 1,
           limit: items.length,
-          totalPages: 1
+          totalPages: 1,
         };
       }
 
       // Si ya viene en formato paginado, aseguramos que tenga toda la información
       if (data.items) {
         console.log('PQRS response is paginated, first item:', data.items[0]);
-        const items = await Promise.all(data.items.map(async (item: PQRS) => {
-          if (!item.type && item.typeId) {
-            try {
-              console.log('Fetching missing type for PQRS:', {
-                pqrsId: item.id,
-                typeId: item.typeId
-              });
-              const type = await PQRSService.getPQRSTypeById(item.typeId);
-              console.log('Found type:', type);
-              return { ...item, type };
-            } catch (error) {
-              console.error('Error fetching type for PQRS:', {
-                pqrsId: item.id,
-                typeId: item.typeId,
-                error
-              });
-              return item;
+        const items = await Promise.all(
+          data.items.map(async (item: PQRS) => {
+            if (!item.type && item.typeId) {
+              try {
+                console.log('Fetching missing type for PQRS:', {
+                  pqrsId: item.id,
+                  typeId: item.typeId,
+                });
+                const type = await PQRSService.getPQRSTypeById(item.typeId);
+                console.log('Found type:', type);
+                return { ...item, type };
+              } catch (error) {
+                console.error('Error fetching type for PQRS:', {
+                  pqrsId: item.id,
+                  typeId: item.typeId,
+                  error,
+                });
+                return item;
+              }
             }
-          }
-          return item;
-        }));
+            return item;
+          })
+        );
 
         return {
           ...data,
-          items
+          items,
         };
       }
 
@@ -171,12 +176,42 @@ export const PQRSService = {
         error,
         message: error.message,
         response: error.response?.data,
-        status: error.response?.status
+        status: error.response?.status,
       });
-      throw new PQRSError(
-        error.response?.data?.message || 
-        'No se pudieron obtener las PQRS'
+      throw new PQRSError(error.response?.data?.message || 'No se pudieron obtener las PQRS');
+    }
+  },
+
+  // Add this method to the PQRSService in src/modules/pqrs/services/pqrs.service.ts
+
+  // Obtener todas las PQRS para administradores con filtros avanzados
+  async getAdminPQRS(filters: AdminPQRSFilters = {}): Promise<PaginatedPQRSResponse> {
+    try {
+
+      const params = new URLSearchParams(
+        Object.fromEntries(
+          Object.entries(filters)
+            .filter(([_, v]) => v != null)
+            .map(([k, v]) => [k, v.toString()])
+        )
       );
+
+      const { data: response } = await apiClient.get(`/admin/pqrs?${params}`);
+
+      // Convertir la respuesta al formato esperado
+      const items = response.data || [];
+      const total = response.total || 0;
+      const totalPages = Math.ceil(total / (filters.limit || 10));
+
+      return {
+        items,
+        total,
+        page: filters.page || 1,
+        limit: filters.limit || 10,
+        totalPages,
+      };
+    } catch {
+      throw new PQRSError('No se pudieron obtener las PQRS para administración');
     }
   },
 
@@ -195,34 +230,34 @@ export const PQRSService = {
   async createPQRS(pqrsData: CreatePQRSDto): Promise<PQRS> {
     try {
       const { attachments, ...restData } = pqrsData;
-      
+
       // Si no hay archivos adjuntos, enviar como JSON
       if (!attachments || attachments.length === 0) {
         const requestData = {
           ...restData,
           priority: restData.priority?.toLowerCase(),
           status: 'pending',
-          type: restData.typeId
+          type: restData.typeId,
         };
 
         console.log('Enviando PQRS como JSON:', {
           requestData,
           url: API_ROUTES.PQRS.BASE,
           headers: {
-            'Content-Type': 'application/json'
-          }
+            'Content-Type': 'application/json',
+          },
         });
-        
+
         const { data } = await apiClient.post(API_ROUTES.PQRS.BASE, requestData, {
           headers: {
-            'Content-Type': 'application/json'
-          }
+            'Content-Type': 'application/json',
+          },
         });
-        
+
         console.log('PQRS creada (JSON):', {
           response: data,
           type: data.type,
-          typeId: data.typeId || requestData.typeId
+          typeId: data.typeId || requestData.typeId,
         });
 
         // Si la respuesta no incluye el tipo completo pero tenemos el typeId, obtenerlo
@@ -243,19 +278,19 @@ export const PQRSService = {
 
       // Si hay archivos adjuntos, usar FormData
       const formData = new FormData();
-      
+
       // Agregar los campos como strings individuales
       formData.append('title', String(restData.title || '').trim());
       formData.append('description', String(restData.description || '').trim());
       formData.append('typeId', String(restData.typeId || ''));
       formData.append('type', String(restData.typeId || ''));
-      
+
       if (restData.priority) {
         formData.append('priority', restData.priority.toLowerCase());
       }
-      
+
       formData.append('status', 'pending');
-      
+
       // Agregar los archivos
       if (attachments) {
         attachments.forEach((file) => {
@@ -270,22 +305,22 @@ export const PQRSService = {
           typeId: String(restData.typeId || ''),
           type: String(restData.typeId || ''),
           priority: restData.priority?.toLowerCase(),
-          status: 'pending'
+          status: 'pending',
         },
         attachmentsCount: attachments?.length || 0,
-        url: API_ROUTES.PQRS.BASE
+        url: API_ROUTES.PQRS.BASE,
       });
 
       const { data } = await apiClient.post(API_ROUTES.PQRS.BASE, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+          'Content-Type': 'multipart/form-data',
+        },
       });
-      
+
       console.log('PQRS creada (FormData):', {
         response: data,
         type: data.type,
-        typeId: data.typeId || restData.typeId
+        typeId: data.typeId || restData.typeId,
       });
 
       // Si la respuesta no incluye el tipo completo pero tenemos el typeId, obtenerlo
@@ -308,11 +343,11 @@ export const PQRSService = {
         message: error.message,
         response: error.response?.data,
         status: error.response?.status,
-        requestData: pqrsData
+        requestData: pqrsData,
       });
-      
+
       let errorMessage = 'No se pudo crear la PQRS: ';
-      
+
       if (error.response?.data?.message) {
         const message = Array.isArray(error.response.data.message)
           ? error.response.data.message.join(', ')
@@ -323,7 +358,7 @@ export const PQRSService = {
       } else {
         errorMessage += 'Error desconocido';
       }
-      
+
       throw new PQRSError(errorMessage);
     }
   },
@@ -346,13 +381,13 @@ export const PQRSService = {
   async deletePQRS(id: string): Promise<void> {
     try {
       await apiClient.delete(API_ROUTES.PQRS.BY_ID(id), {
-        withCredentials: true
+        withCredentials: true,
       });
     } catch (error) {
       console.error('Error deleting PQRS:', error);
       throw new PQRSError('No se pudo eliminar la PQRS');
     }
-  }
+  },
 };
 
-export default PQRSService; 
+export default PQRSService;
