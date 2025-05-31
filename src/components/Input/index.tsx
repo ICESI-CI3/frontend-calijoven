@@ -22,6 +22,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             className
           )}
           ref={ref}
+          data-testid={props.id ? `input-${props.id}` : undefined}
           {...props}
         />
         {(error || helperText) && (

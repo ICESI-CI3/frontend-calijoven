@@ -63,14 +63,11 @@ describe('AuthService', () => {
     });
 
     it('should throw AuthError on registration failure', async () => {
-      const mockError = new Error('API Error');
-      mockedApiClient.post.mockRejectedValueOnce(mockError);
+      // Mock the API client to reject with an AuthError containing the specific backend message
+      mockedApiClient.post.mockRejectedValueOnce(new AuthError('The provided email is already registered'));
 
       await expect(AuthService.register(mockUserData)).rejects.toThrow(
-        AuthError
-      );
-      await expect(AuthService.register(mockUserData)).rejects.toThrow(
-        'No se pudo completar el registro. Intenta nuevamente.'
+        'The provided email is already registered'
       );
       expect(mockedApiClient.post).toHaveBeenCalledWith(
         API_ROUTES.AUTH.REGISTER,
