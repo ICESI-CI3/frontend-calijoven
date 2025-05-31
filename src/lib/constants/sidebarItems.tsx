@@ -9,6 +9,7 @@ import {
   StarIcon,
   BuildingOfficeIcon,
   PhotoIcon,
+  BookmarkIcon,
 } from '@heroicons/react/24/outline';
 import { ROUTES } from './routes';
 import { SidebarItem } from '@/components/layout/Sidebar';
@@ -23,6 +24,11 @@ export const defaultSidebarItems: SidebarItem[] = [
     label: 'Publicaciones',
     href: ROUTES.MY_SPACE.PUBLICATIONS.PATH,
     icon: <StarIcon className="h-full w-full" />,
+  },
+  {
+    label: 'Publicaciones Guardadas',
+    href: ROUTES.MY_SPACE.SAVED_PUBLICATIONS.PATH,
+    icon: <BookmarkIcon className="h-full w-full" />,
   },
   {
     label: 'PQRS',

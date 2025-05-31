@@ -96,6 +96,11 @@ export const ROUTES = {
       PUBLIC: false,
       LABEL: 'Mis Publicaciones',
     },
+    SAVED_PUBLICATIONS: {
+      PATH: '/mi-espacio/publicaciones-guardadas',
+      PUBLIC: false,
+      LABEL: 'Publicaciones Guardadas',
+    },
     PQRS: {
       PATH: '/mi-espacio/pqrs',
       PUBLIC: false,

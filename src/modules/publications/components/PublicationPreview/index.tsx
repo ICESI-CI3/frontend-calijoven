@@ -2,10 +2,11 @@
 
 import { FC } from 'react';
 import { CalendarIcon, TagIcon } from '@heroicons/react/24/outline';
-import { Publication } from '@/types/publication';
+import { Publication, PublicationType } from '@/types/publication';
 import { Button } from '@/components/Button';
 import { useRouter } from 'next/navigation';
 import { ROUTES } from '@/lib/constants/routes';
+import { SavePublicationButton } from '../SavePublicationButton';
 
 const typeMap: Record<string, { label: string; color: string }> = {
   event: { label: 'Evento', color: 'bg-green-500' },
@@ -33,8 +34,10 @@ const PublicationPreview: FC<PublicationPreviewProps> = ({ publication, onReadMo
       publication.attachments[0].url) ||
     'https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg';
 
-  const typeInfo = typeMap[publication.type.name] || {
-    label: publication.type.name,
+  // Validación y valor por defecto para el tipo
+  const typeName = publication.type?.name || 'unknown';
+  const typeInfo = typeMap[typeName] || {
+    label: typeName,
     color: 'bg-gray-400',
   };
 
@@ -45,17 +48,20 @@ const PublicationPreview: FC<PublicationPreviewProps> = ({ publication, onReadMo
         <img src={imageUrl} alt={publication.title} className="h-full w-full object-cover" />
       </div>
       {/* Contenido */}
-      <div className="p-5">
-        <div className="mb-2 flex items-center space-x-2">
-          <span
-            className={`rounded-full px-3 py-1 text-xs font-semibold text-white ${typeInfo.color}`}
-          >
-            {typeInfo.label}
-          </span>
-          <span className="flex items-center text-xs text-gray-500">
-            <CalendarIcon className="mr-1 h-4 w-4" />
-            {formatDate(publication.createdAt)}
-          </span>
+      <div className="p-4">
+        <div className="mb-2 flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <span
+              className={`rounded-full px-3 py-1 text-xs font-semibold text-white ${typeInfo.color}`}
+            >
+              {typeInfo.label}
+            </span>
+            <span className="flex items-center text-xs text-gray-500">
+              <CalendarIcon className="mr-1 h-4 w-4" />
+              {formatDate(publication.createdAt)}
+            </span>
+          </div>
+          <SavePublicationButton publicationId={publication.id} />
         </div>
         <h2 className="mb-1 text-lg font-bold">{publication.title}</h2>
         <p className="mb-2 text-gray-700">{publication.description}</p>

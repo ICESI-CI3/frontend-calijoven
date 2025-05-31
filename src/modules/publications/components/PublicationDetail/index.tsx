@@ -12,6 +12,7 @@ import { registrationService } from '@/modules/publications/services/registratio
 import { useAuth } from '@/lib/hooks/useAuth';
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/Button";
+import { SavePublicationButton } from '../SavePublicationButton';
 
 export function PublicationDetail({ id }: { id: string }) {
   const [publication, setPublication] = useState<any>(null);
@@ -86,7 +87,10 @@ export function PublicationDetail({ id }: { id: string }) {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="mb-2 text-3xl font-bold">{publication.title}</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="mb-2 text-3xl font-bold">{publication.title}</h1>
+          <SavePublicationButton publicationId={publication.id} />
+        </div>
         <p className="text-lg text-muted-foreground">{publication.description}</p>
       </div>
 
@@ -175,17 +179,17 @@ export function PublicationDetail({ id }: { id: string }) {
 
       {/* Adjuntos */}
       {publication.attachments && publication.attachments.length > 0 && (
-        <div className="mt-8">
+        <div className="mb-8">
           <h2 className="mb-4 text-xl font-semibold">Archivos adjuntos</h2>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {publication.attachments.map((attachment: any) => (
               <div
                 key={attachment.id}
-                className="flex cursor-pointer items-center gap-2 rounded-lg border p-4 hover:bg-muted"
+                className="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 p-4 hover:bg-gray-50"
                 onClick={() => setPreviewAttachment(attachment)}
               >
-                <PaperClipIcon className="h-5 w-5" />
-                <span className="truncate">{attachment.name}</span>
+                <PaperClipIcon className="h-5 w-5 text-gray-400" />
+                <span className="text-sm">{attachment.name}</span>
               </div>
             ))}
           </div>
