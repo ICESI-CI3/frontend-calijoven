@@ -3,7 +3,7 @@ import { Carousel } from '@/components/Carousel';
 import { slides } from '@/lib/constants/carousel-slides';
 import { WhatWeDoSection } from '@/modules/home/components/WhatWeDoSection';
 import { OrganizationalStructureSection } from '@/modules/home/components/OrganizationalStructureSection';
-import { LatestPublicationsSection } from '@/modules/home/components/LatestPublicationsSection/LatestPublicationsSection';
+import { LatestPublicationsSection } from '@/modules/home/components/LatestPublicationsSection';
 import { BannerSection } from '@/modules/home/components/BannerSection';
 
 export default function Home() {
