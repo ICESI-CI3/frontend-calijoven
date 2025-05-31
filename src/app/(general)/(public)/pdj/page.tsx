@@ -4,30 +4,43 @@ import { useEffect, useState } from 'react';
 import { Card } from '@/components/Card';
 import { Alert } from '@/components/Alert';
 import { Spinner } from '@/components/Spinner';
-import { CommitteeService } from '@/modules/committee/services/committee.service';
+import { organizationService } from '@/modules/organizations/services';
 import { PDJService } from '@/modules/pdj/services/pdj.service';
-import { CONFIG } from '@/lib/constants/config';
-import type { Committee } from '@/types/committee';
+import type { Organization, CommitteeDto } from '@/types/organization';
 
 export default function PDJPage() {
-  const [committees, setCommittees] = useState<Committee[]>([]);
+  const [committees, setCommittees] = useState<CommitteeDto[]>([]);
   const [documents, setDocuments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const organizationId = CONFIG.ORGANIZATION_ID;
+  const [organization, setOrganization] = useState<Organization | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
       try {
+        // Primero buscamos la organización PDJ
+        const orgsResponse = await organizationService.getOrganizations({
+          search: 'PDJ',
+          limit: 1
+        });
+
+        if (!orgsResponse.data.length) {
+          throw new Error('No se encontró la organización PDJ');
+        }
+
+        const pdj = orgsResponse.data[0];
+        setOrganization(pdj);
+
+        // Luego cargamos los comités y documentos
         const [committeesData, documentsData] = await Promise.all([
-          CommitteeService.getCommittees(organizationId),
-          PDJService.getDocuments(organizationId)
+          organizationService.getOrganization(pdj.id).then(org => org.committees || []),
+          PDJService.getDocuments(pdj.id)
         ]);
 
         setCommittees(committeesData);
         setDocuments(documentsData);
       } catch (error: any) {
+        console.error('Error loading PDJ data:', error);
         setError(error.message || 'Error al cargar la información');
       } finally {
         setLoading(false);
@@ -35,7 +48,7 @@ export default function PDJPage() {
     };
 
     loadData();
-  }, [organizationId]);
+  }, []);
 
   if (loading) {
     return (
@@ -156,13 +169,13 @@ export default function PDJPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {documents.map((doc) => (
                   <div key={doc.id} className="border-b pb-4 last:border-b-0">
-                    <h3 className="font-bold text-lg mb-2">{doc.name}</h3>
-                    {doc.description && (
-                      <p className="text-gray-600 mb-2">{doc.description}</p>
+                    <h3 className="font-bold text-lg mb-2">{doc.title}</h3>
+                    {doc.type?.description && (
+                      <p className="text-gray-600 mb-2">{doc.type.description}</p>
                     )}
                     <div className="flex justify-between items-center">
                       <a
-                        href={doc.url}
+                        href={doc.file_url}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:text-blue-800 text-sm font-medium"
@@ -170,7 +183,7 @@ export default function PDJPage() {
                         Descargar documento
                       </a>
                       <span className="text-sm text-gray-500">
-                        {new Date(doc.createdAt).toLocaleDateString()}
+                        {doc.date ? new Date(doc.date).toLocaleDateString() : 'Fecha no disponible'}
                       </span>
                     </div>
                   </div>
