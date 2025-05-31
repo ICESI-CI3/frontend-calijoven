@@ -37,9 +37,8 @@ const customJestConfig = {
     '!src/components/Carousel/**',
     '!src/components/RichTextEditor/**',
     '!src/components/Attachment/**',
-    // Excluir servicios (deberían probarse en pruebas de integración)
     '!src/lib/api/**',
-    '!src/modules/*/services/**',
+    // '!src/modules/*/services/**',
     // Excluir archivos de configuración y utilidades
     '!src/lib/helpers/**',
     '!src/lib/hooks/**',
