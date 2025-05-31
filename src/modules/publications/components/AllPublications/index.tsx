@@ -8,8 +8,6 @@ export default function PublicationsList({
   isLoading,
   isError,
   error,
-  onEdit,
-  onCreateNew,
   onReadMore,
 }: {
   publications: Publication[];
@@ -22,7 +20,7 @@ export default function PublicationsList({
 }) {
   if (isLoading) {
     return (
-      <div className="flex justify-center py-12">
+      <div className="flex justify-center py-12" role="status">
         <Spinner />
       </div>
     );

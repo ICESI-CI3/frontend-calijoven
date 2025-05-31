@@ -33,7 +33,7 @@ export function LatestPublicationsSection() {
       </div>
       {isLoading ? (
         <div className="text-center text-muted-foreground">
-          <Spinner />.
+          <Spinner data-testid="spinner" />
         </div>
       ) : error ? (
         <div className="text-center text-destructive">{error}</div>
