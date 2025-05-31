@@ -35,7 +35,7 @@ export const ROUTES = {
       LABEL: 'Iniciar Sesión',
     },
     REGISTER: {
-      PATH: '/registro',
+      PATH: '/register',
       PUBLIC: true,
       LABEL: 'Registro',
     },

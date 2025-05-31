@@ -32,7 +32,7 @@ const clearExpiredSession = () => {
     const isPublicRoute = currentPath === '/' || 
                          currentPath.startsWith('/publicaciones') ||
                          currentPath === '/login' || 
-                         currentPath === '/registro';
+                         currentPath === '/register';
     
     if (!isPublicRoute) {
       window.location.href = `/login?callbackUrl=${encodeURIComponent(currentPath)}`;

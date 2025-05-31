@@ -44,9 +44,15 @@ export const AuthService = {
     try {
       const { data } = await apiClient.post(API_ROUTES.AUTH.REGISTER, userData);
       return data;
-    } catch (error) {
+    } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
       console.error('Registration failed:', error);
-      throw new AuthError('No se pudo completar el registro. Intenta nuevamente.');
+      if (error.response && error.response.data && error.response.data.message) {
+        throw new AuthError(error.response.data.message);
+      } else if (error.message) {
+        throw new AuthError('Registration failed: ' + error.message);
+      } else {
+        throw new AuthError('No se pudo completar el registro. Intenta nuevamente.');
+      }
     }
   },
 };
