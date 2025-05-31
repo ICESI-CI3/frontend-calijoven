@@ -44,7 +44,7 @@ export const PublicationService = {
         limit,
         tag: filters.tag,
         city: filters.city,
-        type: filters.type,
+        ...(filters.type !== '' && { type: filters.type }),
         unpublished: filters.unpublished,
         organization: filters.organization,
         sortBy: filters.sortBy,
