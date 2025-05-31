@@ -28,7 +28,7 @@ export function PublicationDetail({ id }: { id: string }) {
 
   if (loading) {
     return (
-      <div className="flex justify-center py-12">
+      <div className="flex justify-center py-12" role="status">
         <Spinner />
       </div>
     );
