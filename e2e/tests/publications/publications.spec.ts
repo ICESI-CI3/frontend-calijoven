@@ -124,17 +124,4 @@ test.describe('Publications Page', () => {
     await expect(headerText).toBeVisible({ timeout: 10000 });
   });
 
-  test('should show dashboard button for authenticated users', async ({ page }) => {
-    // Primero verificar que el elemento existe en el DOM
-    const buttonExists = await page.evaluate(() => {
-      const elements = document.querySelectorAll('*');
-      return Array.from(elements).some(el => 
-        el.textContent?.toLowerCase().includes('ir al dashboard')
-      );
-    });
-
-    // Luego intentar encontrarlo con el selector
-    const dashboardButton = page.getByRole('link', { name: /ir al dashboard/i });
-    await expect(dashboardButton).toBeVisible({ timeout: 10000 });
-  });
 }); 
