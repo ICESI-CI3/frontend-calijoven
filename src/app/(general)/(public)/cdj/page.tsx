@@ -7,12 +7,15 @@ import { Spinner } from '@/components/Spinner';
 import { PDJService } from '@/modules/pdj/services/pdj.service';
 import { organizationService } from '@/modules/organizations/services';
 import type { Organization } from '@/types/organization';
+import { OrganizationPublications } from '@/modules/publications/components/OrganizationPublications';
+import { useRouter } from 'next/navigation';
 
 export default function CDJPage() {
   const [documents, setDocuments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [organization, setOrganization] = useState<Organization | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const loadData = async () => {
@@ -50,6 +53,10 @@ export default function CDJPage() {
         <Spinner size="lg" />
       </div>
     );
+  }
+
+  if (error || !organization) {
+    return <Alert type="error" message={error || 'No se pudo cargar la información del CDJ'} />;
   }
 
   return (
@@ -154,6 +161,16 @@ export default function CDJPage() {
                   No hay documentos disponibles en este momento.
                 </p>
               )}
+            </div>
+          </Card>
+        </section>
+
+        {/* Publicaciones */}
+        <section className="mb-12">
+          <h2 className="text-3xl font-bold mb-6">Publicaciones</h2>
+          <Card title="Publicaciones del CDJ">
+            <div className="p-6">
+              <OrganizationPublications organizationId={organization.id} />
             </div>
           </Card>
         </section>
