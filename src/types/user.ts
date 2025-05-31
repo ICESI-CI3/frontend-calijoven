@@ -2,7 +2,6 @@ import { Permission } from '@/lib/constants/permissions';
 import { BaseCity } from './city';
 import { BaseCommittee } from './committee';
 import { BaseOrganization } from './organization';
-import { Role } from '@/lib/constants/roles';
 
 export type User = {
   id: string;
@@ -12,7 +11,28 @@ export type User = {
   banned: boolean;
   isPublic: boolean;
   roles: Permission[];
-  userTypes: Role[];
+  city: BaseCity;
+  leadingCommittees: BaseCommittee[];
+  committees: BaseCommittee[];
+  organizations: BaseOrganization[];
+};
+
+export type Role = {
+  id: string;
+  name: string;
+  description: string;
+  permissions: Permission[];
+};
+  
+// TODO: eliminar este tipo cuando descubra porque carajo renombrar el roles de arriba da error solo funcioan con roles
+export type getUser = {
+  id: string;
+  name: string;
+  email: string;
+  profilePicture: string;
+  banned: boolean;
+  isPublic: boolean;
+  roles: Role[];
   city: BaseCity;
   leadingCommittees: BaseCommittee[];
   committees: BaseCommittee[];
@@ -22,8 +42,31 @@ export type User = {
 export type UserUpdateRequest = {
   name?: string;
   email?: string;
+  city?: string;
+  addRoles?: Role[];
+  removeRoles?: Role[];
+  isPublic?: boolean;
+  banned?: boolean;
 };
 
+export type CreateUserDto = {
+  name: string;
+  email: string;
+  password: string;
+  userTypes: Role[];
+  city: string;
+};
+
+export type UserFilters = {
+  name?: string;
+  sortBy?: string;
+  sortOrder?: 'ASC' | 'DESC';
+}
+
+export type FilterUserDto = UserFilters & {
+  page: number;
+  limit: number;
+};
 export type NotificationPreferences = {
   events: boolean;
   news: boolean;

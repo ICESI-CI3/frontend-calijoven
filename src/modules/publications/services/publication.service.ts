@@ -87,7 +87,7 @@ export const PublicationService = {
    * Crea una nueva publicación
    */
   async createPublication(publicationData: CreatePublicationDto): Promise<Publication> {
-    try {
+    try { 
       const formData = new FormData();
 
       // Agregar datos básicos

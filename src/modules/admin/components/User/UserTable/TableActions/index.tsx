@@ -1,39 +1,50 @@
 // src/modules/admin/components/UserActions.tsx
 import { Button } from '@/components/Button';
-import { DocumentTextIcon } from '@heroicons/react/24/solid';
+import { Spinner } from '@/components/Spinner';
 
 interface UserActionsProps {
   userId: string;
-  onDetails: (id: string) => void;
+  crumbs: ActionCrumbProps[];
 }
 
-export function TableActions({ userId, onDetails }: UserActionsProps) {
+export function TableActions({ userId, crumbs }: UserActionsProps) {
   return (
     <div className="flex justify-end gap-2">
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => onDetails(userId)}
-        className="text-gray-500 hover:text-gray-700"
-      >
-        <DocumentTextIcon className="h-4 w-4 mr-1" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => onDetails(userId)}
-        className="text-gray-500 hover:text-gray-700"
-      >
-        <DocumentTextIcon className="h-4 w-4 mr-1" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => onDetails(userId)}
-        className="text-gray-500 hover:text-gray-700"
-      >
-        <DocumentTextIcon className="h-4 w-4 mr-1" />
-      </Button>
+      {crumbs.map((crumb, index) => (
+        <ActionCrumb
+          key={index}
+          onAction={crumb.onAction}
+          icon={crumb.icon}
+          userId={userId}
+          isLoading={crumb.isLoading}
+        />
+      ))}
     </div>
   );
+}
+
+interface ActionCrumbProps {
+  onAction: (userId: string) => void;
+  icon: React.ReactNode;
+  userId: string;
+  isLoading?: boolean;
+}
+
+export function ActionCrumb({
+  onAction,
+  icon,
+  userId,
+  isLoading
+}: ActionCrumbProps) {
+  return(
+    <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => onAction(userId)}
+        className="text-gray-500 hover:text-gray-700"
+        disabled={isLoading}
+      >
+        {isLoading ? <Spinner /> : icon}
+      </Button>
+  )
 }

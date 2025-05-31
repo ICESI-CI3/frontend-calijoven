@@ -1,9 +1,9 @@
 'use client';
 
-import { ReactNode } from 'react';
-import { useAuth } from '@/lib/hooks/useAuth';
 import type { Permission } from '@/lib/constants/permissions';
-import { hasAnyPermission, hasAllPermissions } from '@/lib/helpers/permissionUtils';
+import { hasAllPermissions, hasAnyPermission } from '@/lib/helpers/permissionUtils';
+import { useAuth } from '@/lib/hooks/useAuth';
+import { ReactNode } from 'react';
 
 interface RequireAuthProps {
   permissions?: Permission[];

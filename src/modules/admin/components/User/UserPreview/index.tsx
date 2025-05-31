@@ -3,7 +3,7 @@ import { Avatar } from '@/components/Avatar';
 import { Button } from '@/components/Button';
 import { Tag } from '@/components/Tag';
 import { cn } from '@/lib/utils';
-import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { AdjustmentsHorizontalIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { CircleStackIcon, DocumentMagnifyingGlassIcon, DocumentTextIcon, EyeIcon, EyeSlashIcon, MagnifyingGlassMinusIcon, MagnifyingGlassPlusIcon, ShieldCheckIcon, ShieldExclamationIcon } from '@heroicons/react/24/solid';
 
 export interface UserPreviewProps {
@@ -12,7 +12,7 @@ export interface UserPreviewProps {
   email: string;
   image?: string;
   isBanned: boolean;
-  isHidden: boolean;
+  isPublic: boolean;
   onDetails: (id: string) => void;
   className?: string;
 }
@@ -23,7 +23,7 @@ export function UserPreview({
   email,
   image,
   isBanned,
-  isHidden,
+  isPublic,
   onDetails,
   className = '',
 }: UserPreviewProps) {
@@ -55,15 +55,15 @@ export function UserPreview({
         <div className="flex flex-row w-full items-center justify-between">
             {/* Tag Status */}
             <div className="flex flex-wrap gap-1 flex-1">
-              {isHidden ? (
-                <Tag color="warning" className="text-xs flex items-center gap-1">
-                  <EyeSlashIcon className="h-3 w-3" />
-                  Oculto
-                </Tag>
-              ) : (
+              {isPublic ? (
                 <Tag color="success" className="text-xs flex items-center gap-1">
                   <EyeIcon className="h-3 w-3" />
                   Público
+                </Tag>
+              ) : (
+                <Tag color="warning" className="text-xs flex items-center gap-1">
+                  <EyeSlashIcon className="h-3 w-3" />
+                  Oculto
                 </Tag>
               )}
 
@@ -87,7 +87,7 @@ export function UserPreview({
                 onClick={() => onDetails(id)}
                 className="text-gray-500 hover:text-gray-700"
               >
-                <DocumentTextIcon className="h-4 w-4" />
+                <AdjustmentsHorizontalIcon className="h-4 w-4" />
               </Button>
             </div>
         </div>

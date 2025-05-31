@@ -1,32 +1,22 @@
-import { Tag } from '@/components/Tag';
+import { Tag, TagColor } from '@/components/Tag';
+
+{ /* TODO: Hacer este componente general para que sea para public y para banned */}
 
 interface UserStatusProps {
-  isPublic?: boolean;
-  isBanned?: boolean;
+  status?: boolean;
+  statusTrueText?: string;
+  statusFalseText?: string;
+  statusTrueColor?: TagColor;
+  statusFalseColor?: TagColor;
 }
 
-export function UserStatus({ isPublic, isBanned }: UserStatusProps) {
-  if (typeof isPublic !== 'undefined') {
-    return (
-      <Tag 
-        color={isPublic ? 'success' : 'warning'} 
-        className="text-xs"
-      >
-        {isPublic ? 'Público' : 'Oculto'}
-      </Tag>
-    );
-  }
-
-  if (typeof isBanned !== 'undefined') {
-    return (
-      <Tag 
-        color={isBanned ? 'danger' : 'success'} 
-        className="text-xs"
-      >
-        {isBanned ? 'Baneado' : 'Activo'}
-      </Tag>
-    );
-  }
-
-  return null;
+export function UserStatus({ status, statusTrueText, statusFalseText, statusTrueColor, statusFalseColor }: UserStatusProps) {
+  return (
+    <Tag 
+      color={status ? statusTrueColor : statusFalseColor} 
+      className="text-xs"
+    >
+      {status ? statusTrueText : statusFalseText}
+    </Tag>
+  )
 }
