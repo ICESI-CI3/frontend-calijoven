@@ -2,9 +2,26 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import PublicationsTabs from '../PublicationsTabs';
 
+type TabsProps = {
+  children: React.ReactNode;
+  value: string;
+  onChange: (value: string) => void;
+};
+
+type TabPanelProps = {
+  children: React.ReactNode;
+};
+
+type ButtonProps = {
+  children: React.ReactNode;
+  onClick?: () => void;
+  variant?: string;
+  size?: string;
+};
+
 // Mock de los componentes de UI
 jest.mock('@/components/Tabs', () => ({
-  Tabs: ({ children, value, onChange }: any) => (
+  Tabs: ({ children, value, onChange }: TabsProps) => (
     <div data-testid="tabs">
       <div role="tablist">
         <button
@@ -43,12 +60,12 @@ jest.mock('@/components/Tabs', () => ({
       <div role="tabpanel">{children}</div>
     </div>
   ),
-  TabPanel: ({ children }: any) => <div role="tabpanel">{children}</div>,
+  TabPanel: ({ children }: TabPanelProps) => <div role="tabpanel">{children}</div>,
 }));
 
 // Mock del componente Button
 jest.mock('@/components/Button', () => ({
-  Button: ({ children, onClick, variant, size }: any) => (
+  Button: ({ children, onClick, variant, size }: ButtonProps) => (
     <button onClick={onClick} data-variant={variant} data-size={size}>
       {children}
     </button>

@@ -4,6 +4,7 @@ jest.mock('@/modules/publications/services/publication.service', () => ({
     getPublications: jest.fn(),
     deletePublication: jest.fn(),
     generateSingleReport: jest.fn(),
+    generateGeneralReport: jest.fn(),
     createPublication: jest.fn(),
     updatePublication: jest.fn(),
     getPublication: jest.fn(),
@@ -13,10 +14,52 @@ jest.mock('@/modules/publications/services/publication.service', () => ({
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { ReportsSection } from '../index';
+import { publicationService } from '@/modules/publications/services/publication.service';
+
+// Define types for the report filters
+type ReportFilters = {
+  startDate?: string;
+  endDate?: string;
+};
+
+// Define the mock service type
+type MockPublicationService = {
+  generateSingleReport: jest.Mock<Promise<Blob>, [string, ReportFilters?]>;
+  generateGeneralReport: jest.Mock<Promise<Blob>, [string, ReportFilters?]>;
+  getPublications: jest.Mock;
+  deletePublication: jest.Mock;
+  createPublication: jest.Mock;
+  updatePublication: jest.Mock;
+  getPublication: jest.Mock;
+};
+
+// Define proper types for the mock components
+type ButtonProps = {
+  children: React.ReactNode;
+  onClick?: () => void;
+  variant?: string;
+  size?: string;
+  isLoading?: boolean;
+  disabled?: boolean;
+};
+
+type InputProps = {
+  label?: string;
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  type?: string;
+  placeholder?: string;
+};
+
+type AlertProps = {
+  message: string;
+  type?: string;
+  onClose?: () => void;
+};
 
 // Mock de los componentes de UI
 jest.mock('@/components/Button', () => ({
-  Button: ({ children, onClick, variant, size, isLoading, disabled }: any) => (
+  Button: ({ children, onClick, variant, size, isLoading, disabled }: ButtonProps) => (
     <button onClick={onClick} data-variant={variant} data-size={size} data-loading={isLoading} disabled={disabled}>
       {children}
     </button>
@@ -24,7 +67,7 @@ jest.mock('@/components/Button', () => ({
 }));
 
 jest.mock('@/components/Input', () => ({
-  Input: ({ label, value, onChange, type, placeholder }: any) => (
+  Input: ({ label, value, onChange, type, placeholder }: InputProps) => (
     <div>
       <label>{label}</label>
       <input
@@ -39,7 +82,7 @@ jest.mock('@/components/Input', () => ({
 }));
 
 jest.mock('@/components/Alert', () => ({
-  Alert: ({ message, type, onClose }: any) => (
+  Alert: ({ message, type, onClose }: AlertProps) => (
     <div role="alert" data-type={type}>
       {message}
       <button onClick={onClose}>Cerrar</button>
@@ -48,11 +91,13 @@ jest.mock('@/components/Alert', () => ({
 }));
 
 describe('ReportsSection', () => {
-  const mockPublicationService = require('@/modules/publications/services/publication.service').publicationService;
+  const mockPublicationService = publicationService as unknown as MockPublicationService;
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockPublicationService.generateGeneralReport = mockPublicationService.generateSingleReport;
+    // Ensure the mocks are properly typed
+    (mockPublicationService.generateSingleReport as jest.Mock).mockReset();
+    (mockPublicationService.generateGeneralReport as jest.Mock).mockReset();
     // Mock window.URL.createObjectURL
     global.URL.createObjectURL = jest.fn(() => 'blob:url');
     // Mock window.URL.revokeObjectURL
@@ -91,7 +136,7 @@ describe('ReportsSection', () => {
   });
 
   it('generates report with selected filters', async () => {
-    mockPublicationService.generateSingleReport.mockResolvedValueOnce(new Blob(['test'], { type: 'application/pdf' }));
+    mockPublicationService.generateGeneralReport.mockResolvedValueOnce(new Blob(['test'], { type: 'application/pdf' }));
 
     render(<ReportsSection />);
 
@@ -106,7 +151,7 @@ describe('ReportsSection', () => {
     fireEvent.click(generateButton);
 
     await waitFor(() => {
-      expect(mockPublicationService.generateSingleReport).toHaveBeenCalledWith('Test Report', {
+      expect(mockPublicationService.generateGeneralReport).toHaveBeenCalledWith('Test Report', {
         startDate: '2024-01-01',
         endDate: '2024-01-31',
       });
@@ -115,7 +160,7 @@ describe('ReportsSection', () => {
 
   it('shows error message when report generation fails', async () => {
     const errorMessage = 'Error al generar el reporte';
-    mockPublicationService.generateSingleReport.mockRejectedValueOnce(new Error(errorMessage));
+    mockPublicationService.generateGeneralReport.mockRejectedValueOnce(new Error(errorMessage));
 
     render(<ReportsSection />);
 
@@ -138,7 +183,7 @@ describe('ReportsSection', () => {
   });
 
   it('shows success message after generating report', async () => {
-    mockPublicationService.generateSingleReport.mockResolvedValueOnce(new Blob(['test'], { type: 'application/pdf' }));
+    mockPublicationService.generateGeneralReport.mockResolvedValueOnce(new Blob(['test'], { type: 'application/pdf' }));
 
     render(<ReportsSection />);
 

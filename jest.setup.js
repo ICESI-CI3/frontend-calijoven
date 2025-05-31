@@ -2,7 +2,6 @@ import '@testing-library/jest-dom';
 
 // Mock global fetch for tests
 if (!global.fetch) {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   global.fetch = (...args) => require('node-fetch')(...args);
 }
 

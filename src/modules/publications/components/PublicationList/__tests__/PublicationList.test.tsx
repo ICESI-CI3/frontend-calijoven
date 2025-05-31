@@ -1,30 +1,11 @@
+// Mock del servicio de publicaciones
+jest.mock('@/modules/publications/services/publication.service');
+
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { PublicationList } from '../index';
-import { mockPublications, mockPublicationService } from '@/modules/publications/mocks';
-
-// Declarar el tipo para globalThis.__mockService
-declare global {
-  // eslint-disable-next-line no-var
-  var __mockService: typeof import('@/modules/publications/mocks').mockPublicationService;
-}
-
-// Mock del servicio de publicaciones
-jest.mock('@/modules/publications/services/publication.service', () => {
-  const { mockPublications, mockPublicationService } = require('@/modules/publications/mocks');
-  globalThis.__mockService = {
-    getPublications: jest.fn().mockResolvedValue({
-      data: mockPublications,
-      total: mockPublications.length,
-    }),
-    deletePublication: jest.fn().mockResolvedValue(undefined),
-    generateSingleReport: jest.fn().mockResolvedValue(undefined),
-    createPublication: jest.fn().mockResolvedValue(undefined),
-    updatePublication: jest.fn().mockResolvedValue(undefined),
-    getPublication: jest.fn().mockResolvedValue(undefined),
-  };
-  return { publicationService: globalThis.__mockService };
-});
+import { mockPublications } from '@/modules/publications/mocks';
+import { publicationService } from '@/modules/publications/services/publication.service';
 
 // Mock de next/navigation
 jest.mock('next/navigation', () => ({
@@ -158,7 +139,7 @@ describe('PublicationList', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    globalThis.__mockService.getPublications.mockResolvedValue({
+    (publicationService.getPublications as jest.Mock).mockResolvedValue({
       data: mockPublications,
       total: mockPublications.length,
     });
@@ -178,7 +159,7 @@ describe('PublicationList', () => {
 
   it('displays error message when loading fails', async () => {
     const errorMessage = 'Error al cargar las publicaciones';
-    globalThis.__mockService.getPublications.mockRejectedValue(new Error(errorMessage));
+    (publicationService.getPublications as jest.Mock).mockRejectedValue(new Error(errorMessage));
 
     render(<PublicationList {...defaultProps} />);
 
