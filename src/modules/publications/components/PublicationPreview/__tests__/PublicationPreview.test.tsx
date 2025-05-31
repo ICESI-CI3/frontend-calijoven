@@ -5,6 +5,7 @@ import { mockPublications } from '@/modules/publications/mocks';
 import { useRouter } from 'next/navigation';
 import type { Publication, PublicationType } from '@/types/publication';
 import type { Organization } from '@/types/organization';
+import { PropsWithChildren } from 'react';
 
 // Mock de next/navigation
 jest.mock('next/navigation', () => ({
@@ -13,7 +14,7 @@ jest.mock('next/navigation', () => ({
 
 // Mock del componente Button
 jest.mock('@/components/Button', () => ({
-  Button: ({ children, onClick, variant, size }: any) => (
+  Button: ({ children, onClick, variant, size }: PropsWithChildren<{ onClick?: () => void; variant?: string; size?: string }>) => (
     <button onClick={onClick} data-variant={variant} data-size={size}>
       {children}
     </button>
