@@ -19,7 +19,10 @@ export function usePublications({
   initialPage = 1,
   initialLimit = 9,
 }: UsePublicationsOptions = {}) {
-  const [filters, setFilters] = useState<PublicationFilters>(initialFilters);
+  const [filters, setFilters] = useState<PublicationFilters>({
+    search: '',
+    ...initialFilters,
+  });
   const [page, setPage] = useState(initialPage);
   const [limit, setLimit] = useState(initialLimit);
 
