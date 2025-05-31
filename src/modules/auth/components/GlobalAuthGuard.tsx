@@ -29,7 +29,7 @@ export function GlobalAuthGuard({ children }: GlobalAuthGuardProps) {
 
   if (!isHydrated) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center" role="page-loading">
         <Spinner size="lg" />
       </div>
     );
