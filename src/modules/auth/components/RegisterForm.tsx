@@ -166,7 +166,13 @@ export function RegisterForm() {
       </div>
 
       <div>
-        <Button type="submit" className="w-full" disabled={isLoading} isLoading={isLoading}>
+        <Button 
+          type="submit" 
+          className="w-full" 
+          disabled={isLoading} 
+          isLoading={isLoading}
+          id="register"
+        >
           Crear Cuenta
         </Button>
       </div>
