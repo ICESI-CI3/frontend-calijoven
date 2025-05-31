@@ -15,6 +15,8 @@ export const API_ROUTES = {
     BY_ID: (id: string) => `/user/${id}`,
     NOTIFICATION_PREFERENCES: '/user/me/notification-preferences',
     CONTACT: '/user/me/contact',
+    BAN: (id: string) => `/user/${id}/ban`,
+    PUBLIC: (id: string) => `/user/${id}/public`,
   },
 
   PUBLICATIONS: {

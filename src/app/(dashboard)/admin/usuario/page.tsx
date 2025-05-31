@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/Button';
 import { Table } from '@/components/Table';
+import { ROUTES } from '@/lib/constants/routes';
 import { useUsersDashboard } from '@/modules/admin';
 import { getDesktopColumns, getMobileColumns } from '@/modules/admin/components/User/UserTable/TableColumns';
 import { useRouter } from 'next/navigation';
@@ -10,7 +11,7 @@ import { useEffect, useState } from 'react';
 export default function UsersDashboard() {
   const [isMobile, setIsMobile] = useState(false);
   const router = useRouter();
-  const { users, total, isLoading, isError, error, filters, page, limit, handleSearch, handlePageChange, handleBan, handleHide, refetch } = useUsersDashboard({
+  const { users, total, isLoading, isError, error, filters, page, limit, handleSearch, handlePageChange, handleBan, handleHide, banningUserId, hidingUserId } = useUsersDashboard({
     initialFilters: {}
   });
 
@@ -26,7 +27,7 @@ export default function UsersDashboard() {
   }, []);
 
   const handleDetails = (id: string) => {
-    router.push(`/admin/usuario/${id}`);
+    router.push(ROUTES.ADMIN.USER_DETAIL(id).PATH);
   };
 
   return (
@@ -41,14 +42,14 @@ export default function UsersDashboard() {
             fullWidth={true}
             type='button'
             className="w-full md:w-auto"
-            onClick={() => console.log('Crear nuevo usuario')}
+            onClick={() => router.push(ROUTES.ADMIN.USER_CREATE.PATH)}
           >
             Crear nuevo usuario
           </Button>
         </div>
         </div>
       <Table
-        columns={isMobile ? getMobileColumns(handleDetails) : getDesktopColumns({ onBan: handleBan, onHide: handleHide, onDetails: handleDetails })}
+        columns={isMobile ? getMobileColumns(handleDetails) : getDesktopColumns({ onBan: handleBan, onHide: handleHide, onDetails: handleDetails, banningUserId, hidingUserId })}
         data={users}
         keyExtractor={(user) => user.id}
         search={true}

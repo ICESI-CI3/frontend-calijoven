@@ -122,6 +122,12 @@ export const ROUTES = {
       PERMISSIONS: [PERMISSIONS.MANAGE_USER, PERMISSIONS.READ_USER],
       LABEL: 'Usuarios',
     },
+    USER_CREATE: {
+      PATH: '/admin/usuario/crear',
+      PUBLIC: false,
+      PERMISSIONS: [PERMISSIONS.MANAGE_USER],
+      LABEL: 'Crear Usuario',
+    },
     USER_DETAIL: (id: string) => ({
       PATH: `/admin/usuario/${id}`,
       PUBLIC: false,

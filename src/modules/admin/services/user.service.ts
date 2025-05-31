@@ -60,6 +60,26 @@ export const UserService = {
         }
     },
 
+    async banUser(id: string): Promise<User> {
+        try {
+            const { data } = await apiClient.put(API_ROUTES.USER.BAN(id));
+            return data;
+        } catch (error) {
+            console.error('Failed to ban user:', error);
+            throw new UserError('No se pudo banear al usuario.');
+        }
+    },
+
+    async publicUser(id: string): Promise<User> {
+        try {
+            const { data } = await apiClient.put(API_ROUTES.USER.PUBLIC(id));
+            return data;
+        } catch (error) {
+            console.error('Failed to public user:', error);
+            throw new UserError('No se pudo hacer público al usuario.');
+        }
+    },
+
     /*
     async updateUser(id: string, userData: UserUpdateRequest): Promise<User> {
         try {

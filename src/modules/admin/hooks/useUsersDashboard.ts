@@ -23,6 +23,8 @@ export function useUsersDashboard({
     const [filters, setFilters] = useState<UserFilters>(initialFilters);
     const [page, setPage] = useState(initialPage);
     const [limit, setLimit] = useState(initialLimit);
+    const [banningUserId, setBanningUserId] = useState<string | null>(null);
+    const [hidingUserId, setHidingUserId] = useState<string | null>(null);
 
     const queryKey = useMemo(() => ['user', filters, page, limit], [filters, page, limit]);
 
@@ -36,12 +38,28 @@ export function useUsersDashboard({
         setPage(1);
     }
 
-    const handleBan = (id: string) => {
-        console.log(id);
+    const handleBan = async (id: string) => {
+        try {
+            setBanningUserId(id);
+            await UserService.banUser(id);
+            refetch(); 
+        } catch (error) {
+            console.error('Error al banear usuario:', error);
+        } finally {
+            setBanningUserId(null);
+        }
     }
 
-    const handleHide = (id: string) => {
-        console.log(id);
+    const handleHide = async (id: string) => {
+        try {
+            setHidingUserId(id);
+            await UserService.publicUser(id);
+            refetch(); 
+        } catch (error) {
+            console.error('Error al cambiar visibilidad del usuario:', error);
+        } finally {
+            setHidingUserId(null);
+        }
     }
     
     
@@ -63,5 +81,7 @@ export function useUsersDashboard({
         handleBan,
         handleHide,
         refetch,
+        banningUserId,
+        hidingUserId,
     };
 }

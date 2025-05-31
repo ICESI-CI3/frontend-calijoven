@@ -11,9 +11,11 @@ interface UserTableColumnsProps {
   onBan: (id: string) => void;
   onHide: (id: string) => void;
   onDetails: (id: string) => void;
+  banningUserId: string | null;
+  hidingUserId: string | null;
 }
 
-export const getDesktopColumns = ({ onBan, onHide, onDetails }: UserTableColumnsProps): TableColumn<getUser>[] => [
+export const getDesktopColumns = ({ onBan, onHide, onDetails, banningUserId, hidingUserId }: UserTableColumnsProps): TableColumn<getUser>[] => [
   {
     key: 'name',
     header: 'Nombre',
@@ -86,6 +88,7 @@ export const getDesktopColumns = ({ onBan, onHide, onDetails }: UserTableColumns
               <SignalIcon className="h-4 w-4 mr-1" />
             ),
             userId: user.id,
+            isLoading: banningUserId === user.id,
           },
           {
             onAction: () => onHide(user.id),
@@ -95,6 +98,7 @@ export const getDesktopColumns = ({ onBan, onHide, onDetails }: UserTableColumns
               <EyeSlashIcon className="h-4 w-4 mr-1" />
             ),
             userId: user.id,
+            isLoading: hidingUserId === user.id,
           },
           {
             onAction: () => onDetails(user.id), 

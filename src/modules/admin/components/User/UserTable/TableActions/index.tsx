@@ -44,7 +44,11 @@ export function ActionCrumb({
         className="text-gray-500 hover:text-gray-700"
         disabled={isLoading}
       >
-        {isLoading ? <Spinner /> : icon}
+        {isLoading ? (
+          <div className="h-4 w-4 mr-1">
+            <Spinner size="sm" />
+          </div>
+        ) : icon}
       </Button>
   )
 }
