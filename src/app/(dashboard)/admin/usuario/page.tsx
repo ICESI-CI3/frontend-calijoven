@@ -54,6 +54,7 @@ export default function UsersDashboard() {
         keyExtractor={(user) => user.id}
         search={true}
         onSearch={handleSearch}
+        isLoading={isLoading}
         pagination={{
           enabled: true,
           currentPage: page,
