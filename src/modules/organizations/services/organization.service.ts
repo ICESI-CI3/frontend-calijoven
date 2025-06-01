@@ -16,7 +16,7 @@ export class OrganizationError extends Error {
   }
 }
 
-type OrganizationResponse = PaginatedResponse<Organization>;
+export type OrganizationResponse = PaginatedResponse<Organization>;
 
 /**
  * Servicio que encapsula la lógica de organizaciones con el backend

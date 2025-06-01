@@ -54,6 +54,12 @@ export interface CommitteeDto {
   members: PublicUserDto[];
 }
 
+export type OrganizationPreviewDto = SimpleOrganizationDto & {
+  membersCount: number;
+  documentsCount: number;
+  committeesCount: number;
+}
+
 export interface DocumentDto {
   id: string;
   title: string;
