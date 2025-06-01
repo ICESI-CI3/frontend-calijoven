@@ -12,6 +12,7 @@ export type SelectProps = {
   value: string;
   onChange: (value: string) => void;
   disabled?: boolean;
+  role?: string;
 };
 
 export function Select({
@@ -23,11 +24,12 @@ export function Select({
   value,
   onChange,
   disabled,
+  role,
 }: SelectProps) {
   const selectedOption = options.find((option) => option.value === value);
 
   return (
-    <div className={cn('w-full', fullWidth && 'w-full')}>
+    <div className={cn('w-full', fullWidth && 'w-full')} role={role}>
       {label && <label className="mb-2 block text-sm font-medium text-foreground">{label}</label>}
       <Listbox value={value} onChange={onChange} disabled={disabled}>
         <div className="relative">

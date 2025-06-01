@@ -1,7 +1,3 @@
-export type PQRSStatusType = 'pending' | 'in_progress' | 'resolved' | 'rejected' | 'closed';
-
-export type PQRSType = 'petition' | 'complaint' | 'claim' | 'suggestion';
-
 export type PQRSPriority = 'low' | 'medium' | 'high';
 
 export interface PQRSTypeEntity {
@@ -25,7 +21,6 @@ export interface PQRS {
   userId: string;
   createdAt: string;
   updatedAt: string;
-  response?: string;
   attachments?: string[];
   category?: string;
   adminComment?: string | null;
@@ -49,13 +44,23 @@ export interface UpdatePQRSDto {
   title?: string;
   description?: string;
   status?: string | PQRSStatusEntity;
-  response?: string;
+  adminComment?: string;
   category?: string;
   priority?: PQRSPriority;
 }
 
 export interface PQRSFilters {
   type?: PQRSTypeEntity;
+}
+
+export interface AdminPQRSFilters {
+  status?: string;
+  type?: string;
+  user?: string;
+  sortBy?: string;
+  sortOrder?: string;
+  page?: number;
+  limit?: number;
 }
 
 export interface PaginatedPQRSResponse {

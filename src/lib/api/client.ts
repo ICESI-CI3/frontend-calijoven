@@ -2,7 +2,8 @@
  * Client to make HTTP requests to the API
  */
 import axios from 'axios';
-import { getTokenFromStorage, removeTokenFromStorage } from '@/modules/auth/utils/tokenService';
+import { useAuth } from '../hooks/useAuth';
+import { ROUTES } from '../constants/routes';
 
 const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
@@ -45,7 +46,7 @@ const clearExpiredSession = () => {
  */
 apiClient.interceptors.request.use(
   (config) => {
-    const token = getTokenFromStorage();
+    const token = useAuth.getState().getStoredToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -66,9 +67,10 @@ apiClient.interceptors.response.use(
 
     // Handle 401 errors (unauthorized/expired token)
     if (error.response?.status === 401 && typeof window !== 'undefined') {
-      clearExpiredSession();
+      useAuth.getState().clearAuth();
+      window.location.href = ROUTES.AUTH.LOGIN.PATH;
     }
-    
+
     return Promise.reject(error);
   }
 );
