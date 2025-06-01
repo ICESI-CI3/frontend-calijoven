@@ -52,7 +52,7 @@ export const UserService = {
 
     async createUser(userData: CreateUserDto): Promise<User> {
         try {
-            const { data } = await apiClient.post(API_ROUTES.USER.BASE, userData);
+            const { data } = await apiClient.put(API_ROUTES.USER.BASE, userData);
             return data;
         } catch (error) {
             console.error('Failed to create user:', error);

@@ -2,7 +2,7 @@
 
 import { cn } from '@/lib/utils';
 
-export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl';
 
 export interface AvatarProps {
   src?: string;
@@ -19,6 +19,8 @@ const sizeStyles: Record<AvatarSize, string> = {
   lg: 'h-12 w-12 text-lg',
   xl: 'h-16 w-16 text-xl',
   '2xl': 'h-20 w-20 text-2xl',
+  '3xl': 'h-24 w-24 text-3xl',
+  '4xl': 'h-32 w-32 text-4xl',
 };
 
 export function Avatar({ src, alt = '', name = '', size = 'md', className = '' }: AvatarProps) {
