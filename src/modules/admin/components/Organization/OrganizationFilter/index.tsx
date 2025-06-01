@@ -13,7 +13,7 @@ export default function OrganizationFilter({
             <div className="w-full">
             <SearchInput
                 onSearch={onSearchChange}
-                placeholder="Buscar publicaciones..."
+                placeholder="Buscar organizaciones..."
                 className="h-12"
             />
             </div>

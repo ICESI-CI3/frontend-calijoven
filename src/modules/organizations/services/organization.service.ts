@@ -1,12 +1,12 @@
 import apiClient from '@/lib/api/client';
 import { API_ROUTES } from '@/lib/constants/api';
 import type {
-  Organization,
   CreateOrganizationDto,
-  UpdateOrganizationDto,
-  OrganizationFilters,
   MemberOrganizationDto,
-  PaginatedResponse
+  Organization,
+  OrganizationFilters,
+  PaginatedResponse,
+  UpdateOrganizationDto
 } from '@/types/organization';
 
 export class OrganizationError extends Error {
@@ -87,11 +87,11 @@ export const OrganizationService = {
   /**
    * Agrega un usuario a una organización
    */
-  async addMember(organizationId: string, userId: string): Promise<Organization> {
+  async addMember(organizationId: string, email: string): Promise<Organization> {
     try {
-      const memberData: MemberOrganizationDto = { userId };
+      const memberData: MemberOrganizationDto = { email };
       const { data } = await apiClient.post(
-        API_ROUTES.ORGANIZATIONS.MEMBERS(organizationId),
+        API_ROUTES.ORGANIZATIONS.MEMBERS.ADD(organizationId),
         memberData
       );
       return data;
@@ -107,7 +107,7 @@ export const OrganizationService = {
   async removeMember(organizationId: string, userId: string): Promise<Organization> {
     try {
       const { data } = await apiClient.delete(
-        API_ROUTES.ORGANIZATIONS.MEMBER(organizationId, userId)
+        API_ROUTES.ORGANIZATIONS.MEMBERS.REMOVE(organizationId, userId)
       );
       return data;
     } catch (error) {

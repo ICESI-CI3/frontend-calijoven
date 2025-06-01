@@ -21,12 +21,13 @@ export interface CreateOrganizationDto {
 export type UpdateOrganizationDto = Partial<CreateOrganizationDto>;
 
 export interface MemberOrganizationDto {
-  userId: string;
+  email: string;
 }
 
 export interface PublicUserDto {
   id: string;
   name: string;
+  email: string;
   profilePicture: string;
   banned: boolean;
   city: string;
