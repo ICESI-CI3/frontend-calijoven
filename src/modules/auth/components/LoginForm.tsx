@@ -10,7 +10,7 @@ export function LoginForm() {
   const { register, errors, isLoading, error, success, onSubmit } = useLoginForm();
 
   return (
-    <form className="mt-8 space-y-6" onSubmit={onSubmit}>
+    <form className="mt-8 space-y-6" onSubmit={onSubmit} data-testid="login-form">
       <div className="space-y-4">
         <Input
           id="email"

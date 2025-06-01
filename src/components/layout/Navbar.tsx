@@ -106,7 +106,7 @@ export function Navbar() {
                 <RequireAuth
                   fallback={
                     <>
-                      <Link href="/registro" className="hidden md:block">
+                      <Link href="/register" className="hidden md:block">
                         <Button variant="outline" size="sm">
                           Registrarse
                         </Button>
@@ -245,7 +245,7 @@ export function Navbar() {
                 <RequireAuth
                   fallback={
                     <>
-                      <Link href="/registro">
+                      <Link href="/register">
                         <Button variant="outline" size="sm" className="mb-2 w-full">
                           Registrarse
                         </Button>

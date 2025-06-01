@@ -27,7 +27,7 @@ export function BannerSection() {
   if (loading)
     return (
       <div className="flex h-[400px] items-center justify-center bg-muted text-muted-foreground">
-        <Spinner />
+        <Spinner data-testid="spinner" />
       </div>
     );
   if (error)

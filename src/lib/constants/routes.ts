@@ -35,7 +35,7 @@ export const ROUTES = {
       LABEL: 'Iniciar Sesión',
     },
     REGISTER: {
-      PATH: '/registro',
+      PATH: '/register',
       PUBLIC: true,
       LABEL: 'Registro',
     },
@@ -126,6 +126,12 @@ export const ROUTES = {
       PUBLIC: false,
       PERMISSIONS: [PERMISSIONS.MANAGE_USER, PERMISSIONS.READ_USER],
       LABEL: 'Usuarios',
+    },
+    USER_CREATE: {
+      PATH: '/admin/usuario/crear',
+      PUBLIC: false,
+      PERMISSIONS: [PERMISSIONS.MANAGE_USER],
+      LABEL: 'Crear Usuario',
     },
     USER_DETAIL: (id: string) => ({
       PATH: `/admin/usuario/${id}`,

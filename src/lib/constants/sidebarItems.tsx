@@ -1,18 +1,18 @@
+import { SidebarItem } from '@/components/layout/Sidebar';
 import { PERMISSIONS } from '@/lib/constants/permissions';
 import { User } from '@/types/user';
 import {
-  Squares2X2Icon,
-  DocumentTextIcon,
-  ChatBubbleLeftRightIcon,
-  UserGroupIcon,
-  Cog6ToothIcon,
-  StarIcon,
   BuildingOfficeIcon,
+  ChatBubbleLeftRightIcon,
+  Cog6ToothIcon,
+  DocumentTextIcon,
   PhotoIcon,
+  Squares2X2Icon,
+  StarIcon,
+  UserGroupIcon,
   BookmarkIcon,
 } from '@heroicons/react/24/outline';
 import { ROUTES } from './routes';
-import { SidebarItem } from '@/components/layout/Sidebar';
 
 export const defaultSidebarItems: SidebarItem[] = [
   {

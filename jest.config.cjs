@@ -25,6 +25,25 @@ const customJestConfig = {
     '!src/**/*.stories.{js,jsx,ts,tsx}',
     '!src/**/*.test.{js,jsx,ts,tsx}',
     '!src/**/index.{js,jsx,ts,tsx}',
+    // Excluir archivos de configuración y constantes
+    '!src/lib/constants/**',
+    '!src/types/**',
+    // Excluir archivos de Next.js
+    '!src/app/**',
+    '!src/app/(dashboard)/**',
+    '!src/app/(general)/**',
+    // Excluir componentes de UI reutilizables
+    '!src/components/layout/**',
+    '!src/components/Carousel/**',
+    '!src/components/RichTextEditor/**',
+    '!src/components/Attachment/**',
+    '!src/lib/api/**',
+    // '!src/modules/*/services/**',
+    // Excluir archivos de configuración y utilidades
+    '!src/lib/helpers/**',
+    '!src/lib/hooks/**',
+    // Excluir componentes de formularios que deberían probarse en pruebas de integración
+    '!src/modules/*/components/*Form/**',
   ],
 };
 

@@ -14,6 +14,7 @@ export type ButtonProps = {
   onClick?: () => void;
   children: React.ReactNode;
   className?: string;
+  id?: string;
 };
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -28,6 +29,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       disabled,
       onClick,
       children,
+      id,
       ...props
     },
     ref
@@ -56,6 +58,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         disabled={isLoading || disabled}
         onClick={onClick}
+        data-testid={id ? `button-${id}` : undefined}
         {...props}
       >
         {isLoading ? (
