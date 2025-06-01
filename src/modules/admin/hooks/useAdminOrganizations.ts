@@ -4,17 +4,17 @@ import { OrganizationFilters, OrganizationPreviewDto, PaginatedResponse } from "
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
-type UseOrganizationsOptions = {
+type UseAdminOrganizationsOptions = {
     initialPage?: number;
     initialLimit?: number;
 };
 
 type OrganizationsPreviewResponse = PaginatedResponse<OrganizationPreviewDto>;
 
-export function useOrganizations({
+export function useAdminOrganizations({
     initialPage = 1,
     initialLimit = 5,   
-}: UseOrganizationsOptions = {}) {
+}: UseAdminOrganizationsOptions = {}) {
     const [filters, setFilters] = useState<OrganizationFilters>({
         search: '',
         page: initialPage,

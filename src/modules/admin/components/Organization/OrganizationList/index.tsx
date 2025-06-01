@@ -1,15 +1,8 @@
 "use client"
 
-import { Avatar } from "@/components/Avatar"
-import { Badge } from "@/components/Badge"
-import { Button } from "@/components/Button"
-import { Input } from "@/components/Input"
-import { Cog6ToothIcon, DocumentTextIcon, EyeIcon, MagnifyingGlassIcon, PlusIcon, UsersIcon } from "@heroicons/react/24/outline"
-import { useState } from "react"
-import OrganizationPreview from "../OrganizationPreview"
-import { OrganizationPreviewDto } from "@/types/organization"
-import { useOrganizations } from "@/modules/publications/hooks/useOrganizations"
+import { useAdminOrganizations } from "@/modules/admin/hooks/useAdminOrganizations"
 import OrganizationFilter from "../OrganizationFilter"
+import OrganizationPreview from "../OrganizationPreview"
 
 
 export default function OrganizationsList() {
@@ -24,7 +17,7 @@ export default function OrganizationsList() {
     handleSearch,
     handleFilterChange,
     handlePageChange
-  } = useOrganizations();
+  } = useAdminOrganizations();
 
   const handleSearchChange = (value: string) => {
     setSearch(value);
