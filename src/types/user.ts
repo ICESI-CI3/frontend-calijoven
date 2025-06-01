@@ -49,6 +49,12 @@ export type UserUpdateRequest = {
   banned?: boolean;
 };
 
+export type UserUpdateDto = {
+  name?: string;
+  email?: string;
+  city?: string;
+}
+
 export type CreateUserDto = {
   name: string;
   email: string;

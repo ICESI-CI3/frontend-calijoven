@@ -1,6 +1,6 @@
 import apiClient from "@/lib/api/client";
 import { API_ROUTES } from "@/lib/constants/api";
-import { CreateUserDto, getUser, User, UserFilters } from "@/types/user";
+import { CreateUserDto, getUser, User, UserFilters, UserUpdateRequest } from "@/types/user";
 
 export class UserError extends Error {
     constructor(message: string) {
@@ -40,7 +40,7 @@ export const UserService = {
         }
     },
 
-    async getUser(id: string): Promise<User> {
+    async getUser(id: string): Promise<getUser> {
         try {
             const { data } = await apiClient.get(API_ROUTES.USER.BY_ID(id));
             return data;
@@ -80,25 +80,40 @@ export const UserService = {
         }
     },
 
-    /*
-    async updateUser(id: string, userData: UserUpdateRequest): Promise<User> {
+    async updateUser(id: string, userData: UserUpdateRequest): Promise<getUser> {
         try {
             const formData = new FormData();
 
             if (userData.name) formData.append('name', userData.name);
             if (userData.email) formData.append('email', userData.email);
             if (userData.city) formData.append('city', userData.city);
-            if (userData.addRoles) userData.addRoles.forEach((role) => formData.append('add_roles', role));
-            if (userData.removeRoles) userData.removeRoles.forEach((role) => formData.append('remove_roles', role));    
-            if (userData.isPublic !== undefined) formData.append('is_public', userData.isPublic.toString());
-            if (userData.banned !== undefined) formData.append('banned', userData.banned.toString());
+            if (userData.addRoles) {
+                await apiClient.put(API_ROUTES.USER.ADD_ROLES, {
+                    user: id,
+                    roles: userData.addRoles.map(role => role.id)
+                });
+            }
+            if (userData.removeRoles) {
+                await apiClient.put(API_ROUTES.USER.REMOVE_ROLES, {
+                    user: id,
+                    roles: userData.removeRoles.map(role => role.id)
+                });
+            }
 
+            if (userData.isPublic !== undefined) {
+                await apiClient.put(API_ROUTES.USER.PUBLIC(id));
+            }
+
+            if (userData.banned !== undefined) {
+                await apiClient.put(API_ROUTES.USER.BAN(id));
+            } 
+        
             const { data } = await apiClient.put(API_ROUTES.USER.BY_ID(id), formData);
+            
             return data;
         } catch (error) {
             console.error('Failed to update user:', error);
             throw new UserError('No se pudo actualizar el usuario.');
         }
     },
-    */
 }
