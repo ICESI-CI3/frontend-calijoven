@@ -5,8 +5,22 @@ test.setTimeout(60000);
 
 test.describe('PQRS - Usuario Normal', () => {
   test.beforeEach(async ({ page }) => {
-    
-    await page.route(/.*\/auth\/login$/, route => {
+    // Debug: Agregar listeners para peticiones y respuestas
+    page.on('request', request => {
+      console.log('🌐 Request:', request.url(), request.method());
+    });
+    page.on('response', async response => {
+      console.log('📥 Response:', response.url(), response.status());
+      if (response.status() !== 200) {
+        console.log('Response error:', await response.text());
+      }
+    });
+    page.on('console', msg => {
+      console.log('🌍 Browser console:', msg.text());
+    });
+
+    // Mock de autenticación
+    await page.route('**/auth/login', route => {
       console.log('🔐 Interceptando auth/login');
       route.fulfill({
         status: 200,
@@ -22,27 +36,6 @@ test.describe('PQRS - Usuario Normal', () => {
         })
       });
     });
-    // ...existing code...
-
-    await page.route('**/api/auth/session', route => {
-      console.log('🔐 Interceptando api/auth/session');
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          user: {
-            id: 1,
-            name: 'Test User',
-            email: 'test@example.com',
-            roles: ['USER']
-          },
-          
-          expires: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
-        })
-      });
-    });
-
-
 
     await page.route('**/auth/me', route => {
       console.log('🔐 Interceptando auth/me');
@@ -59,7 +52,23 @@ test.describe('PQRS - Usuario Normal', () => {
     });
 
     // Asegurarse de que la sesión se mantenga activa
-    
+    await page.route('**/api/auth/session', route => {
+      console.log('🔐 Interceptando api/auth/session');
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          user: {
+            id: 1,
+            name: 'Test User',
+            email: 'test@example.com',
+            roles: ['USER']
+          },
+          valid: true,
+          expires: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+        })
+      });
+    });
 
     // Mock de tipos de PQRS
     await page.route('**/typesPqrs**', route => {
@@ -173,6 +182,7 @@ test.describe('PQRS - Usuario Normal', () => {
     // Iniciar sesión
     console.log('🚀 Iniciando proceso de login');
     await page.goto('/login');
+
     console.log('📄 HTML actual (pre-login):', await page.content());
     
     await page.waitForSelector('input[type="email"]');
@@ -182,6 +192,9 @@ test.describe('PQRS - Usuario Normal', () => {
     await page.waitForSelector('button[type="submit"]');
     await page.click('button[type="submit"]');
 
+    // Esperar a que la navegación se complete
+    console.log('⏳ Esperando redirección post-login...');
+    
     // Primero esperar a que el login se procese
     await page.waitForResponse(response => 
       response.url().includes('/auth/login') && response.status() === 200
@@ -218,6 +231,7 @@ test.describe('PQRS - Usuario Normal', () => {
   });
 
   test('debe mostrar y usar el modal de creación de PQRS', async ({ page }) => {
+    console.log('🧪 Test: debe mostrar y usar el modal de creación de PQRS');
     await page.goto('/mi-espacio/pqrs');
     await page.waitForLoadState('networkidle');
     console.log('📍 URL actual:', page.url());
@@ -244,8 +258,11 @@ test.describe('PQRS - Usuario Normal', () => {
   });
 
   test('debe mostrar el listado de PQRS del usuario', async ({ page }) => {
+    console.log('🧪 Test: debe mostrar el listado de PQRS del usuario');
     await page.goto('/mi-espacio/pqrs');
     await page.waitForLoadState('networkidle');
+    console.log('📍 URL actual:', page.url());
+    console.log('📄 HTML actual:', await page.content());
 
     // Verificar que se muestra el listado
     await expect(page.getByText(/mi primera pqrs/i)).toBeVisible({ timeout: 15000 });
@@ -254,7 +271,33 @@ test.describe('PQRS - Usuario Normal', () => {
     await expect(page.getByText(/pendiente/i)).toBeVisible({ timeout: 15000 });
   });
 
-  
+  test('debe mostrar mensaje cuando no hay PQRS', async ({ page }) => {
+    console.log('🧪 Test: debe mostrar mensaje cuando no hay PQRS');
+    // Mock de listado vacío
+    await page.route('**/pqrs**', route => {
+      if (route.request().method() === 'GET') {
+        route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            items: [],
+            total: 0,
+            page: 1,
+            limit: 10,
+            totalPages: 0
+          })
+        });
+      }
+    });
+
+    await page.goto('/mi-espacio/pqrs');
+    await page.waitForLoadState('networkidle');
+    console.log('📍 URL actual:', page.url());
+    console.log('📄 HTML actual:', await page.content());
+
+    // Verificar mensaje de no hay PQRS
+    await expect(page.getByText(/no hay pqrs registradas/i)).toBeVisible({ timeout: 15000 });
+  });
 });
 
 
