@@ -107,3 +107,42 @@ export function hasUserIdentifier(payload: DecodedToken | null): boolean {
   if (!payload) return false;
   return Boolean(payload.sub || payload.email || payload.id);
 }
+
+/**
+ * Almacena el token JWT en localStorage
+ * @param {string} token - Token JWT a almacenar
+ */
+export function setTokenInStorage(token: string): void {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('auth-token', token);
+  }
+}
+
+/**
+ * Obtiene el token JWT desde localStorage
+ * @returns {string | null} Token JWT o null si no existe
+ */
+export function getTokenFromStorage(): string | null {
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem('auth-token');
+  }
+  return null;
+}
+
+/**
+ * Elimina el token JWT de localStorage
+ */
+export function removeTokenFromStorage(): void {
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('auth-token');
+  }
+}
+
+/**
+ * Verifica si existe un token válido en localStorage
+ * @returns {boolean} True si existe un token válido, false en caso contrario
+ */
+export function hasValidTokenInStorage(): boolean {
+  const token = getTokenFromStorage();
+  return validateToken(token || undefined);
+}

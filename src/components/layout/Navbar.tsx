@@ -1,13 +1,23 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
-import { Disclosure, Menu, Transition } from '@headlessui/react';
-import { Bars3Icon, XMarkIcon, UserCircleIcon } from '@heroicons/react/24/outline';
+import {
+  Disclosure,
+  DisclosureButton,
+  DisclosurePanel,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuItems,
+  Transition,
+} from '@headlessui/react';
+import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '@/lib/hooks/useAuth';
 import { navbarItems, navbarUserMenu } from '@/lib/constants/navbarItems';
 import { Button } from '@/components/Button';
 import { Fragment } from 'react';
+import RequireAuth from '@/modules/auth/components/RequireAuth';
+import { Avatar } from '../Avatar';
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
@@ -15,7 +25,6 @@ function classNames(...classes: string[]) {
 
 export function Navbar() {
   const { user, logout } = useAuth();
-  const isAuthenticated = !!user;
 
   return (
     <Disclosure
@@ -36,7 +45,7 @@ export function Navbar() {
                 {navbarItems.map((item) =>
                   item.children ? (
                     <Menu as="div" className="relative" key={item.label}>
-                      <Menu.Button className="inline-flex items-center gap-1 rounded-md px-3 py-2 text-base font-medium text-foreground hover:bg-accent hover:text-accent-foreground focus:outline-none">
+                      <MenuButton className="inline-flex items-center gap-1 rounded-md px-3 py-2 text-base font-medium text-foreground hover:bg-accent hover:text-accent-foreground focus:outline-none">
                         {item.label}
                         <svg
                           className="h-4 w-4"
@@ -51,7 +60,7 @@ export function Navbar() {
                             d="M19 9l-7 7-7-7"
                           />
                         </svg>
-                      </Menu.Button>
+                      </MenuButton>
                       <Transition
                         as={Fragment}
                         enter="transition ease-out duration-100"
@@ -61,9 +70,9 @@ export function Navbar() {
                         leaveFrom="transform opacity-100 scale-100"
                         leaveTo="transform opacity-0 scale-95"
                       >
-                        <Menu.Items className="absolute left-0 z-10 mt-2 w-56 origin-top-left rounded-md bg-card py-2 shadow-lg ring-1 ring-black/5 focus:outline-none">
+                        <MenuItems className="absolute left-0 z-10 mt-2 w-56 origin-top-left rounded-md bg-card py-2 shadow-lg ring-1 ring-black/5 focus:outline-none">
                           {item.children.map((sub) => (
-                            <Menu.Item key={sub.label}>
+                            <MenuItem key={sub.label}>
                               {({ active }) => (
                                 <Link
                                   href={sub.href!}
@@ -75,9 +84,9 @@ export function Navbar() {
                                   {sub.label}
                                 </Link>
                               )}
-                            </Menu.Item>
+                            </MenuItem>
                           ))}
-                        </Menu.Items>
+                        </MenuItems>
                       </Transition>
                     </Menu>
                   ) : (
@@ -94,23 +103,25 @@ export function Navbar() {
 
               {/* Right: Auth buttons or Avatar */}
               <div className="flex items-center gap-2">
-                {!isAuthenticated ? (
-                  <>
-                    <Link href="/registro" className="hidden md:block">
-                      <Button variant="outline" size="sm">
-                        Registrarse
-                      </Button>
-                    </Link>
-                    <Link href="/login" className="hidden md:block">
-                      <Button size="sm">Iniciar Sesión</Button>
-                    </Link>
-                  </>
-                ) : (
+                <RequireAuth
+                  fallback={
+                    <>
+                      <Link href="/register" className="hidden md:block">
+                        <Button variant="outline" size="sm">
+                          Registrarse
+                        </Button>
+                      </Link>
+                      <Link href="/login" className="hidden md:block">
+                        <Button size="sm">Iniciar Sesión</Button>
+                      </Link>
+                    </>
+                  }
+                >
                   <Menu as="div" className="relative ml-3">
-                    <Menu.Button className="hidden rounded-full bg-muted text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 md:flex">
+                    <MenuButton className="hidden rounded-full bg-muted text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 md:flex">
                       <span className="sr-only">Abrir menú de usuario</span>
-                      <UserCircleIcon className="h-8 w-8 text-primary" />
-                    </Menu.Button>
+                      <Avatar src={user?.profilePicture} size="md" />
+                    </MenuButton>
                     <Transition
                       as={Fragment}
                       enter="transition ease-out duration-100"
@@ -120,9 +131,9 @@ export function Navbar() {
                       leaveFrom="transform opacity-100 scale-100"
                       leaveTo="transform opacity-0 scale-95"
                     >
-                      <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-card py-2 shadow-lg ring-1 ring-black/5 focus:outline-none">
+                      <MenuItems className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-card py-2 shadow-lg ring-1 ring-black/5 focus:outline-none">
                         {navbarUserMenu.map((item) => (
-                          <Menu.Item key={item.label}>
+                          <MenuItem key={item.label}>
                             {({ active }) =>
                               item.label === 'Cerrar sesión' ? (
                                 <button
@@ -148,35 +159,35 @@ export function Navbar() {
                                 </Link>
                               )
                             }
-                          </Menu.Item>
+                          </MenuItem>
                         ))}
-                      </Menu.Items>
+                      </MenuItems>
                     </Transition>
                   </Menu>
-                )}
+                </RequireAuth>
 
                 {/* Mobile menu button */}
                 <div className="flex md:hidden">
-                  <Disclosure.Button className="inline-flex items-center justify-center rounded-md p-2 text-foreground hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary">
+                  <DisclosureButton className="inline-flex items-center justify-center rounded-md p-2 text-foreground hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary">
                     <span className="sr-only">Abrir menú principal</span>
                     {open ? (
                       <XMarkIcon className="block h-6 w-6" />
                     ) : (
                       <Bars3Icon className="block h-6 w-6" />
                     )}
-                  </Disclosure.Button>
+                  </DisclosureButton>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Mobile menu */}
-          <Disclosure.Panel className="md:hidden">
+          <DisclosurePanel className="md:hidden">
             <div className="space-y-1 px-2 pb-3 pt-2">
               {navbarItems.map((item) =>
                 item.children ? (
                   <Menu as="div" className="relative" key={item.label}>
-                    <Menu.Button className="flex w-full items-center justify-between rounded-md px-3 py-2 text-base font-medium text-foreground hover:bg-accent hover:text-accent-foreground">
+                    <MenuButton className="flex w-full items-center justify-between rounded-md px-3 py-2 text-base font-medium text-foreground hover:bg-accent hover:text-accent-foreground">
                       {item.label}
                       <svg
                         className="h-4 w-4"
@@ -191,7 +202,7 @@ export function Navbar() {
                           d="M19 9l-7 7-7-7"
                         />
                       </svg>
-                    </Menu.Button>
+                    </MenuButton>
                     <Transition
                       as={Fragment}
                       enter="transition ease-out duration-100"
@@ -201,9 +212,9 @@ export function Navbar() {
                       leaveFrom="transform opacity-100 scale-100"
                       leaveTo="transform opacity-0 scale-95"
                     >
-                      <Menu.Items className="absolute left-0 z-10 mt-2 w-56 origin-top-left rounded-md bg-card py-2 shadow-lg ring-1 ring-black/5 focus:outline-none">
+                      <MenuItems className="absolute left-0 z-10 mt-2 w-56 origin-top-left rounded-md bg-card py-2 shadow-lg ring-1 ring-black/5 focus:outline-none">
                         {item.children.map((sub) => (
-                          <Menu.Item key={sub.label}>
+                          <MenuItem key={sub.label}>
                             {({ active }) => (
                               <Link
                                 href={sub.href!}
@@ -215,9 +226,9 @@ export function Navbar() {
                                 {sub.label}
                               </Link>
                             )}
-                          </Menu.Item>
+                          </MenuItem>
                         ))}
-                      </Menu.Items>
+                      </MenuItems>
                     </Transition>
                   </Menu>
                 ) : (
@@ -231,20 +242,22 @@ export function Navbar() {
                 )
               )}
               <div className="mt-2 border-t border-border pt-2">
-                {!isAuthenticated ? (
-                  <>
-                    <Link href="/registro">
-                      <Button variant="outline" size="sm" className="mb-2 w-full">
-                        Registrarse
-                      </Button>
-                    </Link>
-                    <Link href="/login">
-                      <Button size="sm" className="w-full">
-                        Iniciar Sesión
-                      </Button>
-                    </Link>
-                  </>
-                ) : (
+                <RequireAuth
+                  fallback={
+                    <>
+                      <Link href="/register">
+                        <Button variant="outline" size="sm" className="mb-2 w-full">
+                          Registrarse
+                        </Button>
+                      </Link>
+                      <Link href="/login">
+                        <Button size="sm" className="w-full">
+                          Iniciar Sesión
+                        </Button>
+                      </Link>
+                    </>
+                  }
+                >
                   <div className="flex flex-col gap-1">
                     {navbarUserMenu.map((item) =>
                       item.label === 'Cerrar sesión' ? (
@@ -268,10 +281,10 @@ export function Navbar() {
                       )
                     )}
                   </div>
-                )}
+                </RequireAuth>
               </div>
             </div>
-          </Disclosure.Panel>
+          </DisclosurePanel>
         </>
       )}
     </Disclosure>

@@ -18,7 +18,7 @@ const iconMap = {
 
 export function WhatWeDoSection() {
   return (
-    <section className="container mx-auto px-4 py-12">
+    <section role="section" className="container mx-auto px-4 py-12">
       <h2 className="mb-2 text-center text-3xl font-bold text-foreground">¿Qué hacemos?</h2>
       <p className="mx-auto mb-10 max-w-3xl text-center text-lg text-muted-foreground">
         Somos el mecanismo de participación juvenil que conecta las voces jóvenes con las decisiones

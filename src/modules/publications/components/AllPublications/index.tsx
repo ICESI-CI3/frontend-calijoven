@@ -8,6 +8,7 @@ export default function PublicationsList({
   isLoading,
   isError,
   error,
+  onReadMore,
 }: {
   publications: Publication[];
   isLoading: boolean;
@@ -15,10 +16,11 @@ export default function PublicationsList({
   error: Error | null;
   onEdit: (publication: Publication) => void;
   onCreateNew: () => void;
+  onReadMore?: (id: string) => void;
 }) {
   if (isLoading) {
     return (
-      <div className="flex justify-center py-12">
+      <div className="flex justify-center py-12" role="status">
         <Spinner />
       </div>
     );
@@ -36,7 +38,7 @@ export default function PublicationsList({
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
       {publications.map((publication) => (
-        <PublicationPreview key={publication.id} publication={publication} />
+        <PublicationPreview key={publication.id} publication={publication} onReadMore={onReadMore} />
       ))}
     </div>
   );

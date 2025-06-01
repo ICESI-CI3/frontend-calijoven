@@ -12,6 +12,7 @@ import { BaseOrganization } from '@/types/organization';
 import { BaseCity } from '@/types/city';
 import { publicationService } from '@/modules/publications/services/publication.service';
 import { offerTypesService } from '@/lib/api/offerTypes.service';
+import { publicationTypes } from '@/lib/constants/publicationTypes';
 
 interface UsePublicationFormProps {
   publication?: Publication;
@@ -84,7 +85,7 @@ export function usePublicationForm({
       const existingTags = publication.tags.filter(tag => tag.id);
       setSelectedExistingTags(existingTags);
 
-      if (publication.type.name === 'event') {
+      if (publication.type.name === publicationTypes.event.value) {
         const eventData = publication.event || {};
         setFormData((prev) => ({
           ...prev,
@@ -131,14 +132,14 @@ export function usePublicationForm({
         (submissionData as UpdatePublicationDto).attachmentsToDelete = attachmentsToDelete;
       }
 
-      if (submissionData.type === 'event' && submissionData.event?.date) {
+      if (submissionData.type === publicationTypes.event.value && submissionData.event?.date) {
         submissionData.event = {
           ...submissionData.event,
           date: submissionData.event.date,
         };
       }
 
-      if (submissionData.type === 'offer' && submissionData.offer?.deadline) {
+      if (submissionData.type === publicationTypes.offer.value && submissionData.offer?.deadline) {
         submissionData.offer = {
           ...submissionData.offer,
           deadline: submissionData.offer.deadline,

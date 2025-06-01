@@ -22,10 +22,10 @@ const formatDate = (iso: string) =>
 
 interface PublicationPreviewProps {
   publication: Publication;
+  onReadMore?: (id: string) => void;
 }
 
-const PublicationPreview: FC<PublicationPreviewProps> = ({ publication }) => {
-  console.log('Publication data received by PublicationPreview:', publication);
+const PublicationPreview: FC<PublicationPreviewProps> = ({ publication, onReadMore }) => {
   const router = useRouter();
   const imageUrl =
     (publication.attachments &&
@@ -74,7 +74,7 @@ const PublicationPreview: FC<PublicationPreviewProps> = ({ publication }) => {
         <Button
           variant="outline"
           size="sm"
-          onClick={() => router.push(ROUTES.PUBLICATIONS.DETAIL(publication.id).PATH)}
+          onClick={() => onReadMore ? onReadMore(publication.id) : router.push(ROUTES.PUBLICATIONS.DETAIL(publication.id).PATH)}
         >
           Leer más
         </Button>

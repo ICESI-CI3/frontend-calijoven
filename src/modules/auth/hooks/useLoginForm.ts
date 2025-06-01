@@ -2,7 +2,7 @@
  * Hook personalizado que maneja la lógica del formulario de inicio de sesión
  */
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '@/lib/hooks/useAuth';
@@ -17,11 +17,11 @@ import { loginSchema, LoginFormData } from '@/types/auth';
  */
 export function useLoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const auth = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [rememberMe, setRememberMe] = useState(false);
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -42,18 +42,21 @@ export function useLoginForm() {
     setSuccess(null);
 
     try {
-      const authData = await AuthService.login(formData, rememberMe);
+      const authData = await AuthService.login(formData);
 
       if (!authData.token) {
         throw new Error('No se recibió token de autenticación');
       }
 
-      await auth.login(authData.user, authData.token, rememberMe);
+      auth.login(authData.user, authData.token);
       setSuccess('¡Inicio de sesión exitoso! Redirigiendo...');
 
-      // Esperar 1.5 segundos para mostrar el mensaje de éxito antes de redirigir
+      // Get callback URL from query params or default to home
+      const callbackUrl = searchParams.get('callbackUrl') || ROUTES.HOME.PATH;
+
+      // Wait 1.5 seconds to show success message before redirecting
       setTimeout(() => {
-        router.push(ROUTES.MY_SPACE.HOME.PATH);
+        router.push(callbackUrl);
       }, 1500);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error desconocido');
@@ -68,8 +71,6 @@ export function useLoginForm() {
     isLoading,
     error,
     success,
-    rememberMe,
-    setRememberMe,
     onSubmit: form.handleSubmit(onSubmit),
   };
 }
