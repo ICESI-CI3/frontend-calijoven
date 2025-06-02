@@ -5,7 +5,7 @@ import axios from 'axios';
 import { useAuth } from '../hooks/useAuth';
 import { ROUTES } from '../constants/routes';
 
-const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://34.139.3.80:4000';
 
 /**
  * Configured axios instance to make requests to the API

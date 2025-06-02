@@ -40,6 +40,6 @@ export async function waitForPageReady(page: Page) {
 }
 
 export function buildApiRegex(route: string) {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://34.139.3.80:4000';
   return `**${baseUrl}${route}*`;
 }
