@@ -25,7 +25,7 @@ describe('PQRSService', () => {
 
       const result = await PQRSService.getPQRSTypes();
       expect(result).toEqual(mockTypes);
-      expect(apiClient.get).toHaveBeenCalledWith('/typesPqrs');
+      expect(apiClient.get).toHaveBeenCalledWith('pqrs/types');
     });
 
     it('debe lanzar un error si falla la petición', async () => {
@@ -41,7 +41,7 @@ describe('PQRSService', () => {
 
       const result = await PQRSService.getPQRSTypeById('1');
       expect(result).toEqual(mockType);
-      expect(apiClient.get).toHaveBeenCalledWith('/typesPqrs/1');
+      expect(apiClient.get).toHaveBeenCalledWith('pqrs/types/1');
     });
 
     it('debe lanzar un error si falla la petición', async () => {
@@ -57,7 +57,7 @@ describe('PQRSService', () => {
 
       const result = await PQRSService.getStatusTypes();
       expect(result).toEqual(mockStatus);
-      expect(apiClient.get).toHaveBeenCalledWith('/types');
+      expect(apiClient.get).toHaveBeenCalledWith('pqrs/status');
     });
 
     it('debe lanzar un error si falla la petición', async () => {
@@ -73,7 +73,7 @@ describe('PQRSService', () => {
 
       const result = await PQRSService.getStatusById('Pendiente');
       expect(result).toEqual(mockStatus);
-      expect(apiClient.get).toHaveBeenCalledWith('/types/Pendiente');
+      expect(apiClient.get).toHaveBeenCalledWith('pqrs/status/Pendiente');
     });
 
     it('debe lanzar un error si falla la petición', async () => {
