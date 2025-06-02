@@ -1,12 +1,12 @@
 import React from 'react';
 import { Select } from '@/components/Select';
 import type { CreatePublicationDto } from '@/types/publication';
-import type { BaseOrganization } from '@/types/organization';
+import type { OrganizationDto } from '@/types/organization';
 import { Info } from '@/components/Info';
 
 interface OrganizationsSectionProps {
   formData: CreatePublicationDto;
-  userOrganizations: BaseOrganization[];
+  userOrganizations: OrganizationDto[];
   onOrganizersChange: (orgId: string) => void;
 }
 

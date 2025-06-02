@@ -1,8 +1,8 @@
 'use client';
 
-import { ReactNode, useState } from 'react';
 import { Button } from '@/components/Button';
 import { Spinner } from '@/components/Spinner';
+import { ReactNode, useState } from 'react';
 import { SearchInput } from '../SearchInput';
 
 export type TableColumn<T> = {

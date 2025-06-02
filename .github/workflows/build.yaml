@@ -1,0 +1,63 @@
+name: Build and Deploy to GKE
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+
+env:
+  PROJECT_ID: ${{ secrets.GKE_PROJECT }}
+  GKE_CLUSTER: compunet-3-frotend-cluster
+  GKE_ZONE: us-east1
+  DEPLOYMENT_NAME: cali-joven-next
+  IMAGE: cali-joven-next
+
+jobs:
+  setup-build-publish-deploy:
+    name: Setup, Build, Publish, and Deploy
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Auth to gcloud CLI
+      uses: 'google-github-actions/auth@v2'
+      with:
+        credentials_json: ${{ secrets.GKE_SA_KEY }}
+        project_id: ${{ secrets.GKE_PROJECT }}
+
+    - name: Set up gcloud CLI
+      uses: 'google-github-actions/setup-gcloud@v2'
+      with:
+        project_id: ${{ secrets.GKE_PROJECT }}
+
+    - name: Set up GKE credentials
+      uses: 'google-github-actions/get-gke-credentials@v2'
+      with:
+        cluster_name: 'compunet-3-frontend-cluster'
+        location: ${{ env.GKE_ZONE }}
+
+    - name: Configure Docker for gcloud
+      run: |-
+        gcloud --quiet auth configure-docker \
+          $GKE_ZONE-docker.pkg.dev
+    # Build the Docker image
+    - name: Build
+      run: |-
+        docker build \
+          --tag "$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/cali-joven-frontend/$IMAGE:$GITHUB_SHA" \
+          --build-arg GITHUB_SHA="$GITHUB_SHA" \
+          --tag "$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/cali-joven-frontend/$IMAGE:latest" \
+          .
+    # Push the Docker image to Google Container Registry
+    - name: Publish
+      run: |-
+        docker push "$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/cali-joven-frontend/$IMAGE:$GITHUB_SHA"
+        docker push "$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/cali-joven-frontend/$IMAGE:latest"
+    - name: Deploy to GKE
+      run: |-
+        IMAGE_URL="$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/cali-joven-frontend/$IMAGE:$GITHUB_SHA"
+        sed -i "s|\${IMAGE_URL}|$IMAGE_URL|g" k8s/deployment.yaml
+        kubectl apply -f k8s/deployment.yaml
