@@ -83,7 +83,6 @@ export function CommitteeForm({
         onChange={(value) => handleChange('description', value)}
         placeholder="Describa el propósito y funciones del comité"
         rows={5}
-        required
       />
 
       <div className="flex justify-end space-x-4">

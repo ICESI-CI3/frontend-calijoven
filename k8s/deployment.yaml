@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cali-joven-frotend
+  labels:
+    app: cali-joven-frotend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cali-joven-frotend
+  template:
+    metadata:
+      labels:
+        app: cali-joven-frotend
+    spec:
+      containers:
+      - name: compunet-3-frotend
+        image: ${IMAGE_URL}
+        imagePullPolicy: Always
+        envFrom:
+          - secretRef:
+              name: cali-joven-frotend-secret
+        env:
+          - name: PORT
+            value: "3000"
+        ports:
+        - containerPort: 3000
+      imagePullSecrets:
+        - name: compunet-3-secret   
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cali-joven-frotend-service
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 34.138.169.227
+  ports:
+    - name: http
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
+  selector:
+    app: cali-joven-frotend

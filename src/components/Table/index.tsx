@@ -1,8 +1,8 @@
 'use client';
 
-import { ReactNode, useState } from 'react';
 import { Button } from '@/components/Button';
 import { Spinner } from '@/components/Spinner';
+import { ReactNode, useState } from 'react';
 import { SearchInput } from '../SearchInput';
 
 export type TableColumn<T> = {
@@ -132,7 +132,6 @@ export function Table<T>({
       {search && (
         <div className="flex items-center justify-between p-4">
           <SearchInput
-            value={searchValue}
             onChange={setSearchValue}
             onSearch={handleSearch}
             placeholder="Buscar por título o descripción..."

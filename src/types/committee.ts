@@ -31,16 +31,6 @@ export interface CommitteeMember {
   role?: string;
 }
 
-export interface Committee {
-  id: string;
-  name: string;
-  description: string;
-  createdAt: string;
-  updatedAt: string;
-  members: CommitteeMember[];
-  organizationId: string;
-}
-
 export interface CreateCommitteeDto {
   name: string;
   description: string;
