@@ -15,6 +15,14 @@ export const API_ROUTES = {
     BY_ID: (id: string) => `/user/${id}`,
     NOTIFICATION_PREFERENCES: '/user/me/notification-preferences',
     CONTACT: '/user/me/contact',
+    BAN: (id: string) => `/user/${id}/ban`,
+    PUBLIC: (id: string) => `/user/${id}/public`,
+    ADD_ROLES: '/user/admin/add-roles',
+    REMOVE_ROLES: '/user/admin/remove-roles'
+  },
+
+  ROLE: {
+    BASE: '/role'
   },
 
   PUBLICATIONS: {
@@ -37,6 +45,7 @@ export const API_ROUTES = {
   PQRS: {
     BASE: '/pqrs',
     BY_ID: (id: string) => `/pqrs/${id}`,
+    TYPES: '/pqrs/types',
     ADMIN: {
       BASE: '/admin/pqrs',
       BY_ID: (id: string) => `/admin/pqrs/${id}`,
@@ -45,10 +54,11 @@ export const API_ROUTES = {
 
   ORGANIZATIONS: {
     BASE: '/organization',
-    BY_ID: (id: string) => `/organization/${id}`,
+    BY_ID: (orgId: string) => `/organization/${orgId}`,
     MEMBERS: {
-      ADD: (id: string) => `/organization/${id}/members`,
-      REMOVE: (orgId: string, userId: string) => `/organization/${orgId}/members/${userId}`,
+      BASE: (orgId: string) => `/organization/${orgId}/members`,
+      ADD: (orgId: string) => `/organization/${orgId}/members`,
+      REMOVE: (orgId: string, userId: string) => `/organization/${orgId}/members/${userId}`
     },
     COMMITTEES: {
       BASE: (orgId: string) => `/organization/${orgId}/committee`,

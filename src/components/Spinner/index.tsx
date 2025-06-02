@@ -27,6 +27,7 @@ export function Spinner({ size = 'md', className, show = true }: SpinnerProps) {
       leaveTo="opacity-0"
     >
       <div
+        data-testid="spinner"
         className={cn(
           'animate-spin rounded-full border-2 border-current border-t-transparent',
           sizeClasses[size],

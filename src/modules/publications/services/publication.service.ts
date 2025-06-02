@@ -1,5 +1,6 @@
 import apiClient from '@/lib/api/client';
 import { API_ROUTES } from '@/lib/constants/api';
+import { publicationTypes } from '@/lib/constants/publicationTypes';
 import type {
   Publication,
   CreatePublicationDto,
@@ -7,7 +8,15 @@ import type {
   PublicationFilters,
   FilterPublicationDto,
   ReportFilters,
+  Tag
 } from '@/types/publication';
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  total: number;
+  page: number;
+  totalPages: number;
+}
 
 export class PublicationError extends Error {
   constructor(message: string) {
@@ -16,6 +25,11 @@ export class PublicationError extends Error {
   }
 }
 
+type PublicationResponse = {
+  data: Publication[];
+  total: number;
+};
+
 /**
  * Servicio que encapsula la lógica de publicaciones con el backend
  */
@@ -23,16 +37,22 @@ export const PublicationService = {
   /**
    * Obtiene un listado paginado de publicaciones
    */
-  async getPublications(filters: PublicationFilters = {}, page = 1, limit = 10) {
+  async getPublications(filters: PublicationFilters = {}, page = 1, limit = 10): Promise<PublicationResponse> {
     try {
+      console.log('Getting publications with filters:', filters);
       const filterParams: FilterPublicationDto = {
         page,
         limit,
         tag: filters.tag,
         city: filters.city,
-        type: filters.type,
+        ...(filters.type !== '' && { type: filters.type }),
         unpublished: filters.unpublished,
+        organization: filters.organization,
+        sortBy: filters.sortBy,
+        sortOrder: filters.sortOrder,
       };
+
+      console.log('Filter params:', filterParams);
 
       const params = new URLSearchParams(
         Object.fromEntries(
@@ -46,7 +66,11 @@ export const PublicationService = {
         params.append('search', filters.search);
       }
 
-      const { data } = await apiClient.get(`${API_ROUTES.PUBLICATIONS.BASE}?${params}`);
+      const url = `${API_ROUTES.PUBLICATIONS.BASE}?${params}`;
+      console.log('Making request to:', url);
+
+      const { data } = await apiClient.get(url);
+      console.log('Publications response:', data);
       return data;
     } catch (error) {
       console.error('Failed to fetch publications:', error);
@@ -71,7 +95,7 @@ export const PublicationService = {
    * Crea una nueva publicación
    */
   async createPublication(publicationData: CreatePublicationDto): Promise<Publication> {
-    try {
+    try { 
       const formData = new FormData();
 
       // Agregar datos básicos
@@ -104,12 +128,12 @@ export const PublicationService = {
       }
 
       // Agregar datos específicos según el tipo
-      if (publicationData.type === 'event' && publicationData.event) {
-        formData.append('event', JSON.stringify(publicationData.event));
-      } else if (publicationData.type === 'news' && publicationData.news) {
-        formData.append('news', JSON.stringify(publicationData.news));
-      } else if (publicationData.type === 'offer' && publicationData.offer) {
-        formData.append('offer', JSON.stringify(publicationData.offer));
+      if (publicationData.type === publicationTypes.event.value && publicationData.event) {
+        formData.append(publicationTypes.event.value, JSON.stringify(publicationData.event));
+      } else if (publicationData.type === publicationTypes.news.value && publicationData.news) {
+        formData.append(publicationTypes.news.value, JSON.stringify(publicationData.news));
+      } else if (publicationData.type === publicationTypes.offer.value && publicationData.offer) {
+        formData.append(publicationTypes.offer.value, JSON.stringify(publicationData.offer));
       }
 
       // Agregar archivos adjuntos
@@ -169,12 +193,12 @@ export const PublicationService = {
       }
 
       // Agregar datos específicos según el tipo
-      if (publicationData.type === 'event' && publicationData.event) {
-        formData.append('event', JSON.stringify(publicationData.event));
-      } else if (publicationData.type === 'news' && publicationData.news) {
-        formData.append('news', JSON.stringify(publicationData.news));
-      } else if (publicationData.type === 'offer' && publicationData.offer) {
-        formData.append('offer', JSON.stringify(publicationData.offer));
+      if (publicationData.type === publicationTypes.event.value && publicationData.event) {
+        formData.append(publicationTypes.event.value, JSON.stringify(publicationData.event));
+      } else if (publicationData.type === publicationTypes.news.value && publicationData.news) {
+        formData.append(publicationTypes.news.value, JSON.stringify(publicationData.news));
+      } else if (publicationData.type === publicationTypes.offer.value && publicationData.offer) {
+        formData.append(publicationTypes.offer.value, JSON.stringify(publicationData.offer));
       }
 
       // Agregar archivos adjuntos a eliminar
@@ -219,13 +243,9 @@ export const PublicationService = {
    */
   async generateGeneralReport(name: string, filters: ReportFilters = {}): Promise<Blob> {
     try {
-      const { data } = await apiClient.post(
-        API_ROUTES.REPORTS.PUBLICATION.GENERAL,
-        { name, filters },
-        {
-          responseType: 'blob',
-        }
-      );
+      const { data } = await apiClient.post(API_ROUTES.REPORTS.PUBLICATION.GENERAL, { name, filters }, {
+        responseType: 'blob'
+      });
       return data;
     } catch (error) {
       console.error('Failed to generate general report:', error);
@@ -238,17 +258,32 @@ export const PublicationService = {
    */
   async generateSingleReport(id: string, name: string): Promise<Blob> {
     try {
-      const { data } = await apiClient.post(
-        `${API_ROUTES.REPORTS.PUBLICATION.BY_ID}/${id}`,
-        { name },
-        {
-          responseType: 'blob',
-        }
-      );
+      const { data } = await apiClient.post(`${API_ROUTES.REPORTS.PUBLICATION.BY_ID(id)}`, { name }, {
+        responseType: 'blob'
+      });
       return data;
     } catch (error) {
       console.error('Failed to generate single report:', error);
       throw new PublicationError('No se pudo generar el reporte individual.');
+    }
+  },
+
+  /**
+   * Búsqueda paginada de tags
+   */
+  async searchTags(search: string, page: number = 1, limit: number = 50): Promise<PaginatedResponse<Tag>> {
+    try {
+      const { data } = await apiClient.get(`${API_ROUTES.PUBLICATIONS.BASE}/tags`, {
+        params: {
+          search,
+          page,
+          limit,
+        },
+      });
+      return data;
+    } catch (error) {
+      console.error('Error searching tags:', error);
+      throw new Error('No se pudieron buscar las etiquetas');
     }
   },
 };

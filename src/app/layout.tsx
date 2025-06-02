@@ -1,6 +1,7 @@
 import { Poppins } from 'next/font/google';
 import { Providers } from '@/providers';
 import '@/styles/globals.css';
+import { GlobalAuthGuard } from '@/modules/auth/components/GlobalAuthGuard';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -18,7 +19,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="es" className={poppins.variable} suppressHydrationWarning>
       <body className={poppins.className}>
-        <Providers>{children}</Providers>
+        <div className="pt-10">
+          <Providers>
+            <GlobalAuthGuard>
+              {children}
+            </GlobalAuthGuard>
+          </Providers>
+        </div>
       </body>
     </html>
   );

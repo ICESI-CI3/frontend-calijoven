@@ -1,28 +1,69 @@
-import { User } from './user';
 import { Organization } from './organization';
 import { City } from './city';
 
 export type PublicationTypeEnum = 'event' | 'news' | 'offer';
 
-export interface PublicationType {
+export type PublicationType = {
   name: string;
   description: string;
 }
 
-export interface Attachment {
+export type Attachment = {
   id: string;
   name: string;
   format: string;
   url: string;
 }
 
-export interface Tag {
+export type Tag = {
   id: string;
   name: string;
   description: string;
 }
 
-export interface Publication {
+/**{
+            "id": "e415f9d3-49fd-488e-a443-17eb889c49c4",
+            "title": "Taller de Programación",
+            "description": "Taller introductorio de programación para jóvenes",
+            "published_at": null,
+            "type": {
+                "name": "event",
+                "description": "Eventos"
+            },
+            "attachments": [],
+            "organizers": [],
+            "content": "Contenido detallado del taller de programación...",
+            "cities": [],
+            "tags": [],
+            "createdAt": "2025-05-27T18:21:29.993Z",
+            "event": {
+                "id": "e415f9d3-49fd-488e-a443-17eb889c49c4",
+                "date": "2025-06-02T21:11:15.121Z",
+                "location": "Cali, Colombia",
+                "registrationLink": "https://example.com/register"
+            },
+            "news": null,
+            "offer": null
+        }, */
+export type Registration = {
+  id: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  publication: {
+    id: string;
+    title: string;
+    description: string;
+    type: PublicationType;
+    date?: string;
+    location?: string;
+  };
+  registeredAt: string;
+};
+
+export type Publication = {
   id: string;
   title: string;
   description: string;
@@ -40,39 +81,46 @@ export interface Publication {
   tags: Tag[];
   attachments?: Attachment[];
   createdAt: string;
+  event?: EventDto;
+  news?: NewsDto;
+  offer?: OfferDto;
+  registrations?: Registration[];
+  registered?: number;
 }
 
-export interface PublicationFilters {
+export type PublicationFilters = {
   tag?: string;
   city?: string;
   type?: string;
-  page?: number;
-  limit?: number;
   unpublished?: boolean;
   search?: string;
+  organization?: string;
+  sortBy?: string;
+  sortOrder?: 'ASC' | 'DESC';
 }
 
-export interface CreateTagDto {
+export type CreateTagDto = {
   name: string;
   description?: string;
 }
 
-export interface EventDto {
+export type EventDto = {
   location?: string;
   date?: string;
+  registrationLink?: string;
 }
 
-export interface NewsDto {
+export type NewsDto = {
   author?: string;
 }
 
-export interface OfferDto {
+export type OfferDto = {
   offerType?: string;
   external_link?: string;
   deadline?: string;
 }
 
-export interface CreatePublicationDto {
+export type CreatePublicationDto = {
   title: string;
   description: string;
   content: string;
@@ -87,20 +135,16 @@ export interface CreatePublicationDto {
   attachments?: File[];
 }
 
-export interface UpdatePublicationDto extends Partial<CreatePublicationDto> {
+export type UpdatePublicationDto = Partial<CreatePublicationDto> & {
   attachmentsToDelete?: string[];
 }
 
-export interface FilterPublicationDto {
-  tag?: string;
-  city?: string;
-  type?: string;
+export type FilterPublicationDto = PublicationFilters & {
   page?: number;
   limit?: number;
-  unpublished?: boolean;
 }
 
-export interface ReportFilters {
+export type ReportFilters = {
   types?: string[];
   organizationIds?: string[];
   authorIds?: string[];
