@@ -3,11 +3,11 @@ import { ReactNode } from 'react';
 interface UserStatusProps {
   status: boolean;
   onStatusChange: (value: boolean) => void;
-  title: String
+  title: string
   trueIcon: ReactNode;
   falseIcon: ReactNode;
-  trueText: String,
-  falseText: String
+  trueText: string,
+  falseText: string
 }
 
 export function UserFormStatus({ status, onStatusChange, title, trueIcon, trueText, falseIcon, falseText }: UserStatusProps) {
