@@ -1,6 +1,7 @@
-import { render, screen, waitFor, act } from '@testing-library/react';
+import { screen, waitFor, act } from '@testing-library/react';
 import { LatestPublicationsSection } from '../index';
 import { PublicationService } from '@/modules/publications/services/publication.service';
+import { renderWithClient } from '@/test-utils';
 
 // Mock the publication service
 jest.mock('@/modules/publications/services/publication.service', () => ({
@@ -39,7 +40,7 @@ describe('LatestPublicationsSection', () => {
     (PublicationService.getPublications as jest.Mock).mockImplementation(() => new Promise(() => {}));
     
     await act(async () => {
-      render(<LatestPublicationsSection />);
+      renderWithClient(<LatestPublicationsSection />);
     });
     
     expect(screen.getByTestId('spinner')).toBeInTheDocument();
@@ -49,7 +50,7 @@ describe('LatestPublicationsSection', () => {
     (PublicationService.getPublications as jest.Mock).mockRejectedValue(new Error('Failed to fetch'));
     
     await act(async () => {
-      render(<LatestPublicationsSection />);
+      renderWithClient(<LatestPublicationsSection />);
     });
     
     await waitFor(() => {
@@ -61,7 +62,7 @@ describe('LatestPublicationsSection', () => {
     (PublicationService.getPublications as jest.Mock).mockResolvedValue({ data: [] });
     
     await act(async () => {
-      render(<LatestPublicationsSection />);
+      renderWithClient(<LatestPublicationsSection />);
     });
 
     await waitFor(() => {
@@ -73,7 +74,7 @@ describe('LatestPublicationsSection', () => {
     (PublicationService.getPublications as jest.Mock).mockResolvedValue({ data: mockPublications });
     
     await act(async () => {
-      render(<LatestPublicationsSection />);
+      renderWithClient(<LatestPublicationsSection />);
     });
 
     await waitFor(() => {
@@ -87,7 +88,7 @@ describe('LatestPublicationsSection', () => {
     (PublicationService.getPublications as jest.Mock).mockResolvedValue({ data: mockPublications });
     
     await act(async () => {
-      render(<LatestPublicationsSection />);
+      renderWithClient(<LatestPublicationsSection />);
     });
 
     expect(screen.getByText('Noticias, Eventos y Ofertas')).toBeInTheDocument();
@@ -98,7 +99,7 @@ describe('LatestPublicationsSection', () => {
     (PublicationService.getPublications as jest.Mock).mockResolvedValue({ data: mockPublications });
     
     await act(async () => {
-      render(<LatestPublicationsSection />);
+      renderWithClient(<LatestPublicationsSection />);
     });
 
     await waitFor(() => {

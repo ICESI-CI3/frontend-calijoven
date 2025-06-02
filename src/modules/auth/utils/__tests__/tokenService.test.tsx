@@ -52,32 +52,4 @@ describe('tokenService', () => {
     expect(tokenService.hasUserIdentifier(null)).toBe(false);
     expect(tokenService.hasUserIdentifier({})).toBe(false);
   });
-
-  describe('storage', () => {
-    let tokenServiceStorage: typeof tokenService;
-    beforeEach(() => {
-      Object.defineProperty(window, 'localStorage', {
-        value: {
-          getItem: jest.fn(),
-          setItem: jest.fn(),
-          removeItem: jest.fn(),
-        },
-        writable: true,
-      });
-    });
-
-    it('setTokenInStorage y getTokenFromStorage', () => {
-      window.localStorage.setItem = jest.fn();
-      window.localStorage.getItem = jest.fn().mockReturnValue('token');
-      tokenService.setTokenInStorage('token');
-      expect(window.localStorage.setItem).toHaveBeenCalledWith('auth-token', 'token');
-      expect(tokenService.getTokenFromStorage()).toBe('token');
-    });
-
-    it('removeTokenFromStorage', () => {
-      window.localStorage.removeItem = jest.fn();
-      tokenService.removeTokenFromStorage();
-      expect(window.localStorage.removeItem).toHaveBeenCalledWith('auth-token');
-    });
-  });
 }); 

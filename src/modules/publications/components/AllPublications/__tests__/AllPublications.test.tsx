@@ -1,7 +1,8 @@
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import AllPublications from '../index';
 import type { Publication } from '@/types/publication';
+import { renderWithClient } from '@/test-utils';
 
 // Mock de los datos de prueba
 const mockPublications: Publication[] = [
@@ -37,7 +38,7 @@ const mockOnReadMore = jest.fn();
 
 describe('AllPublications', () => {
   it('renders loading state', () => {
-    render(
+    renderWithClient(
       <AllPublications
         publications={[]}
         isLoading={true}
@@ -53,7 +54,7 @@ describe('AllPublications', () => {
 
   it('renders error state', () => {
     const errorMessage = 'Error al cargar las publicaciones';
-    render(
+    renderWithClient(
       <AllPublications
         publications={[]}
         isLoading={false}
@@ -68,7 +69,7 @@ describe('AllPublications', () => {
   });
 
   it('renders empty state', () => {
-    render(
+    renderWithClient(
       <AllPublications
         publications={[]}
         isLoading={false}
@@ -83,7 +84,7 @@ describe('AllPublications', () => {
   });
 
   it('renders list of publications', () => {
-    render(
+    renderWithClient(
       <AllPublications
         publications={mockPublications}
         isLoading={false}

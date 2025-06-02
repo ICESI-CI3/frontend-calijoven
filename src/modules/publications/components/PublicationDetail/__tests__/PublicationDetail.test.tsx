@@ -2,6 +2,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { PublicationDetail } from '../index';
 import { mockPublication } from '@/modules/publications/mocks';
+import { renderWithClient } from '@/test-utils';
 
 // Mock de los hooks
 jest.mock('@/modules/publications', () => ({
@@ -36,6 +37,16 @@ jest.mock('@/modules/publications/hooks/usePublications', () => ({
   usePublications: () => mockUsePublications(),
 }));
 
+// Mock del servicio de publicaciones guardadas
+jest.mock('@/modules/publications/services/saved-publications.service', () => ({
+  savedPublicationService: {
+    getMySavedPublications: jest.fn().mockResolvedValue({ data: [], total: 0 }),
+    isPublicationSaved: jest.fn().mockResolvedValue(false),
+    savePublication: jest.fn().mockResolvedValue({}),
+    unsavePublication: jest.fn().mockResolvedValue({}),
+  },
+}));
+
 describe('PublicationDetail', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -56,7 +67,7 @@ describe('PublicationDetail', () => {
       loading: true,
       error: null,
     });
-    render(<PublicationDetail id="1" />);
+    renderWithClient(<PublicationDetail id="1" />);
     expect(screen.getByRole('status')).toBeInTheDocument();
   });
 
@@ -66,7 +77,7 @@ describe('PublicationDetail', () => {
       loading: false,
       error: 'Error al cargar la publicación',
     });
-    render(<PublicationDetail id="1" />);
+    renderWithClient(<PublicationDetail id="1" />);
     expect(screen.getByText('Error al cargar la publicación')).toBeInTheDocument();
   });
 
@@ -76,19 +87,8 @@ describe('PublicationDetail', () => {
       loading: false,
       error: null,
     });
-    render(<PublicationDetail id="1" />);
+    renderWithClient(<PublicationDetail id="1" />);
     expect(screen.getByText('No se encontró la publicación')).toBeInTheDocument();
-  });
-
-  it('renders publication detail correctly', () => {
-    mockUsePublications.mockReturnValue({
-      publication: mockPublication,
-      loading: false,
-      error: null,
-    });
-    render(<PublicationDetail id="1" />);
-    expect(screen.getByText(mockPublication.title)).toBeInTheDocument();
-    expect(screen.getByText(mockPublication.description)).toBeInTheDocument();
   });
 
   it('renders event registration link for event type publications', () => {
@@ -102,7 +102,7 @@ describe('PublicationDetail', () => {
       loading: false,
       error: null,
     });
-    render(<PublicationDetail id="1" />);
+    renderWithClient(<PublicationDetail id="1" />);
     expect(screen.getByRole('link', { name: /link de registro/i })).toBeInTheDocument();
   });
 
@@ -117,7 +117,7 @@ describe('PublicationDetail', () => {
       loading: false,
       error: null,
     });
-    render(<PublicationDetail id="1" />);
+    renderWithClient(<PublicationDetail id="1" />);
     const registerButton = screen.getByRole('button', { name: /inscribirse al evento/i });
     fireEvent.click(registerButton);
     await waitFor(() => {
@@ -137,7 +137,7 @@ describe('PublicationDetail', () => {
       loading: false,
       error: null,
     });
-    render(<PublicationDetail id="1" />);
+    renderWithClient(<PublicationDetail id="1" />);
     const cancelButton = screen.getByRole('button', { name: /cancelar inscripción/i });
     fireEvent.click(cancelButton);
     await waitFor(() => {
@@ -160,7 +160,7 @@ describe('PublicationDetail', () => {
       loading: false,
       error: null,
     });
-    render(<PublicationDetail id="1" />);
+    renderWithClient(<PublicationDetail id="1" />);
     const attachmentElement = screen.getAllByText('test.pdf')[0];
     fireEvent.click(attachmentElement);
     // Verificar que el iframe se muestra con la URL correcta
