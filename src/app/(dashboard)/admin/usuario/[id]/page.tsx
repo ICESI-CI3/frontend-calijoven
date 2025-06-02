@@ -82,7 +82,7 @@ export default function UserDetailsPage() {
         <div className="py-12 text-center">
           <Alert
             type="error"
-            message={error instanceof Error ? error.message : 'Error al cargar la PQRS'}
+            message={error instanceof Error ? error.message : 'Error al cargar el usuario'}
           />
           <div className="mt-4 flex justify-center gap-2">
             <Button onClick={() => refetch()}>Reintentar</Button>

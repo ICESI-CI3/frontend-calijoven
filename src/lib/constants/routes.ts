@@ -144,6 +144,16 @@ export const ROUTES = {
       PUBLIC: false,
       PERMISSIONS: [PERMISSIONS.MANAGE_ORGANIZATION],
     }),
+    ORGANIZATION_EDIT: (id: string) => ({
+      PATH: `/admin/organizacion/${id}/editar`,
+      PUBLIC: false,
+      PERMISSIONS: [PERMISSIONS.MANAGE_ORGANIZATION],
+    }),
+    ORGANIZATION_CREATE:{
+      PATH: `/admin/organizacion/nueva`,
+      PUBLIC: false,
+      PERMISSIONS: [PERMISSIONS.MANAGE_ORGANIZATION],
+    },
     PUBLICATIONS: {
       PATH: '/admin/publicacion',
       PUBLIC: false,
