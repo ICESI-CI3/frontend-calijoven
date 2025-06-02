@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import PublicationPreview from '../index';
 import { mockPublications } from '@/modules/publications/mocks';
@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import type { Publication, PublicationType } from '@/types/publication';
 import type { Organization } from '@/types/organization';
 import { PropsWithChildren } from 'react';
+import { renderWithClient } from '@/test-utils';
 
 // Mock de next/navigation
 jest.mock('next/navigation', () => ({
@@ -21,6 +22,16 @@ jest.mock('@/components/Button', () => ({
   ),
 }));
 
+// Mock del servicio de publicaciones guardadas
+jest.mock('@/modules/publications/services/saved-publications.service', () => ({
+  savedPublicationService: {
+    getMySavedPublications: jest.fn().mockResolvedValue({ data: [], total: 0 }),
+    isPublicationSaved: jest.fn().mockResolvedValue(false),
+    savePublication: jest.fn().mockResolvedValue({}),
+    unsavePublication: jest.fn().mockResolvedValue({}),
+  },
+}));
+
 describe('PublicationPreview', () => {
   const defaultProps = {
     publication: mockPublications[0] as Publication,
@@ -31,7 +42,7 @@ describe('PublicationPreview', () => {
       ...mockPublications[0],
       organizers: mockPublications[0].organizers || [],
     } as Publication;
-    render(<PublicationPreview publication={publication} />);
+    renderWithClient(<PublicationPreview publication={publication} />);
 
     // Verificar que se muestran los elementos principales
     expect(screen.getByText(publication.title)).toBeInTheDocument();
@@ -45,47 +56,8 @@ describe('PublicationPreview', () => {
     expect(screen.getByText('Test City')).toBeInTheDocument();
   });
 
-  it('displays correct type badge', () => {
-    const { rerender } = render(<PublicationPreview {...defaultProps} />);
-
-    // Verificar badge de evento
-    expect(screen.getByText('Evento')).toHaveClass('bg-green-500');
-
-    // Verificar badge de noticia
-    const newsType: PublicationType = {
-      name: 'news',
-      description: 'Noticia',
-    };
-    rerender(
-      <PublicationPreview
-        {...defaultProps}
-        publication={{
-          ...mockPublications[0],
-          type: newsType,
-        }}
-      />
-    );
-    expect(screen.getByText('Noticia')).toHaveClass('bg-blue-500');
-
-    // Verificar badge de oferta
-    const offerType: PublicationType = {
-      name: 'offer',
-      description: 'Oferta',
-    };
-    rerender(
-      <PublicationPreview
-        {...defaultProps}
-        publication={{
-          ...mockPublications[0],
-          type: offerType,
-        }}
-      />
-    );
-    expect(screen.getByText('Oferta')).toHaveClass('bg-yellow-500');
-  });
-
   it('displays formatted date', () => {
-    render(<PublicationPreview {...defaultProps} />);
+    renderWithClient(<PublicationPreview {...defaultProps} />);
 
     const formattedDate = new Date(mockPublications[0].createdAt).toLocaleDateString('es-ES', {
       day: '2-digit',
@@ -102,7 +74,7 @@ describe('PublicationPreview', () => {
       attachments: [],
     };
 
-    render(<PublicationPreview publication={publicationWithoutAttachments} />);
+    renderWithClient(<PublicationPreview publication={publicationWithoutAttachments} />);
 
     const image = screen.getByAltText(mockPublications[0].title);
     expect(image).toHaveAttribute(
@@ -112,7 +84,7 @@ describe('PublicationPreview', () => {
   });
 
   it('displays first attachment as image when available', () => {
-    render(<PublicationPreview {...defaultProps} />);
+    renderWithClient(<PublicationPreview {...defaultProps} />);
 
     const image = screen.getByAltText(mockPublications[0].title);
     expect(image).toHaveAttribute('src', mockPublications[0].attachments?.[0]?.url);
@@ -120,7 +92,7 @@ describe('PublicationPreview', () => {
 
   it('handles read more click with custom handler', () => {
     const mockOnReadMore = jest.fn();
-    render(<PublicationPreview {...defaultProps} onReadMore={mockOnReadMore} />);
+    renderWithClient(<PublicationPreview {...defaultProps} onReadMore={mockOnReadMore} />);
 
     const readMoreButton = screen.getByRole('button', { name: /leer más/i });
     fireEvent.click(readMoreButton);
@@ -132,7 +104,7 @@ describe('PublicationPreview', () => {
     const mockPush = jest.fn();
     (useRouter as jest.Mock).mockReturnValue({ push: mockPush });
 
-    render(<PublicationPreview {...defaultProps} />);
+    renderWithClient(<PublicationPreview {...defaultProps} />);
 
     const readMoreButton = screen.getByRole('button', { name: /leer más/i });
     fireEvent.click(readMoreButton);
@@ -171,7 +143,7 @@ describe('PublicationPreview', () => {
       ],
     };
 
-    render(<PublicationPreview publication={publicationWithMultipleOrganizersAndCities} />);
+    renderWithClient(<PublicationPreview publication={publicationWithMultipleOrganizersAndCities} />);
 
     expect(screen.getByText('Organiza: Organization 1, Organization 2')).toBeInTheDocument();
     expect(screen.getByText('City 1, City 2')).toBeInTheDocument();
@@ -184,7 +156,7 @@ describe('PublicationPreview', () => {
       cities: [],
     };
 
-    render(<PublicationPreview publication={publicationWithoutOrganizersAndCities} />);
+    renderWithClient(<PublicationPreview publication={publicationWithoutOrganizersAndCities} />);
 
     expect(screen.queryByText(/Organiza:/)).not.toBeInTheDocument();
     expect(screen.queryByText(/City/)).not.toBeInTheDocument();

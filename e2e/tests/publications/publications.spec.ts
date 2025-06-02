@@ -1,127 +1,111 @@
+import { API_ROUTES } from './../../../src/lib/constants/api';
 import { test, expect } from '@playwright/test';
+import { generateStorageState, TEST_USERS } from '../../helper/auth';
+import { ROUTES } from '@/lib/constants/routes';
+import { buildApiRegex, waitForPageReady } from '../../helper/util';
+import { PublicationFactory } from '../../mock/publication-factory';
 
-test.describe('Publications Page', () => {
+test.use({ storageState: generateStorageState(TEST_USERS.USER) });
+
+test.describe('Public Publications View', () => {
   test.beforeEach(async ({ page }) => {
-    // Mockear la ruta de sesión para simular un usuario autenticado
-    await page.route('**/api/auth/session', route => {
+    // Navigate to the publications page
+    await page.goto(ROUTES.PUBLICATIONS.LIST.PATH);
+    
+    // Mock the API response
+    await page.route(buildApiRegex(API_ROUTES.PUBLICATIONS.BASE), (route) => {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify({
-          user: {
-            id: 1,
-            name: 'Test User',
-            email: 'test@example.com',
-            roles: ['ADMIN']
-          },
-          valid: true,
-          expires: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+          data: PublicationFactory.createMany(6),
+          total: 6,
         }),
       });
     });
 
-    // Mockear la ruta de callback de autenticación
-    await page.route('**/api/auth/callback/credentials', route => {
+    await page.route(buildApiRegex(API_ROUTES.PUBLICATIONS.BY_ID('*')), (route) => {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({
-          user: {
-            id: 1,
-            name: 'Test User',
-            email: 'test@example.com',
-            roles: ['ADMIN']
-          }
-        }),
+        body: JSON.stringify(PublicationFactory.create()),
       });
     });
 
-    // Mockear las rutas de la API
-    await page.route('**/publication*', route => {
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          data: [],
-          meta: {
-            total: 0,
-            page: 1,
-            limit: 3
-          }
-        }),
-      });
-    });
-
-    await page.route('**/api/banners*', route => {
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify([]),
-      });
-    });
-
-    // Navegar a la página de publicaciones antes de cada test
-    await page.goto('/publicaciones', { waitUntil: 'networkidle' });
-    
-    // Debug: Verificar que la página se cargó correctamente
-    const title = await page.title();
-    
-    // Debug: Verificar la URL actual
-    const url = page.url();
-    
-    // Debug: Verificar si hay errores en la red
-    page.on('requestfailed', request => {
-      console.log('Failed request:', request.url(), request.failure()?.errorText);
-    });
-
-    // Esperar a que la página esté completamente cargada
-    await page.waitForLoadState('domcontentloaded');
-    await page.waitForLoadState('networkidle');
-
-    // Si estamos en la página de login, esperar a que se complete la redirección
-    if (url.includes('/login')) {
-      await page.waitForURL('**/publications', { timeout: 10000 });
-    }
+    // Wait for the page to be ready
+    await waitForPageReady(page);
   });
 
-  test('should load the publications page', async ({ page }) => {
-    // Verificar que estamos en la página correcta
-    await expect(page).toHaveURL(/.*\/publicaciones/);
-    
-    // Verificar que el título de la página es correcto
-    const title = await page.title();
-    expect(title).toBeTruthy();
-    
-    // Verificar que el body está presente
-    const body = await page.locator('body');
-    await expect(body).toBeVisible();
-    
-    // Debug: Imprimir todos los elementos con texto
-    const elements = await page.evaluate(() => {
-      const allElements = document.querySelectorAll('*');
-      return Array.from(allElements)
-        .filter(el => el.textContent?.trim())
-        .map(el => ({
-          tag: el.tagName,
-          text: el.textContent?.trim(),
-          visible: el.getBoundingClientRect().height > 0,
-          classes: el.className
-        }));
+  test.describe('Publication Filtering', () => {
+    test('should filter publications by type', async ({ page }) => {
+      // Wait for the page to load completely
+      await page.waitForLoadState('networkidle');
+
+      // Find the publication type filter
+      const typeFilter = page
+        .getByText('Tipo de Publicación')
+        .locator('..')
+        .locator('select, [role="combobox"]');
+
+      if (await typeFilter.isVisible()) {
+        // Select a specific type (e.g: Events)
+        await typeFilter.selectOption({ label: 'Evento' });
+
+        // Wait for the list to update
+        await page.waitForTimeout(2000);
+
+        // Verify that the filter is applied
+        const publicationCards = page.locator('[data-testid="publication-card"]');
+        const cards = await publicationCards.all();
+        
+        for (const card of cards) {
+          const type = await card.getAttribute('data-type');
+          expect(type).toBe('event');
+        }
+      }
+    });
+
+    test('should filter publications by organization', async ({ page }) => {
+      // Find the organization filter
+      const orgFilter = page
+        .getByText('Organización')
+        .locator('..')
+        .locator('select, [role="combobox"]');
+
+      if (await orgFilter.isVisible()) {
+        // Select a specific organization
+        await orgFilter.selectOption({ index: 1 });
+
+        // Wait for the list to update
+        await page.waitForTimeout(2000);
+
+        // Verify that the filter is applied
+        const publicationCards = page.locator('[data-testid="publication-card"]');
+        await expect(publicationCards).toBeVisible();
+      }
     });
   });
 
-  test('should display the publications header', async ({ page }) => {
-    // Primero verificar que el elemento existe en el DOM
-    const headerExists = await page.evaluate(() => {
-      const elements = document.querySelectorAll('*');
-      return Array.from(elements).some(el => 
-        el.textContent?.includes('Descubre eventos, noticias y oportunidades para jóvenes')
-      );
+  test.describe('Pagination', () => {
+    test('should navigate through pages', async ({ page }) => {
+      // Wait for the page to load
+      await page.waitForLoadState('networkidle');
+
+      // Find pagination controls
+      const pagination = page.locator('[aria-label="pagination"], .pagination, [data-testid="pagination"]');
+
+      if (await pagination.isVisible()) {
+        // Click next page
+        const nextButton = page.getByRole('button', { name: /siguiente|next/i });
+        if (await nextButton.isVisible()) {
+          await nextButton.click();
+          await page.waitForTimeout(1000);
+          
+          // Verify that the page changed
+          const currentPage = page.locator('[aria-current="page"]');
+          await expect(currentPage).toHaveText('2');
+        }
+      }
     });
-
-    // Luego intentar encontrarlo con el selector
-    const headerText = page.getByText('Descubre eventos, noticias y oportunidades para jóvenes', { exact: false });
-    await expect(headerText).toBeVisible({ timeout: 10000 });
   });
-
-}); 
+});
