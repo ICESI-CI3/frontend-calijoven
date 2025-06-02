@@ -24,11 +24,27 @@ export const AuthService = {
    * @throws {AuthError} - Error si la autenticación falla
    */
   async login(credentials: LoginFormData): Promise<AuthResponse> {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] 🔐 Iniciando proceso de login para email: ${credentials.email}`);
+
     try {
+      console.log(`[${timestamp}] 📡 Enviando petición de login a ${API_ROUTES.AUTH.LOGIN}`);
       const { data } = await apiClient.post(API_ROUTES.AUTH.LOGIN, credentials);
+
+      console.log(`[${timestamp}] ✅ Login exitoso para usuario: ${data.user?.email || 'N/A'}`);
+      console.log(`[${timestamp}] 🔑 Token recibido: ${data.token ? 'Sí' : 'No'}`);
+
       return data;
     } catch (error) {
       console.error('Login failed:', error);
+
+      // Log adicional para seguimiento
+      console.log(`[${new Date().toISOString()}] ❌ Intento de login fallido:`, {
+        email: credentials.email,
+        errorType: error instanceof Error ? error.constructor.name : 'Unknown',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      });
+
       throw new AuthError('No se pudo iniciar sesión. Verifica tus credenciales.');
     }
   },

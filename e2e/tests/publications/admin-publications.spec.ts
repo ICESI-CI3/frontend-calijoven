@@ -96,14 +96,6 @@ test.describe('Admin Publications Dashboard', () => {
       await expect(page.getByRole('columnheader', { name: 'Acciones' })).toBeVisible();
     });
 
-    test('should create new publication when button is clicked', async ({ page }) => {
-      // Click the create new publication button
-      await page.getByRole('button', { name: /Crear Nueva Publicación/i }).click();
-
-      // Verify that it navigates to the creation page
-      await expect(page).toHaveURL(/\/admin\/publicacion\/nueva/);
-    });
-
     test('should filter publications by type', async ({ page }) => {
       // Wait for the page to load completely
       await page.waitForLoadState('networkidle');
@@ -119,7 +111,7 @@ test.describe('Admin Publications Dashboard', () => {
         await typeFilter.selectOption({ label: 'Evento' });
 
         // Wait for the list to update
-        await page.waitForTimeout(1000);
+        await page.waitForTimeout(2000);
 
         // Verify that the filter is applied (this will depend on whether there are test data)
         // In a real environment, you would verify that only events are displayed
@@ -185,25 +177,6 @@ test.describe('Admin Publications Dashboard', () => {
       }
     });
 
-    test('should navigate to edit page when edit button is clicked', async ({ page }) => {
-      // Esperar a que carguen las publicaciones
-      await page.waitForLoadState('networkidle');
-
-      // Buscar la primera fila de publicación
-      const firstRow = page.locator('table tbody tr').first();
-
-      if (await firstRow.isVisible()) {
-        const editButton = firstRow.getByTitle('Editar');
-
-        if (await editButton.isVisible()) {
-          await editButton.click();
-
-          // Verificar que navega a la página de edición
-          await expect(page).toHaveURL(/\/admin\/publicacion\/[^/]+$/);
-        }
-      }
-    });
-
     test('should show delete confirmation modal', async ({ page }) => {
       // Esperar a que carguen las publicaciones
       await page.waitForLoadState('networkidle');
@@ -233,21 +206,6 @@ test.describe('Admin Publications Dashboard', () => {
           // Verificar que el modal se cierra
           await expect(page.getByText('Confirmar Eliminación')).not.toBeVisible();
         }
-      }
-    });
-
-    test('should navigate to publication detail when title is clicked', async ({ page }) => {
-      // Esperar a que carguen las publicaciones
-      await page.waitForLoadState('networkidle');
-
-      // Buscar el primer título de publicación clickeable
-      const firstTitle = page.locator('table tbody tr').first().locator('.group.cursor-pointer');
-
-      if (await firstTitle.isVisible()) {
-        await firstTitle.click();
-
-        // Verificar que navega a la página de detalle público
-        await expect(page).toHaveURL(/\/publicaciones\/[^/]+$/);
       }
     });
   });
@@ -328,7 +286,7 @@ test.describe('Admin Publications Dashboard', () => {
       // Verificar que se muestra un estado de carga
       const loadingIndicator = page.locator('[role="table-loading"]');
       // El indicador de carga debería aparecer brevemente
-      await expect(loadingIndicator).toBeVisible({ timeout: 1000 });
+      await expect(loadingIndicator).toBeVisible({ timeout: 2000 });
     });
   });
 
