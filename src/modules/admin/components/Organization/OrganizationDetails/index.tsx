@@ -10,13 +10,18 @@ import { SearchInput } from "@/components/SearchInput"
 import { Spinner } from "@/components/Spinner"
 import { Tabs, TabsList, TabsTrigger } from "@/components/Tabs"
 import { useAdminOrganizationDetails } from "@/modules/admin/hooks/useAdminOrganizationDetails"
+import { CommitteeCreateRequest } from "@/types/committee"
+import { CommitteeDto } from "@/types/organization"
 import {
-  ArrowLeftIcon,
-  Cog6ToothIcon,
-  DocumentTextIcon,
-  PencilIcon,
-  TrashIcon,
-  UserGroupIcon
+    ArrowLeftIcon,
+    Cog6ToothIcon,
+    DocumentTextIcon,
+    PencilIcon,
+    PlusIcon,
+    TrashIcon,
+    UserGroupIcon,
+    UserMinusIcon,
+    UserPlusIcon
 } from "@heroicons/react/24/outline"
 import { useParams, useRouter } from "next/navigation"
 import { useState } from "react"
@@ -66,11 +71,17 @@ const mockPublications: Publication[] = [
 ]
 
 export default function OrganizationDetails() {
-  const [isPublic, setIsPublic] = useState(true)
   const [activeTab, setActiveTab] = useState("info")
   const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false)
-  const [isRemoveMemberModalOpen, setIsRemoveMemberModalOpen] = useState(false)
   const [memberEmail, setMemberEmail] = useState("")
+  const [isCreateCommitteeModalOpen, setIsCreateCommitteeModalOpen] = useState(false)
+  const [isAddCommitteeMemberModalOpen, setIsAddCommitteeMemberModalOpen] = useState(false)
+  const [selectedCommittee, setSelectedCommittee] = useState<CommitteeDto | null>(null)
+  const [newCommitteeData, setNewCommitteeData] = useState<CommitteeCreateRequest>({
+    name: "",
+    leaderEmail: "",
+  })
+  const [committeeMemberEmail, setCommitteeMemberEmail] = useState("")
 
   const router = useRouter();
   const params = useParams();
@@ -92,6 +103,16 @@ export default function OrganizationDetails() {
       addMember,
       removeMember,  
       refetch,
+      createCommittee,
+      updateCommittee,
+      deleteCommittee,
+      addCommitteeMember,
+      removeCommitteeMember,
+      isCreatingCommittee,
+      isUpdatingCommittee,
+      isDeletingCommittee,
+      isAddingCommitteeMember,
+      isRemovingCommitteeMember,
   } = useAdminOrganizationDetails(organizationId);
 
   const handleAddMember = (userId: string) => {
@@ -108,6 +129,26 @@ export default function OrganizationDetails() {
       setMemberEmail("")
       setIsAddMemberModalOpen(false)
     }
+  }
+
+  const handleCreateCommittee = () => {
+    if (newCommitteeData.name && newCommitteeData.leaderEmail) {
+      createCommittee(newCommitteeData)
+      setNewCommitteeData({ name: "", leaderEmail: "" })
+      setIsCreateCommitteeModalOpen(false)
+    }
+  }
+
+  const handleAddCommitteeMember = () => {
+    if (selectedCommittee && committeeMemberEmail) {
+      addCommitteeMember({ committeeId: selectedCommittee.id, email: committeeMemberEmail })
+      setCommitteeMemberEmail("")
+      setIsAddCommitteeMemberModalOpen(false)
+    }
+  }
+
+  const handleRemoveCommitteeMember = (committeeId: string, userId: string) => {
+    removeCommitteeMember({ committeeId, userId })
   }
 
   if (isLoading) {
@@ -243,23 +284,101 @@ export default function OrganizationDetails() {
 
             {activeTab === "committees" && (
               <div className="space-y-4 mt-4">
-                <Card
-                  title={`Comités (${mockCommittees.length})`}
-                  icon={<Cog6ToothIcon className="w-5 h-5 text-primary" />}
-                  color="primary"
-                >
-                  <div className="space-y-3">
-                    {mockCommittees.map((committee) => (
-                      <div key={committee.id} className="p-4 border rounded-lg">
-                        <div className="flex items-center justify-between mb-2">
-                          <h4 className="font-medium">{committee.name}</h4>
-                          <span className="text-sm text-muted-foreground">{committee.membersCount} miembros</span>
+                <div className="flex justify-between items-center">
+                  <h2 className="text-lg font-semibold">Comités</h2>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={() => setIsCreateCommitteeModalOpen(true)}
+                  >
+                    <PlusIcon className="w-4 h-4 mr-2" />
+                    Crear Comité
+                  </Button>
+                </div>
+
+                <div className="grid gap-4">
+                  {committeeTabData.committees.map((committee) => (
+                    <Card
+                      key={committee.id}
+                      title={committee.name}
+                      icon={<Cog6ToothIcon className="w-5 h-5 text-primary" />}
+                      color="primary"
+                    >
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm text-muted-foreground">
+                              Líder: {committee.leader.name}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              {committee.members.length} miembros
+                            </p>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                setSelectedCommittee(committee)
+                                setIsAddCommitteeMemberModalOpen(true)
+                              }}
+                            >
+                              <UserPlusIcon className="w-4 h-4 mr-2" />
+                              Agregar Miembro
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => deleteCommittee(committee.id)}
+                              disabled={isDeletingCommittee}
+                            >
+                              <TrashIcon className="w-4 h-4 mr-2" />
+                              Eliminar
+                            </Button>
+                          </div>
                         </div>
-                        <p className="text-sm text-muted-foreground">{committee.description}</p>
+
+                        <div className="space-y-2">
+                          <h4 className="font-medium">Miembros</h4>
+                          <div className="space-y-2">
+                            {committee.members.map((member) => (
+                              <div
+                                key={member.id}
+                                className="flex items-center justify-between p-2 bg-gray-50 rounded-lg"
+                              >
+                                <div className="flex items-center gap-2">
+                                  <Avatar
+                                    name={member.name}
+                                    src={member.profilePicture}
+                                    size="sm"
+                                  />
+                                  <div>
+                                    <p className="text-sm font-medium">{member.name}</p>
+                                    <p className="text-xs text-muted-foreground">
+                                      {member.email}
+                                    </p>
+                                  </div>
+                                </div>
+                                {member.id !== committee.leader.id && (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() =>
+                                      handleRemoveCommitteeMember(committee.id, member.id)
+                                    }
+                                    disabled={isRemovingCommitteeMember}
+                                  >
+                                    <UserMinusIcon className="w-4 h-4" />
+                                  </Button>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
                       </div>
-                    ))}
-                  </div>
-                </Card>
+                    </Card>
+                  ))}
+                </div>
               </div>
             )}
 
@@ -325,6 +444,75 @@ export default function OrganizationDetails() {
               disabled={!memberEmail}
             >
               Confirmar
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Create Committee Modal */}
+      <Modal
+        isOpen={isCreateCommitteeModalOpen}
+        onClose={() => setIsCreateCommitteeModalOpen(false)}
+        title="Crear Nuevo Comité"
+      >
+        <div className="space-y-4">
+          <Input
+            label="Nombre del Comité"
+            value={newCommitteeData.name}
+            onChange={(e) =>
+              setNewCommitteeData((prev) => ({ ...prev, name: e.target.value }))
+            }
+          />
+          <Input
+            label="Email del Líder"
+            value={newCommitteeData.leaderEmail}
+            onChange={(e) =>
+              setNewCommitteeData((prev) => ({ ...prev, leaderEmail: e.target.value }))
+            }
+          />
+          <div className="flex justify-end gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setIsCreateCommitteeModalOpen(false)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="primary"
+              onClick={handleCreateCommittee}
+              disabled={isCreatingCommittee}
+            >
+              Crear Comité
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Add Committee Member Modal */}
+      <Modal
+        isOpen={isAddCommitteeMemberModalOpen}
+        onClose={() => setIsAddCommitteeMemberModalOpen(false)}
+        title="Agregar Miembro al Comité"
+      >
+        <div className="space-y-4">
+          <Input
+            label="Email del Miembro"
+            value={committeeMemberEmail}
+            onChange={(e) => setCommitteeMemberEmail(e.target.value)}
+          />
+          <div className="flex justify-end gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setIsAddCommitteeMemberModalOpen(false)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="primary"
+              onClick={handleAddCommitteeMember}
+              disabled={isAddingCommitteeMember}
+            >
+              Agregar Miembro
             </Button>
           </div>
         </div>

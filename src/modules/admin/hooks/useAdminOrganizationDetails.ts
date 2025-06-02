@@ -1,4 +1,6 @@
+import { CommitteeService } from "@/modules/organizations/services/committee.service";
 import { OrganizationService } from "@/modules/organizations/services/organization.service";
+import { CommitteeCreateRequest, CommitteeUpdateRequest } from "@/types/committee";
 import { CommitteeDto, DocumentDto, Organization, PublicUserDto } from "@/types/organization";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -93,6 +95,116 @@ export function useAdminOrganizationDetails(organizationId: string) {
         },
     });
 
+    // Mutación para crear un comité
+    const createCommitteeMutation = useMutation({
+        mutationFn: (data: CommitteeCreateRequest) => CommitteeService.createCommittee(organizationId, data),
+        onSuccess: (updatedCommittee) => {
+            // Actualizar el caché de la organización
+            queryClient.setQueryData(['organization', organizationId], (old: Organization | undefined) => {
+                if (!old) return old;
+                return {
+                    ...old,
+                    committees: [...old.committees, updatedCommittee],
+                };
+            });
+            // Actualizar el estado local
+            setCommitteeTabData((prev) => ({
+                committees: [...prev.committees, updatedCommittee],
+            }));
+        },
+    });
+
+    // Mutación para actualizar un comité
+    const updateCommitteeMutation = useMutation({
+        mutationFn: ({ committeeId, data }: { committeeId: string; data: CommitteeUpdateRequest }) =>
+            CommitteeService.updateCommittee(organizationId, committeeId, data),
+        onSuccess: (updatedCommittee) => {
+            // Actualizar el caché de la organización
+            queryClient.setQueryData(['organization', organizationId], (old: Organization | undefined) => {
+                if (!old) return old;
+                return {
+                    ...old,
+                    committees: old.committees.map((c) =>
+                        c.id === updatedCommittee.id ? updatedCommittee : c
+                    ),
+                };
+            });
+            // Actualizar el estado local
+            setCommitteeTabData((prev) => ({
+                committees: prev.committees.map((c) =>
+                    c.id === updatedCommittee.id ? updatedCommittee : c
+                ),
+            }));
+        },
+    });
+
+    // Mutación para eliminar un comité
+    const deleteCommitteeMutation = useMutation({
+        mutationFn: (committeeId: string) => CommitteeService.deleteCommittee(organizationId, committeeId),
+        onSuccess: (_, committeeId) => {
+            // Actualizar el caché de la organización
+            queryClient.setQueryData(['organization', organizationId], (old: Organization | undefined) => {
+                if (!old) return old;
+                return {
+                    ...old,
+                    committees: old.committees.filter((c) => c.id !== committeeId),
+                };
+            });
+            // Actualizar el estado local
+            setCommitteeTabData((prev) => ({
+                committees: prev.committees.filter((c) => c.id !== committeeId),
+            }));
+        },
+    });
+
+    // Mutación para agregar un miembro a un comité
+    const addCommitteeMemberMutation = useMutation({
+        mutationFn: ({ committeeId, email }: { committeeId: string; email: string }) =>
+            CommitteeService.addMember(organizationId, committeeId, email),
+        onSuccess: (updatedCommittee) => {
+            // Actualizar el caché de la organización
+            queryClient.setQueryData(['organization', organizationId], (old: Organization | undefined) => {
+                if (!old) return old;
+                return {
+                    ...old,
+                    committees: old.committees.map((c) =>
+                        c.id === updatedCommittee.id ? updatedCommittee : c
+                    ),
+                };
+            });
+            // Actualizar el estado local
+            setCommitteeTabData((prev) => ({
+                committees: prev.committees.map((c) =>
+                    c.id === updatedCommittee.id ? updatedCommittee : c
+                ),
+            }));
+        },
+    });
+
+    // Mutación para remover un miembro de un comité
+    const removeCommitteeMemberMutation = useMutation({
+        mutationFn: ({ committeeId, userId }: { committeeId: string; userId: string }) =>
+            CommitteeService.removeMember(organizationId, committeeId, userId),
+        onSuccess: (updatedCommittee) => {
+            // Actualizar el caché de la organización
+            queryClient.setQueryData(['organization', organizationId], (old: Organization | undefined) => {
+                if (!old) return old;
+                return {
+                    ...old,
+                    committees: old.committees.map((c) =>
+                        c.id === updatedCommittee.id ? updatedCommittee : c
+                    ),
+                };
+            });
+            // Actualizar el estado local
+            setCommitteeTabData((prev) => ({
+                committees: prev.committees.map((c) =>
+                    c.id === updatedCommittee.id ? updatedCommittee : c
+                ),
+            }));
+        },
+    });
+
     return {
         organization,
         refetch,
@@ -114,5 +226,20 @@ export function useAdminOrganizationDetails(organizationId: string) {
         isRemovingMember: removeMemberMutation.isPending,
         addMemberError: addMemberMutation.error,
         removeMemberError: removeMemberMutation.error,
+        createCommittee: createCommitteeMutation.mutate,
+        updateCommittee: updateCommitteeMutation.mutate,
+        deleteCommittee: deleteCommitteeMutation.mutate,
+        addCommitteeMember: addCommitteeMemberMutation.mutate,
+        removeCommitteeMember: removeCommitteeMemberMutation.mutate,
+        isCreatingCommittee: createCommitteeMutation.isPending,
+        isUpdatingCommittee: updateCommitteeMutation.isPending,
+        isDeletingCommittee: deleteCommitteeMutation.isPending,
+        isAddingCommitteeMember: addCommitteeMemberMutation.isPending,
+        isRemovingCommitteeMember: removeCommitteeMemberMutation.isPending,
+        createCommitteeError: createCommitteeMutation.error,
+        updateCommitteeError: updateCommitteeMutation.error,
+        deleteCommitteeError: deleteCommitteeMutation.error,
+        addCommitteeMemberError: addCommitteeMemberMutation.error,
+        removeCommitteeMemberError: removeCommitteeMemberMutation.error,
     };
 }   
