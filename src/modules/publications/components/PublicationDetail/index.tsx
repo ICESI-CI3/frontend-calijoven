@@ -1,29 +1,27 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Spinner } from "@/components/Spinner";
-import { Alert } from "@/components/Alert";
-import { AttachmentPreviewModal } from "@/components/Attachment/AttachmentPreviewModal";
-import { PublicationHeader } from "./PublicationHeader";
-import { PublicationMetadata } from "./metadata";
-import { PublicationAttachments } from "./PublicationAttachments";
-import { EventRegistration } from "./EventRegistration";
-import { usePublications } from "../../hooks/usePublications";
-import { useEventRegistration } from "../../hooks/useEventRegistration";
+import { useState } from 'react';
+import { Spinner } from '@/components/Spinner';
+import { Alert } from '@/components/Alert';
+import { AttachmentPreviewModal } from '@/components/Attachment/AttachmentPreviewModal';
+import { PublicationHeader } from './PublicationHeader';
+import { PublicationMetadata } from './metadata';
+import { PublicationAttachments } from './PublicationAttachments';
+import { EventRegistration } from './EventRegistration';
+import { usePublications } from '../../hooks/usePublications';
+import { useEventRegistration } from '../../hooks/useEventRegistration';
 import type { Attachment } from '@/types/publication';
+import { SavePublicationButton } from '../SavePublicationButton';
 
 export function PublicationDetail({ id }: { id: string }) {
-  const { publication, loading, error, refetchPublication } = usePublications({ singlePublicationId: id });
+  const { publication, loading, error, refetchPublication } = usePublications({
+    singlePublicationId: id,
+  });
   const [previewAttachment, setPreviewAttachment] = useState<Attachment | null>(null);
-  
-  const { 
-    regLoading, 
-    regError, 
-    regSuccess, 
-    handleRegistration 
-  } = useEventRegistration({ 
+
+  const { regLoading, regError, regSuccess, handleRegistration } = useEventRegistration({
     publicationId: id,
-    onSuccess: refetchPublication
+    onSuccess: refetchPublication,
   });
 
   if (loading) {
@@ -46,12 +44,13 @@ export function PublicationDetail({ id }: { id: string }) {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <PublicationHeader 
-        title={publication.title} 
-        description={publication.description} 
-      />
-      
-      <PublicationMetadata 
+      <div className="flex items-center justify-between">
+        <h1 className="mb-2 text-3xl font-bold">{publication.title}</h1>
+        <SavePublicationButton publicationId={publication.id} />
+      </div>
+      <PublicationHeader title={publication.title} description={publication.description} />
+
+      <PublicationMetadata
         type={publication.type}
         tags={publication.tags}
         event={publication.event}
@@ -61,7 +60,7 @@ export function PublicationDetail({ id }: { id: string }) {
         publishedBy={publication.published_by}
       />
 
-      <div className="tiptap max-w-none mb-8">
+      <div className="tiptap mb-8 max-w-none">
         <div dangerouslySetInnerHTML={{ __html: publication.content }} />
       </div>
 
@@ -71,7 +70,7 @@ export function PublicationDetail({ id }: { id: string }) {
       />
 
       {publication.type.name === 'event' && (
-        <EventRegistration 
+        <EventRegistration
           isRegistered={isRegistered}
           onRegister={() => handleRegistration(false)}
           onCancel={() => handleRegistration(true)}
@@ -89,4 +88,4 @@ export function PublicationDetail({ id }: { id: string }) {
       )}
     </div>
   );
-} 
+}

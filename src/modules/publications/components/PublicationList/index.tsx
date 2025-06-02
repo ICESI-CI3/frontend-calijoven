@@ -1,6 +1,5 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/Button';
 import { Alert } from '@/components/Alert';
 import { Modal } from '@/components/Modal';
@@ -10,8 +9,7 @@ import { IconBadge, StatusIcons, TypeIcons } from '@/components/IconBadge';
 import { Pagination } from '@/components/Pagination';
 import { FilterBar, FilterGroup } from '@/components/FilterBar';
 import { Toggle } from '@/components/Toggle';
-import type { Publication, PublicationFilters } from '@/types/publication';
-import { publicationService } from '@/modules/publications/services/publication.service';
+import type { Publication } from '@/types/publication';
 import {
   DocumentTextIcon,
   ExclamationCircleIcon,
@@ -21,8 +19,7 @@ import {
   TrashIcon,
 } from '@heroicons/react/24/outline';
 import { publicationTypes } from '@/lib/constants/publicationTypes';
-import { ROUTES } from '@/lib/constants/routes';
-import { useRouter } from 'next/navigation';
+import { useAdminPublicationList } from '@/modules/publications/hooks/useAdminPublicationList';
 
 interface PublicationListProps {
   onEdit: (publication: Publication) => void;
@@ -30,86 +27,35 @@ interface PublicationListProps {
   organizationId?: string;
 }
 
-const defaultFilters: PublicationFilters = { unpublished: true };
-
 export function PublicationList({
   onEdit,
   onCreateNew,
   organizationId = '',
 }: PublicationListProps) {
-  const router = useRouter();
-  const [publications, setPublications] = useState<Publication[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [filters, setFilters] = useState<PublicationFilters>({
-    ...defaultFilters,
-    organization: organizationId,
-  });
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
-  const [itemsPerPage] = useState(10);
-  const [deleteModal, setDeleteModal] = useState<{
-    isOpen: boolean;
-    publication: Publication | null;
-  }>({
-    isOpen: false,
-    publication: null,
-  });
+  const {
+    // Data
+    publications,
+    totalItems,
+    totalPages,
 
-  useEffect(() => {
-    setFilters((prev) => ({
-      ...prev,
-      organization: organizationId,
-    }));
-    setCurrentPage(1);
-  }, [organizationId]);
+    // State
+    isLoading,
+    error,
+    filters,
+    currentPage,
+    deleteModal,
 
-  const loadPublications = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const response = await publicationService.getPublications(filters, currentPage, itemsPerPage);
-      setPublications(response.data || []);
-      setTotalItems(response.total || 0);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al cargar las publicaciones');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [filters, currentPage, itemsPerPage]);
-
-  useEffect(() => {
-    loadPublications();
-  }, [loadPublications]);
-
-  const handleDelete = async (publication: Publication) => {
-    try {
-      await publicationService.deletePublication(publication.id);
-      setDeleteModal({ isOpen: false, publication: null });
-      loadPublications();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al eliminar la publicación');
-    }
-  };
-
-  const handleGenerateReport = async (publication: Publication) => {
-    try {
-      const blob = await publicationService.generateSingleReport(
-        publication.id,
-        `Reporte - ${publication.title}`
-      );
-
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `reporte-${publication.title.toLowerCase().replace(/\s+/g, '-')}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al generar el reporte');
-    }
-  };
+    // Actions
+    handleFilterChange,
+    handlePageChange,
+    handleClearFilters,
+    handleDelete,
+    handleGenerateReport,
+    handleNavigateToDetail,
+    openDeleteModal,
+    closeDeleteModal,
+    setErrorMessage,
+  } = useAdminPublicationList({ organizationId });
 
   const publicationTypeOptions = [
     { value: '', label: 'Todos los tipos' },
@@ -150,27 +96,12 @@ export function PublicationList({
 
     const variant = typeVariantMap[type.name] || 'default';
     const icon = typeIconMap[type.name];
-    const label =
-      {
-        news: 'Noticia',
-        event: 'Evento',
-        offer: 'Oferta',
-      }[type.name] || type.description;
 
     return (
       <IconBadge variant={variant} icon={icon}>
-        {label}
+        {type.description}
       </IconBadge>
     );
-  };
-
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-
-  const handleClearFilters = () => {
-    setFilters({
-      ...defaultFilters,
-      organization: organizationId,
-    });
   };
 
   const tableColumns: TableColumn<Publication>[] = [
@@ -182,9 +113,9 @@ export function PublicationList({
       render: (publication) => (
         <div
           className="group cursor-pointer"
-          onClick={() => router.push(ROUTES.PUBLICATIONS.DETAIL(publication.id).PATH)}
+          onClick={() => handleNavigateToDetail(publication.id)}
         >
-          <div className="text-xs font-medium text-gray-900 sm:text-sm group-hover:text-primary group-hover:underline group-hover:underline-offset-2">
+          <div className="text-xs font-medium text-gray-900 group-hover:text-primary group-hover:underline group-hover:underline-offset-2 sm:text-sm">
             {publication.title}
           </div>
           <div className="max-w-xs truncate text-xs text-gray-500 group-hover:text-primary group-hover:underline group-hover:underline-offset-2">
@@ -240,7 +171,7 @@ export function PublicationList({
 
           <button
             className="inline-flex items-center justify-center rounded-md bg-gray-50 p-2 text-red-600 hover:bg-red-50"
-            onClick={() => setDeleteModal({ isOpen: true, publication })}
+            onClick={() => openDeleteModal(publication)}
             title="Eliminar"
           >
             <TrashIcon className="h-4 w-4" />
@@ -263,7 +194,7 @@ export function PublicationList({
         </Button>
       </div>
 
-      {error && <Alert type="error" message={error} onClose={() => setError(null)} />}
+      {error && <Alert type="error" message={error} onClose={() => setErrorMessage(null)} />}
 
       {/* Filtros mejorados */}
       <FilterBar onClear={handleClearFilters}>
@@ -272,7 +203,7 @@ export function PublicationList({
           icon={<DocumentTextIcon className="h-6 w-6" />}
           options={publicationTypeOptions}
           selectedValue={filters.type || ''}
-          onChange={(value) => setFilters((prev) => ({ ...prev, type: value }))}
+          onChange={(value) => handleFilterChange({ type: value })}
           defaultExpanded={false}
         />
 
@@ -280,7 +211,7 @@ export function PublicationList({
           label="Ver solo publicados"
           checked={filters.unpublished === false}
           onChange={(checked) => {
-            setFilters((prev) => ({ ...prev, unpublished: !checked }));
+            handleFilterChange({ unpublished: !checked });
           }}
           size="md"
         />
@@ -294,7 +225,7 @@ export function PublicationList({
         isLoading={isLoading}
         emptyMessage="No se encontraron publicaciones con los filtros seleccionados."
         search={true}
-        onSearch={(value) => setFilters((prev) => ({ ...prev, search: value }))}
+        onSearch={(value) => handleFilterChange({ search: value })}
       />
 
       {/* Paginación mejorada */}
@@ -302,16 +233,12 @@ export function PublicationList({
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
-          onPageChange={setCurrentPage}
+          onPageChange={handlePageChange}
         />
       )}
 
       {/* Modal de confirmación de eliminación */}
-      <Modal
-        isOpen={deleteModal.isOpen}
-        onClose={() => setDeleteModal({ isOpen: false, publication: null })}
-        title="Confirmar Eliminación"
-      >
+      <Modal isOpen={deleteModal.isOpen} onClose={closeDeleteModal} title="Confirmar Eliminación">
         <div className="space-y-4">
           <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0">
             <ExclamationCircleIcon className="h-6 w-6 text-red-600" />
@@ -328,10 +255,7 @@ export function PublicationList({
             </div>
           </div>
           <div className="mt-5 flex justify-end gap-3 sm:mt-4">
-            <Button
-              variant="outline"
-              onClick={() => setDeleteModal({ isOpen: false, publication: null })}
-            >
+            <Button variant="outline" onClick={closeDeleteModal}>
               Cancelar
             </Button>
             <Button

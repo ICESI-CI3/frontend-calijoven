@@ -3,9 +3,6 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import { User } from '@/types/user';
 import {
   extractTokenPayload,
-  setTokenInStorage,
-  getTokenFromStorage,
-  removeTokenFromStorage,
   validateToken,
 } from '../../modules/auth/utils/tokenService';
 import { useEffect } from 'react';
@@ -47,9 +44,6 @@ export const useAuth = create<AuthState>()(
           // Add roles from token payload to user
           user.roles = payload.authorities || [];
 
-          // Store token in localStorage
-          setTokenInStorage(token);
-
           // Update Zustand state
           set({
             user,
@@ -63,8 +57,6 @@ export const useAuth = create<AuthState>()(
 
       logout: () => {
         try {
-          // Remove token from localStorage
-          removeTokenFromStorage();
 
           // Clear Zustand state
           set({
@@ -85,7 +77,6 @@ export const useAuth = create<AuthState>()(
       setHydrated: (state: boolean) => set({ isHydrated: state }),
 
       clearAuth: () => {
-        removeTokenFromStorage();
         set({
           user: null,
           token: null,
@@ -94,14 +85,13 @@ export const useAuth = create<AuthState>()(
 
       isAuthenticated: () => {
         const state = get();
-        const storedToken = getTokenFromStorage();
 
         // Check if we have a user and a valid token
-        return !!(state.user && storedToken && validateToken(storedToken));
+        return !!(state.user && validateToken(state.token || undefined));
       },
 
       getStoredToken: () => {
-        return getTokenFromStorage();
+        return get().token;
       },
     }),
     {
@@ -123,13 +113,6 @@ export const useAuth = create<AuthState>()(
         if (state) {
           state.setHydrated(true);
 
-          // Sync token from separate localStorage item
-          const storedToken = getTokenFromStorage();
-          if (storedToken && !state.token) {
-            state.token = storedToken;
-          }
-
-          // Validate stored token
           if (state.token && !validateToken(state.token)) {
             state.clearAuth();
           }
@@ -218,14 +201,6 @@ export function useAuthSync() {
           } catch (error) {
             console.error('Error parsing auth storage:', error);
           }
-        }
-      }
-
-      // Handle token storage changes
-      if (e.key === 'auth-token') {
-        if (e.newValue === null && user) {
-          // Token was removed, clear auth
-          clearAuth();
         }
       }
     };
