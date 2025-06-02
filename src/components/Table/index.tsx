@@ -47,7 +47,6 @@ export function Table<T>({
   const [searchValue, setSearchValue] = useState('');
 
   const handleSearch = (value: string) => {
-    setSearchValue(value);
     onSearch?.(value);
   };
 
@@ -56,7 +55,7 @@ export function Table<T>({
       return (
         <tr>
           <td colSpan={columns.length} className="px-6 py-10 text-center">
-            <div className="flex justify-center">
+            <div className="flex justify-center" role="table-loading">
               <Spinner size="lg" />
             </div>
           </td>
@@ -134,7 +133,8 @@ export function Table<T>({
         <div className="flex items-center justify-between p-4">
           <SearchInput
             value={searchValue}
-            onChange={handleSearch}
+            onChange={setSearchValue}
+            onSearch={handleSearch}
             placeholder="Buscar por título o descripción..."
             className="w-full text-xs sm:text-sm"
             label="Buscar"
@@ -165,6 +165,7 @@ export function Table<T>({
             <tr>
               {columns.map((column) => (
                 <th
+                  role="columnheader"
                   key={column.key}
                   className={`px-6 py-3 text-xs font-medium uppercase tracking-wider text-gray-500 ${
                     column.align ? `text-${column.align}` : 'text-center'
