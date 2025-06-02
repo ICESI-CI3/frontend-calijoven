@@ -1,7 +1,7 @@
-import { OrganizationService, OrganizationError } from '../organization.service';
 import apiClient from '@/lib/api/client';
 import { API_ROUTES } from '@/lib/constants/api';
 import { Organization, PaginatedResponse } from '@/types/organization';
+import { OrganizationError, OrganizationService } from '../organization.service';
 
 // Mock the apiClient module
 jest.mock('@/lib/api/client');
@@ -21,12 +21,18 @@ describe('OrganizationService', () => {
         name: 'Org One',
         public: true,
         members: [],
+        acronym: 'OO',
+        committees: [],
+        documents: []
       },
       {
         id: 'org2',
         name: 'Org Two',
         public: false,
         members: [],
+        acronym: 'OT',
+        committees: [],
+        documents: []
       },
     ];
     const mockPaginatedResponse: PaginatedResponse<Organization> = {
@@ -83,6 +89,9 @@ describe('OrganizationService', () => {
       name: 'Org One',
       public: true,
       members: [],
+      acronym: 'OO',
+      committees: [],
+      documents: []
     };
 
     it('should fetch an organization by ID on success', async () => {
@@ -115,6 +124,8 @@ describe('OrganizationService', () => {
       id: 'new-org',
       ...mockCreateData,
       members: [],
+      committees: [],
+      documents: []
     };
 
     it('should create an organization on success', async () => {
@@ -150,6 +161,9 @@ describe('OrganizationService', () => {
       name: 'Updated Org',
       public: false,
       members: [],
+      acronym: 'UO',
+      committees: [],
+      documents: []
     };
 
     it('should update an organization on success', async () => {
@@ -179,22 +193,32 @@ describe('OrganizationService', () => {
 
   describe('addMember', () => {
     const mockOrgId = 'org1';
-    const mockUserId = 'user1';
+    const mockEmail = 'user1@example.com';
     const mockUpdatedOrganization: Organization = {
       id: mockOrgId,
       name: 'Org One',
       public: true,
-      members: [{ id: mockUserId, name: 'User One', profilePicture: '', banned: false, city: 'Test City' }],
+      members: [{
+        id: 'user1',
+        name: 'User One',
+        profilePicture: '',
+        banned: false,
+        city: 'Test City',
+        email: mockEmail
+      }],
+      acronym: 'OO',
+      committees: [],
+      documents: []
     };
 
     it('should add a member on success', async () => {
       mockedApiClient.post.mockResolvedValueOnce({ data: mockUpdatedOrganization });
 
-      const result = await OrganizationService.addMember(mockOrgId, mockUserId);
+      const result = await OrganizationService.addMember(mockOrgId, mockEmail);
 
       expect(mockedApiClient.post).toHaveBeenCalledWith(
-        API_ROUTES.ORGANIZATIONS.MEMBERS(mockOrgId),
-        { userId: mockUserId }
+        API_ROUTES.ORGANIZATIONS.MEMBERS.ADD(mockOrgId),
+        { email: mockEmail }
       );
       expect(result).toEqual(mockUpdatedOrganization);
     });
@@ -203,10 +227,10 @@ describe('OrganizationService', () => {
       const mockError = new Error('API Error');
       mockedApiClient.post.mockRejectedValueOnce(mockError);
 
-      await expect(OrganizationService.addMember(mockOrgId, mockUserId)).rejects.toThrow(
+      await expect(OrganizationService.addMember(mockOrgId, mockEmail)).rejects.toThrow(
         OrganizationError
       );
-      await expect(OrganizationService.addMember(mockOrgId, mockUserId)).rejects.toThrow(
+      await expect(OrganizationService.addMember(mockOrgId, mockEmail)).rejects.toThrow(
         'No se pudo agregar el miembro a la organización.'
       );
     });
@@ -220,6 +244,9 @@ describe('OrganizationService', () => {
       name: 'Org One',
       public: true,
       members: [],
+      acronym: 'OO',
+      committees: [],
+      documents: []
     };
 
     it('should remove a member on success', async () => {
@@ -228,7 +255,7 @@ describe('OrganizationService', () => {
       const result = await OrganizationService.removeMember(mockOrgId, mockUserId);
 
       expect(mockedApiClient.delete).toHaveBeenCalledWith(
-        API_ROUTES.ORGANIZATIONS.MEMBER(mockOrgId, mockUserId)
+        API_ROUTES.ORGANIZATIONS.MEMBERS.REMOVE(mockOrgId, mockUserId)
       );
       expect(result).toEqual(mockUpdatedOrganization);
     });

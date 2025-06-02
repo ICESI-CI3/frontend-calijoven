@@ -22,7 +22,6 @@ export function PQRSForm({ onSuccess, onCancel }: PQRSFormProps) {
     typeId: '',
     priority: 'medium' // Mantenemos el valor por defecto pero no lo mostramos en el formulario
   });
-
   const [loading, setLoading] = useState(false);
   const [loadingTypes, setLoadingTypes] = useState(true);
   const [error, setError] = useState<string | null>(null);

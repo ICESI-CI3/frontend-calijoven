@@ -54,9 +54,12 @@ export const API_ROUTES = {
 
   ORGANIZATIONS: {
     BASE: '/organization',
-    BY_ID: (id: string) => `/organization/${id}`,
-    MEMBERS: (id: string) => `/organization/${id}/members`,
-    MEMBER: (orgId: string, userId: string) => `/organization/${orgId}/members/${userId}`,
+    BY_ID: (orgId: string) => `/organization/${orgId}`,
+    MEMBERS: {
+      BASE: (orgId: string) => `/organization/${orgId}/members`,
+      ADD: (orgId: string) => `/organization/${orgId}/members`,
+      REMOVE: (orgId: string, userId: string) => `/organization/${orgId}/members/${userId}`
+    },
     COMMITTEES: {
       BASE: (orgId: string) => `/organization/${orgId}/committee`,
       BY_ID: (orgId: string, id: string) => `/organization/${orgId}/committee/${id}`,

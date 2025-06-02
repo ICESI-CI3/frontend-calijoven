@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Card } from '@/components/Card';
 import { Alert } from '@/components/Alert';
 import { Spinner } from '@/components/Spinner';
+
 import { organizationService } from '@/modules/organizations/services';
 import { PDJService } from '@/modules/pdj/services/pdj.service';
 import type { Organization, CommitteeDto } from '@/types/organization';
@@ -19,6 +20,7 @@ export default function PDJPage() {
   useEffect(() => {
     const loadData = async () => {
       try {
+
         // Primero buscamos la organización PDJ
         const orgsResponse = await organizationService.getOrganizations({
           search: 'PDJ',

@@ -18,30 +18,6 @@ export const apiClient = axios.create({
 });
 
 /**
- * Function to clear the session when it expires
- */
-const clearExpiredSession = () => {
-  // Remove token from localStorage
-  removeTokenFromStorage();
-  
-  // Remove user data from localStorage
-  localStorage.removeItem('auth-user-storage');
-  
-  // Redirect to login if we're in the browser
-  if (typeof window !== 'undefined') {
-    const currentPath = window.location.pathname;
-    const isPublicRoute = currentPath === '/' || 
-                         currentPath.startsWith('/publicaciones') ||
-                         currentPath === '/login' || 
-                         currentPath === '/register';
-    
-    if (!isPublicRoute) {
-      window.location.href = `/login?callbackUrl=${encodeURIComponent(currentPath)}`;
-    }
-  }
-};
-
-/**
  * Request interceptor to add Authorization header with token from localStorage
  */
 apiClient.interceptors.request.use(

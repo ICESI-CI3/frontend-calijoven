@@ -12,7 +12,7 @@ export type Committee = BaseCommittee & {
 
 export type CommitteeCreateRequest = {
   name: string;
-  leaderId: string;
+  leaderEmail: string;
 };
 
 export type CommitteeUpdateRequest = {

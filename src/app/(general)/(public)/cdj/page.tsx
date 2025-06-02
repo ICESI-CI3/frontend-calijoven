@@ -136,6 +136,7 @@ export default function CDJPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {documents.map((doc) => (
                   <div key={doc.id} className="border-b pb-4 last:border-b-0">
+
                     <h3 className="font-bold text-lg mb-2">{doc.title}</h3>
                     {doc.type?.description && (
                       <p className="text-gray-600 mb-2">{doc.type.description}</p>
@@ -174,7 +175,6 @@ export default function CDJPage() {
             </div>
           </Card>
         </section>
-
         {/* Contacto */}
         <section className="mb-12">
           <h2 className="text-3xl font-bold mb-6">Contacto</h2>
