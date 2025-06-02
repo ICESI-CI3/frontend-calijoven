@@ -132,7 +132,6 @@ export function Table<T>({
       {search && (
         <div className="flex items-center justify-between p-4">
           <SearchInput
-            value={searchValue}
             onChange={setSearchValue}
             onSearch={handleSearch}
             placeholder="Buscar por título o descripción..."
