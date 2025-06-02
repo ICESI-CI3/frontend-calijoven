@@ -1,5 +1,4 @@
 import { Page } from "@playwright/test";
-import "../../src/lib/api/envConfig";
 
 /**
  * Espera a que Zustand termine de hidratarse
@@ -41,6 +40,6 @@ export async function waitForPageReady(page: Page) {
 }
 
 export function buildApiRegex(route: string) {
-  const baseUrl = process.env.BACKEND_URL || 'http://localhost:4000';
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
   return `**${baseUrl}${route}*`;
 }
