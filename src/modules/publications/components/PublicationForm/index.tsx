@@ -14,7 +14,7 @@ import {
 import { AttachmentPreviewModal } from '@/components/Attachment';
 import { usePublicationForm } from './hooks/usePublicationForm';
 import type { Publication } from '@/types/publication';
-import { BaseOrganization } from '@/types/organization';
+import { OrganizationDto } from '@/types/organization';
 import { Toggle } from '@/components/Toggle';
 
 interface PublicationFormProps {
@@ -22,7 +22,7 @@ interface PublicationFormProps {
   onSuccess: () => void;
   onCancel: () => void;
   defaultOrganizationId?: string;
-  userOrganizations?: BaseOrganization[];
+  userOrganizations?: OrganizationDto[];
 }
 
 export function PublicationForm({
