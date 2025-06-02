@@ -1,8 +1,8 @@
-import { PublicationService, PublicationError, PaginatedResponse } from '../publication.service';
 import apiClient from '@/lib/api/client';
 import { API_ROUTES } from '@/lib/constants/api';
 import { publicationTypes } from '@/lib/constants/publicationTypes';
-import type { Publication, CreatePublicationDto, UpdatePublicationDto, Tag } from '@/types/publication';
+import type { CreatePublicationDto, Publication, Tag, UpdatePublicationDto } from '@/types/publication';
+import { PaginatedResponse, PublicationError, PublicationService } from '../publication.service';
 
 // Mock the apiClient module
 jest.mock('@/lib/api/client');
