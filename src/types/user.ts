@@ -1,7 +1,7 @@
 import { Permission } from '@/lib/constants/permissions';
 import { BaseCity } from './city';
 import { BaseCommittee } from './committee';
-import { BaseOrganization } from './organization';
+import { OrganizationDto } from './organization';
 
 export type User = {
   id: string;
@@ -14,7 +14,7 @@ export type User = {
   city: BaseCity;
   leadingCommittees: BaseCommittee[];
   committees: BaseCommittee[];
-  organizations: BaseOrganization[];
+  organizations: OrganizationDto[];
 };
 
 export type Role = {
@@ -36,7 +36,7 @@ export type getUser = {
   city: BaseCity;
   leadingCommittees: BaseCommittee[];
   committees: BaseCommittee[];
-  organizations: BaseOrganization[];
+  organizations: OrganizationDto[];
 };
 
 export type UserUpdateRequest = {

@@ -8,7 +8,7 @@ import type {
   OfferDto,
   UpdatePublicationDto,
 } from '@/types/publication';
-import { BaseOrganization } from '@/types/organization';
+import { OrganizationDto } from '@/types/organization';
 import { BaseCity } from '@/types/city';
 import { publicationService } from '@/modules/publications/services/publication.service';
 import { offerTypesService } from '@/lib/api/offerTypes.service';
@@ -17,7 +17,7 @@ import { publicationTypes } from '@/lib/constants/publicationTypes';
 interface UsePublicationFormProps {
   publication?: Publication;
   defaultOrganizationId?: string;
-  userOrganizations?: BaseOrganization[];
+  userOrganizations?: OrganizationDto[];
   onSuccess: () => void;
 }
 

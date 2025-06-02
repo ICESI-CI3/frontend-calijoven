@@ -1,12 +1,13 @@
-import { useMemo, useEffect, useState, useCallback } from 'react';
-import { usePublications } from '@/modules/publications';
+import { Alert } from '@/components/Alert';
+import { Pagination } from '@/components/Pagination';
 import { organizationService } from '@/modules/organizations/services';
+import { usePublications } from '@/modules/publications';
+import AllPublications from '@/modules/publications/components/AllPublications';
 import PublicationsFilters from '@/modules/publications/components/PublicationsFilters';
 import PublicationsTabs from '@/modules/publications/components/PublicationsTabs/PublicationsTabs';
-import AllPublications from '@/modules/publications/components/AllPublications';
-import { Pagination } from '@/components/Pagination';
-import { Alert } from '@/components/Alert';
 import type { SimpleOrganizationDto } from '@/types/organization';
+import type { Publication } from '@/types/publication';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 const TABS = [
   { value: '', label: 'Todas' },
@@ -18,7 +19,7 @@ const TABS = [
 interface PublicationsListProps {
   activeTab: string;
   onTabChange: (type: string) => void;
-  onEdit: (publication: any) => void;
+  onEdit: (publication: Publication) => void;
   onCreateNew: () => void;
   onReadMore: (id: string) => void;
 }
@@ -37,13 +38,13 @@ export function PublicationsList({
   const [selectedOrganization, setSelectedOrganization] = useState('');
 
   const {
-    publications,
-    total,
-    isLoading,
-    isError,
-    error,
-    page,
-    limit,
+    publications = [],
+    total = 0,
+    isLoading = false,
+    isError = false,
+    error = null,
+    page = 1,
+    limit = 9,
     handleFilterChange,
     handlePageChange,
     handleSearch
@@ -70,7 +71,9 @@ export function PublicationsList({
   }, []);
 
   useEffect(() => {
-    handleFilterChange({ type: activeTab });
+    if (handleFilterChange) {
+      handleFilterChange({ type: activeTab });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
@@ -88,12 +91,16 @@ export function PublicationsList({
 
   const handleOrganizationChange = useCallback((value: string) => {
     setSelectedOrganization(value);
-    handleFilterChange({ organization: value });
+    if (handleFilterChange) {
+      handleFilterChange({ organization: value });
+    }
   }, [handleFilterChange]);
 
   const handleSearchChange = (value: string) => {
     setSearchValue(value);
-    handleSearch(value);
+    if (handleSearch) {
+      handleSearch(value);
+    }
   };
 
   return (
@@ -101,7 +108,6 @@ export function PublicationsList({
       {orgError && <Alert type="error" message={orgError} onClose={() => setOrgError(null)} />}
       
       <PublicationsFilters
-        searchValue={searchValue}
         onSearchChange={handleSearchChange}
         organizationOptions={organizationOptions}
         selectedOrganization={selectedOrganization}
@@ -119,7 +125,7 @@ export function PublicationsList({
         publications={publications}
         isLoading={isLoading}
         isError={isError}
-        error={error}
+        error={typeof error === 'string' ? new Error(error) : error}
         onEdit={onEdit}
         onCreateNew={onCreateNew}
         onReadMore={onReadMore}
@@ -129,7 +135,7 @@ export function PublicationsList({
         <Pagination
           currentPage={page}
           totalPages={Math.ceil(total / limit)}
-          onPageChange={handlePageChange}
+          onPageChange={handlePageChange || (() => {})}
         />
       </div>
     </>
