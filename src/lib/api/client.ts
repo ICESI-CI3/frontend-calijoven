@@ -4,9 +4,8 @@
 import axios from 'axios';
 import { useAuth } from '../hooks/useAuth';
 import { ROUTES } from '../constants/routes';
-import './envConfig.ts'
 
-const baseURL = process.env.BACKEND_URL || 'http://localhost:4000';
+const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
 /**
  * Configured axios instance to make requests to the API
