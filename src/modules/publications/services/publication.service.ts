@@ -44,7 +44,7 @@ export const PublicationService = {
         limit,
         tag: filters.tag,
         city: filters.city,
-        type: filters.type,
+        ...(filters.type !== '' && { type: filters.type }),
         unpublished: filters.unpublished,
         organization: filters.organization,
         sortBy: filters.sortBy,
@@ -88,7 +88,7 @@ export const PublicationService = {
    * Crea una nueva publicación
    */
   async createPublication(publicationData: CreatePublicationDto): Promise<Publication> {
-    try {
+    try { 
       const formData = new FormData();
 
       // Agregar datos básicos

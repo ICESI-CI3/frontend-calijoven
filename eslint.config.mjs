@@ -23,6 +23,14 @@ const eslintConfig = [
     },
   },
   {
+    files: ['**/__tests__/**/*', '**/*.test.*', '**/*.spec.*', 'jest.setup.js', 'jest.config.cjs'],
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
+    },
+  },
+  {
     ignores: [
       'node_modules/',
       '.next/',

@@ -7,6 +7,7 @@ export type UsePublicationsOptions = {
   initialFilters?: PublicationFilters;
   initialPage?: number;
   initialLimit?: number;
+  singlePublicationId?: string;
 };
 
 type PublicationsQueryResult = {
@@ -18,16 +19,25 @@ export function usePublications({
   initialFilters = {},
   initialPage = 1,
   initialLimit = 9,
+  singlePublicationId,
 }: UsePublicationsOptions = {}) {
-  const [filters, setFilters] = useState<PublicationFilters>(initialFilters);
+  const [filters, setFilters] = useState<PublicationFilters>({
+    search: '',
+    ...initialFilters,
+  });
   const [page, setPage] = useState(initialPage);
   const [limit, setLimit] = useState(initialLimit);
 
-  const queryKey = useMemo(() => ['publications', filters, page, limit], [filters, page, limit]);
-
-  const { data, isLoading, isError, error, refetch } = useQuery<PublicationsQueryResult>({
-    queryKey,
+  const publicationsQuery = useQuery<PublicationsQueryResult>({
+    queryKey: ['publications', filters, page, limit],
     queryFn: () => PublicationService.getPublications(filters, page, limit),
+    enabled: !singlePublicationId,
+  });
+
+  const singlePublicationQuery = useQuery<Publication>({
+    queryKey: ['publication', singlePublicationId],
+    queryFn: () => PublicationService.getPublication(singlePublicationId!),
+    enabled: !!singlePublicationId,
   });
 
   const handleSearch = (search: string) => {
@@ -44,18 +54,35 @@ export function usePublications({
     setPage(newPage);
   };
 
+  if (singlePublicationId) {
+    return {
+      publication: singlePublicationQuery.data || null,
+      loading: singlePublicationQuery.isLoading,
+      error: singlePublicationQuery.error instanceof Error 
+        ? singlePublicationQuery.error.message 
+        : singlePublicationQuery.error 
+          ? String(singlePublicationQuery.error)
+          : null,
+      refetchPublication: () => singlePublicationQuery.refetch(),
+    };
+  }
+
   return {
-    publications: data?.data || [],
-    total: data?.total || 0,
-    isLoading,
-    isError,
-    error,
+    publications: publicationsQuery.data?.data || [],
+    total: publicationsQuery.data?.total || 0,
+    isLoading: publicationsQuery.isLoading,
+    isError: publicationsQuery.isError,
+    error: publicationsQuery.error instanceof Error 
+      ? publicationsQuery.error.message 
+      : publicationsQuery.error 
+        ? String(publicationsQuery.error)
+        : null,
     filters,
     page,
     limit,
     handleSearch,
     handleFilterChange,
     handlePageChange,
-    refetch,
+    refetch: () => publicationsQuery.refetch(),
   };
 }

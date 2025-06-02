@@ -1,42 +1,43 @@
 import { Select } from '@/components/Select';
 import { SearchInput } from '@/components/SearchInput';
-import { Button } from '@/components/Button';
+import { Spinner } from '@/components/Spinner';
 
 export default function PublicationsFilters({
-  searchValue,
   onSearchChange,
   organizationOptions,
   selectedOrganization,
   onOrganizationChange,
-  onFilter,
+  isLoadingOrganizations = false,
 }: {
-  searchValue: string;
   onSearchChange: (value: string) => void;
   organizationOptions: { value: string; label: string }[];
   selectedOrganization: string;
   onOrganizationChange: (value: string) => void;
-  onFilter: () => void;
+  isLoadingOrganizations?: boolean;
 }) {
   return (
-    <div className="mb-6 flex flex-col gap-4 rounded-lg border bg-background p-4 shadow-sm">
-      <div className="flex flex-col items-center gap-4 md:flex-row">
-        <div className="w-full flex-1">
-          <SearchInput
-            value={searchValue}
-            onChange={onSearchChange}
-            placeholder="Buscar publicaciones..."
-          />
-        </div>
-        <div className="w-full md:w-48">
+    <div className="flex flex-col gap-y-2">
+      {/* Barra de búsqueda arriba */}
+      <div className="w-full">
+        <SearchInput
+          onSearch={onSearchChange}
+          placeholder="Buscar publicaciones..."
+          className="h-12"
+        />
+      </div>
+      {/* Select de organizaciones debajo, con separación inferior */}
+      <div className="w-full md:w-64 mb-6">
+        {isLoadingOrganizations ? (
+          <div className="flex h-12 items-center justify-center rounded-md border border-gray-200 bg-gray-50 w-full">
+            <Spinner size="sm" />
+          </div>
+        ) : (
           <Select
             options={organizationOptions}
             value={selectedOrganization}
             onChange={onOrganizationChange}
           />
-        </div>
-        <Button variant="outline" size="sm" onClick={onFilter}>
-          Filtrar
-        </Button>
+        )}
       </div>
     </div>
   );

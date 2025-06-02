@@ -4,8 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 
 export interface SearchInputProps {
-  value: string;
-  onChange: (value: string) => void;
+  onChange?: (value: string) => void;
   onSearch?: (value: string) => void;
   placeholder?: string;
   label?: string;
@@ -14,7 +13,6 @@ export interface SearchInputProps {
 }
 
 export function SearchInput({
-  value,
   onChange,
   onSearch,
   placeholder = 'Buscar...',
@@ -22,42 +20,51 @@ export function SearchInput({
   className = '',
   debounceMs = 300,
 }: SearchInputProps) {
-  const [localValue, setLocalValue] = useState(value);
+  const [localValue, setLocalValue] = useState('');
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Update local value when value prop changes
-  useEffect(() => {
-    setLocalValue(value);
-  }, [value]);
-
-  // Handle input change with debounce
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     setLocalValue(newValue);
 
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-    }
-
-    timerRef.current = setTimeout(() => {
-      onChange(newValue);
-      if (onSearch) {
-        onSearch(newValue);
-      }
-    }, debounceMs);
-  };
-
-  // Handle enter key press
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && onSearch) {
+    if (onChange && debounceMs > 0) {
       if (timerRef.current) {
         clearTimeout(timerRef.current);
       }
-      onSearch(localValue);
+      timerRef.current = setTimeout(() => {
+        onChange(newValue);
+      }, debounceMs);
+    } else if (onChange && debounceMs <= 0) {
+      onChange(newValue);
+    }
+
+    if (onSearch && timerRef.current) {
+      clearTimeout(timerRef.current);
     }
   };
 
-  // Clean up timer on unmount
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (onSearch) {
+        if (timerRef.current) {
+          clearTimeout(timerRef.current);
+        }
+        onSearch(localValue);
+      }
+    }
+  };
+
+  const handleClear = () => {
+    setLocalValue('');
+    if (onChange) {
+      onChange('');
+    }
+    if (onSearch) {
+      onSearch('');
+    }
+  };
+
   useEffect(() => {
     return () => {
       if (timerRef.current) {
@@ -99,13 +106,7 @@ export function SearchInput({
           <button
             type="button"
             className="absolute inset-y-0 right-0 flex items-center pr-3"
-            onClick={() => {
-              setLocalValue('');
-              onChange('');
-              if (onSearch) {
-                onSearch('');
-              }
-            }}
+            onClick={handleClear}
           >
             <svg
               className="h-5 w-5 text-gray-400 hover:text-gray-500"
@@ -116,7 +117,7 @@ export function SearchInput({
             >
               <path
                 fillRule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 001.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z"
                 clipRule="evenodd"
               />
             </svg>

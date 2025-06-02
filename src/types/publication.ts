@@ -107,6 +107,7 @@ export type CreateTagDto = {
 export type EventDto = {
   location?: string;
   date?: string;
+  registrationLink?: string;
 }
 
 export type NewsDto = {
