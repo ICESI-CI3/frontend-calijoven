@@ -32,8 +32,23 @@ export function useEventRegistration({ publicationId, onSuccess }: UseEventRegis
         const updatedPublication = await PublicationService.getPublication(publicationId);
         onSuccess(updatedPublication);
       }
-    } catch (err) {
-      setRegError(err instanceof Error ? err.message : 'Error al procesar la inscripción');
+    } catch (err: any) {
+      // Manejo de error específico para inscripción duplicada
+      let errorMsg = 'Error al procesar la inscripción';
+      if (err?.response?.data?.message) {
+        const backendMsg = err.response.data.message;
+        if (
+          backendMsg.toLowerCase().includes('ya inscrito') ||
+          backendMsg.toLowerCase().includes('already registered')
+        ) {
+          errorMsg = 'Ya estás inscrito a este evento.';
+        } else {
+          errorMsg = backendMsg;
+        }
+      } else if (err instanceof Error && err.message) {
+        errorMsg = err.message;
+      }
+      setRegError(errorMsg);
     } finally {
       setRegLoading(false);
     }

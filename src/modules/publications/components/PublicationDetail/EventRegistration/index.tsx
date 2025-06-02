@@ -1,9 +1,9 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/lib/hooks/useAuth';
 import { Button } from "@/components/Button";
 import { Alert } from "@/components/Alert";
 import { CheckCircleIcon } from "@heroicons/react/24/outline";
+import RequireAuth from '@/modules/auth/components/RequireAuth';
 
 interface EventRegistrationProps {
   isRegistered: boolean;
@@ -51,24 +51,23 @@ export function EventRegistration({
   error, 
   success 
 }: EventRegistrationProps) {
-  const { user } = useAuth();
   const router = useRouter();
-
-  if (!user) {
-    return (
-      <Button onClick={() => router.push('/login')} className="w-full sm:w-auto">
-        Inicia sesión para inscribirte
-      </Button>
-    );
-  }
 
   return (
     <div className="mt-8">
-      {isRegistered ? (
-        <RegisteredView onCancel={onCancel} isLoading={isLoading} />
-      ) : (
-        <UnregisteredView onRegister={onRegister} isLoading={isLoading} />
-      )}
+      <RequireAuth
+        fallback={
+          <Button onClick={() => router.push('/login')} className="w-full sm:w-auto">
+            Inicia sesión para inscribirte
+          </Button>
+        }
+      >
+        {isRegistered ? (
+          <RegisteredView onCancel={onCancel} isLoading={isLoading} />
+        ) : (
+          <UnregisteredView onRegister={onRegister} isLoading={isLoading} />
+        )}
+      </RequireAuth>
       {error && <Alert type="error" message={error} />}
       {success && <Alert type="success" message={success} />}
     </div>
