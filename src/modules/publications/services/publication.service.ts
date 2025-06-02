@@ -39,6 +39,7 @@ export const PublicationService = {
    */
   async getPublications(filters: PublicationFilters = {}, page = 1, limit = 10): Promise<PublicationResponse> {
     try {
+      console.log('Getting publications with filters:', filters);
       const filterParams: FilterPublicationDto = {
         page,
         limit,
@@ -50,6 +51,8 @@ export const PublicationService = {
         sortBy: filters.sortBy,
         sortOrder: filters.sortOrder,
       };
+
+      console.log('Filter params:', filterParams);
 
       const params = new URLSearchParams(
         Object.fromEntries(
@@ -63,7 +66,11 @@ export const PublicationService = {
         params.append('search', filters.search);
       }
 
-      const { data } = await apiClient.get(`${API_ROUTES.PUBLICATIONS.BASE}?${params}`);
+      const url = `${API_ROUTES.PUBLICATIONS.BASE}?${params}`;
+      console.log('Making request to:', url);
+
+      const { data } = await apiClient.get(url);
+      console.log('Publications response:', data);
       return data;
     } catch (error) {
       console.error('Failed to fetch publications:', error);

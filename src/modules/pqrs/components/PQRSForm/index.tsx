@@ -1,20 +1,14 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
 import { Select } from "@/components/Select";
 import { Textarea } from "@/components/Textarea";
 import { Alert } from "@/components/Alert";
 import { Spinner } from "@/components/Spinner";
-import type { CreatePQRSDto, PQRS, PQRSPriority, PQRSTypeEntity } from "@/types/pqrs";
+import type { CreatePQRSDto, PQRS, PQRSTypeEntity } from "@/types/pqrs";
 import PQRSService from "@/modules/pqrs/services/pqrs.service";
-
-const priorityOptions = [
-  { value: 'low', label: 'Baja' },
-  { value: 'medium', label: 'Media' },
-  { value: 'high', label: 'Alta' }
-];
 
 interface PQRSFormProps {
   onSuccess: () => void;
@@ -26,15 +20,12 @@ export function PQRSForm({ onSuccess, onCancel }: PQRSFormProps) {
     title: '',
     description: '',
     typeId: '',
-    priority: 'medium'
+    priority: 'medium' // Mantenemos el valor por defecto pero no lo mostramos en el formulario
   });
-
-  const [attachments, setAttachments] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadingTypes, setLoadingTypes] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [types, setTypes] = useState<PQRSTypeEntity[]>([]);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const loadTypes = async () => {
@@ -78,17 +69,6 @@ export function PQRSForm({ onSuccess, onCancel }: PQRSFormProps) {
     }));
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files) {
-      const newFiles = Array.from(event.target.files);
-      setAttachments(prev => [...prev, ...newFiles]);
-    }
-  };
-
-  const removeFile = (index: number) => {
-    setAttachments(prev => prev.filter((_, i) => i !== index));
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -117,8 +97,7 @@ export function PQRSForm({ onSuccess, onCancel }: PQRSFormProps) {
         title: String(formData.title).trim(),
         description: String(formData.description).trim(),
         typeId: formData.typeId,
-        priority: formData.priority,
-        attachments
+        priority: formData.priority
       };
 
       console.log('Enviando PQRS:', {
@@ -172,66 +151,20 @@ export function PQRSForm({ onSuccess, onCancel }: PQRSFormProps) {
           rows={5}
         />
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Select
-            label="Tipo"
-            options={types.map(type => ({
-              value: type.id,
-              label: type.name
-            }))}
-            value={formData.typeId}
-            onChange={(value) => {
-              console.log('Tipo seleccionado:', value);
-              handleChange('typeId', value);
-            }}
-          />
+        <Select
+          label="Tipo"
+          options={types.map(type => ({
+            value: type.id,
+            label: type.name
+          }))}
+          value={formData.typeId}
+          onChange={(value) => {
+            console.log('Tipo seleccionado:', value);
+            handleChange('typeId', value);
+          }}
+        />
 
-          <Select
-            label="Prioridad"
-            options={priorityOptions}
-            value={formData.priority || 'medium'}
-            onChange={(value) => handleChange('priority', value as PQRSPriority)}
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Archivos Adjuntos
-          </label>
-          
-          <div className="flex flex-wrap gap-2 mb-4">
-            {attachments.map((file, index) => (
-              <div key={index} className="bg-gray-100 rounded px-3 py-1 flex items-center gap-2">
-                <span className="text-sm">{file.name}</span>
-                <button
-                  type="button"
-                  onClick={() => removeFile(index)}
-                  className="text-gray-500 hover:text-red-500"
-                >
-                  &times;
-                </button>
-              </div>
-            ))}
-          </div>
-          
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleFileChange}
-            className="hidden"
-            multiple
-          />
-          
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => fileInputRef.current?.click()}
-          >
-            Subir Archivos
-          </Button>
-        </div>
-
-        <div className="flex justify-end space-x-4">
+        <div className="flex justify-end gap-4">
           <Button
             type="button"
             variant="outline"
@@ -241,9 +174,10 @@ export function PQRSForm({ onSuccess, onCancel }: PQRSFormProps) {
           </Button>
           <Button
             type="submit"
-            disabled={loading}
+            variant="primary"
+            isLoading={loading}
           >
-            {loading ? 'Creando...' : 'Crear PQRS'}
+            Enviar PQRS
           </Button>
         </div>
       </form>
