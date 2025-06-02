@@ -70,6 +70,7 @@ export default function PublicationsDashboard() {
                   options={organizationOptions}
                   value={selectedOrganization}
                   onChange={handleOrganizationChange}
+                  role="organization-select"
                 />
               </div>
             </div>
