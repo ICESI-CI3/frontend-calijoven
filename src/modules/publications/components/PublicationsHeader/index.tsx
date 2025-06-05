@@ -12,11 +12,6 @@ export function PublicationsHeader() {
           Descubre eventos, noticias y oportunidades para jóvenes
         </p>
       </div>
-      <RequireAuth fallback={null}>
-        <Button variant="outline" size="sm" onClick={() => router.push('/dashboard')}>
-          Ir al Dashboard
-        </Button>
-      </RequireAuth>
     </div>
   );
 } 
