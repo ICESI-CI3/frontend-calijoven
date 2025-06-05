@@ -20,7 +20,7 @@ export const navbarItems: NavbarItem[] = [
       { label: 'CDJ - Consejo Distrital de Juventud', href: ROUTES.CDJ.PATH },
     ],
   },
-  { label: 'Transparencia', href: ROUTES.TRANSPARENCY.PATH },
+  /*{ label: 'Transparencia', href: ROUTES.TRANSPARENCY.PATH },*/
 ];
 
 export const navbarUserMenu: NavbarItem[] = [

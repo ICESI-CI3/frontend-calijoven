@@ -15,14 +15,16 @@ import {
 import { ROUTES } from './routes';
 
 export const defaultSidebarItems: SidebarItem[] = [
+  /*
   {
     label: 'Inicio',
     href: ROUTES.MY_SPACE.HOME.PATH,
     icon: <Squares2X2Icon className="h-full w-full" />,
   },
+  */
   {
     label: 'Publicaciones',
-    href: ROUTES.MY_SPACE.PUBLICATIONS.PATH,
+    href: ROUTES.PUBLICATIONS.LIST.PATH,
     icon: <StarIcon className="h-full w-full" />,
   },
   {
@@ -35,11 +37,13 @@ export const defaultSidebarItems: SidebarItem[] = [
     href: ROUTES.MY_SPACE.PQRS.PATH,
     icon: <ChatBubbleLeftRightIcon className="h-full w-full" />,
   },
+  /*
   {
     label: 'Configuración',
     href: ROUTES.MY_SPACE.CONFIGURATION.PATH,
     icon: <Cog6ToothIcon className="h-full w-full" />,
-  },
+  },¨
+  */
 ];
 
 export const sidebarItemsPerPermission: { [key: string]: SidebarItem[] } = {
