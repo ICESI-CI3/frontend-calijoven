@@ -23,11 +23,6 @@ export const defaultSidebarItems: SidebarItem[] = [
   },
   */
   {
-    label: 'Publicaciones',
-    href: ROUTES.PUBLICATIONS.LIST.PATH,
-    icon: <StarIcon className="h-full w-full" />,
-  },
-  {
     label: 'Publicaciones Guardadas',
     href: ROUTES.MY_SPACE.SAVED_PUBLICATIONS.PATH,
     icon: <BookmarkIcon className="h-full w-full" />,
@@ -68,13 +63,7 @@ export const sidebarItemsPerPermission: { [key: string]: SidebarItem[] } = {
       icon: <DocumentTextIcon className="h-full w-full" />,
     },
   ],
-  [PERMISSIONS.MANAGE_BANNER]: [
-    {
-      label: 'Banners',
-      href: ROUTES.ADMIN.BANNERS.PATH,
-      icon: <PhotoIcon className="h-full w-full" />,
-    },
-  ],
+  
   [PERMISSIONS.MANAGE_PQRS]: [
     {
       label: 'PQRS',
