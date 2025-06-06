@@ -12,6 +12,7 @@ import { usePublications } from '../../hooks/usePublications';
 import { useEventRegistration } from '../../hooks/useEventRegistration';
 import type { Attachment } from '@/types/publication';
 import { SavePublicationButton } from '../SavePublicationButton';
+import RequireAuth from '@/modules/auth/components/RequireAuth';
 
 export function PublicationDetail({ id }: { id: string }) {
   const { publication, loading, error, refetchPublication } = usePublications({
@@ -46,7 +47,9 @@ export function PublicationDetail({ id }: { id: string }) {
     <div className="container mx-auto px-4 py-8">
       <div className="flex items-center justify-between">
         <h1 className="mb-2 text-3xl font-bold">{publication.title}</h1>
-        <SavePublicationButton publicationId={publication.id} />
+        <RequireAuth>
+          <SavePublicationButton publicationId={publication.id} />
+        </RequireAuth>
       </div>
       <PublicationHeader title={publication.title} description={publication.description} />
 

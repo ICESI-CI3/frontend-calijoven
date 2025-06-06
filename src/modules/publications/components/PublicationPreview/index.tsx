@@ -7,6 +7,7 @@ import { Button } from '@/components/Button';
 import { useRouter } from 'next/navigation';
 import { ROUTES } from '@/lib/constants/routes';
 import { SavePublicationButton } from '../SavePublicationButton';
+import RequireAuth from '@/modules/auth/components/RequireAuth';
 
 const typeMap: Record<string, { label: string; color: string }> = {
   event: { label: 'Evento', color: 'bg-green-500' },
@@ -61,7 +62,9 @@ const PublicationPreview: FC<PublicationPreviewProps> = ({ publication, onReadMo
               {formatDate(publication.createdAt)}
             </span>
           </div>
-          <SavePublicationButton publicationId={publication.id} />
+          <RequireAuth>
+            <SavePublicationButton publicationId={publication.id} />
+          </RequireAuth>
         </div>
         <h2 className="mb-1 text-lg font-bold">{publication.title}</h2>
         <p className="mb-2 text-gray-700">{publication.description}</p>
