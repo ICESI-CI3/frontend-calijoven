@@ -1,5 +1,6 @@
 import { OrganizationService, OrganizationError } from '../organization.service';
 import apiClient from '@/lib/api/client';
+import { expect } from '@jest/globals';
 
 jest.mock('@/lib/api/client', () => ({
   get: jest.fn(),

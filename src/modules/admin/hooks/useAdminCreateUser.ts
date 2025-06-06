@@ -37,7 +37,6 @@ export function useAdminCreateUser() {
                 email: userData.email,
                 password: userData.password,
                 city: userData.city?.id || '',
-                userTypes: [] // Required by CreateUserDto but we'll leave it empty for now
             }),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['users'] });
