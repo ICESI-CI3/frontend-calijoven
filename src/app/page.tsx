@@ -10,7 +10,7 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      <main className="flex-1 bg-background pt-16">
+      <main className="flex-1 bg-background pt-6 mt-10">
         <Carousel slides={slides} />
         <WhatWeDoSection />
         <OrganizationalStructureSection />

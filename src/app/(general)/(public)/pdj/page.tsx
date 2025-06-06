@@ -66,7 +66,7 @@ export default function PDJPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 py-6">
       {/* Hero Section */}
       <div className="bg-blue-700 text-white">
         <div className="container mx-auto px-4 py-16">

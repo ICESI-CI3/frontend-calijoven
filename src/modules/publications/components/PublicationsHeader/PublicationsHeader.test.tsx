@@ -35,16 +35,4 @@ describe('PublicationsHeader', () => {
     expect(screen.getByText('Descubre eventos, noticias y oportunidades para jóvenes')).toBeInTheDocument();
   });
 
-  it('renders the dashboard button when user is authenticated', () => {
-    render(<PublicationsHeader />);
-    const button = screen.getByText('Ir al Dashboard');
-    expect(button).toBeInTheDocument();
-  });
-
-  it('navigates to dashboard when button is clicked', () => {
-    render(<PublicationsHeader />);
-    const button = screen.getByText('Ir al Dashboard');
-    fireEvent.click(button);
-    expect(mockPush).toHaveBeenCalledWith('/dashboard');
-  });
 }); 

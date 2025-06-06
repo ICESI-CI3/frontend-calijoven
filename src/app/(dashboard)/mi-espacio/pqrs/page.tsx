@@ -79,47 +79,57 @@ export default function PQRSPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+
+    
+    <div className="min-h-screen bg-gray-50">
       {/* Encabezado */}
-      <div className="mb-8 flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Mis PQRS</h1>
-          <p className="mt-2 text-gray-600">
-            Gestiona tus peticiones, quejas, reclamos y sugerencias
-          </p>
+      <div className="bg-white shadow">
+        <div className="mb-4 flex justify-between items-center container mx-auto px-4 py-6">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Mis PQRS</h1>
+            <p className="mt-2 text-gray-600">
+              Gestiona tus peticiones, quejas, reclamos y sugerencias
+            </p>
+          </div>
+          <Button onClick={() => setShowCreateModal(true)}>
+            Crear Nueva PQRS
+          </Button>
         </div>
-        <Button onClick={() => setShowCreateModal(true)}>
-          Crear Nueva PQRS
-        </Button>
       </div>
 
-      {/* Filtros */}
-      <PQRSFilters
-        filters={filters}
-        onFilterChange={handleFilterChange}
-      />
+      <div className='container mx-auto px-4 space-y-6'>
+        {/* Filtros */}
+        <div className='bg-white shadow rounded-lg p-2'>
+          <div className='mx-auto px-4 py-4'>
+            <PQRSFilters
+              filters={filters}
+              onFilterChange={handleFilterChange}
+            />
+          </div>
+        </div>
 
-      {/* Lista de PQRS */}
-      <PQRSList
-        pqrs={pqrs}
-        loading={loading}
-        error={error}
-        totalPages={totalPages}
-        currentPage={page}
-        onPageChange={setPage}
-      />
-
-      {/* Modal de creación */}
-      <Modal
-        isOpen={showCreateModal}
-        onClose={() => setShowCreateModal(false)}
-        title="Crear Nueva PQRS"
-      >
-        <PQRSForm
-          onSuccess={handleCreateSuccess}
-          onCancel={() => setShowCreateModal(false)}
+        {/* Lista de PQRS */}
+        <PQRSList
+          pqrs={pqrs}
+          loading={loading}
+          error={error}
+          totalPages={totalPages}
+          currentPage={page}
+          onPageChange={setPage}
         />
-      </Modal>
+
+        {/* Modal de creación */}
+        <Modal
+          isOpen={showCreateModal}
+          onClose={() => setShowCreateModal(false)}
+          title="Crear Nueva PQRS"
+        >
+          <PQRSForm
+            onSuccess={handleCreateSuccess}
+            onCancel={() => setShowCreateModal(false)}
+          />
+        </Modal>
+      </div>
     </div>
   );
 } 

@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { PublicationsList } from '@/modules/publications/components/PublicationsList';
 import { PublicationsHeader } from '@/modules/publications/components/PublicationsHeader';
+import { PublicationsList } from '@/modules/publications/components/PublicationsList';
 import { Publication } from '@/types/publication';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export default function PublicationsPage() {
   const [activeTab, setActiveTab] = useState('');

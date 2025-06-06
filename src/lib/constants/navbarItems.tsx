@@ -20,12 +20,11 @@ export const navbarItems: NavbarItem[] = [
       { label: 'CDJ - Consejo Distrital de Juventud', href: ROUTES.CDJ.PATH },
     ],
   },
-  { label: 'Transparencia', href: ROUTES.TRANSPARENCY.PATH },
+  /*{ label: 'Transparencia', href: ROUTES.TRANSPARENCY.PATH },*/
 ];
 
 export const navbarUserMenu: NavbarItem[] = [
-  { label: 'Mi espacio', href: ROUTES.MY_SPACE.HOME.PATH, icon: <Cog6ToothIcon className="h-5 w-5" /> },
-  { label: 'Perfil', href: ROUTES.MY_SPACE.CONFIGURATION.PATH, icon: <UserIcon className="h-5 w-5" /> },
+  { label: 'Mi espacio', href: ROUTES.MY_SPACE.SAVED_PUBLICATIONS.PATH, icon: <Cog6ToothIcon className="h-5 w-5" /> },
   {
     label: 'Cerrar sesión',
     href: '#logout',
